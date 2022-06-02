@@ -1,0 +1,25 @@
+{
+    "name": "ltx-support",
+    "displayName": "LTX Support",
+    "description": "Support of stalker logic format",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "ltx",
+            "aliases": ["LTX", "ltx"],
+            "extensions": [".ltx"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "ltx",
+            "scopeName": "source.tpl",
+            "path": "./syntaxes/ltx.tmLanguage.json"
+        }]
+    }
+}
