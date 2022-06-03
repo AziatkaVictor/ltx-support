@@ -14,12 +14,18 @@
             "id": "ltx",
             "aliases": ["LTX", "ltx"],
             "extensions": [".ltx"],
-            "configuration": "./language-configuration.json"
+            "configuration": "./syntaxes/language-configuration.json"
         }],
         "grammars": [{
             "language": "ltx",
-            "scopeName": "source.tpl",
+            "scopeName": "source.ltx",
             "path": "./syntaxes/ltx.tmLanguage.json"
-        }]
+        }],
+        "snippets": [
+            {
+                "language": "ltx",
+                "path": "./syntaxes/snippets.json"
+            }
+        ]
     }
 }

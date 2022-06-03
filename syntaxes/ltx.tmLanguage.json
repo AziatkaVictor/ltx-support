@@ -3,30 +3,57 @@
 	"name": "LTX",
 	"patterns": [
 		{
+			"include": "#comments"
+		},
+		{
+			"include": "#titles"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
-			"include": "#strings"
+			"include": "#modules"
 		}
 	],
 	"repository": {
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.ltx",
-				"match": "\\b(if|while|for|return)\\b"
+				"match": "\\b(on_info|on_game_timer|on_actor_outside|on_actor_inside|active)\\b"
 			}]
 		},
-		"strings": {
-			"name": "string.quoted.double.ltx",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.ltx",
-					"match": "\\\\."
+		"modules": {
+			"patterns": [{
+				"name": "keyword.control.ltx",
+				"match": "\\b(sr_idle|sr_timer|sr_teleport|sr_particle|sr_light)\\b"
+			}]
+		},
+		"comments": {
+			"patterns": [{
+				"name": "comment.line.ltx",
+				"begin": ";",
+				"end": "\n",
+				"beginCaptures": {
+					"0": { "name": "punctuation.paren.open" }
+				},
+				"endCaptures": {
+					"0": { "name": "punctuation.paren.close" }
 				}
-			]
+			}]
+		},
+		"titles": {
+			"patterns": [{
+				"name": "entity.name.type.ltx",
+				"begin": "\\[",
+				"end": "\\]",
+				"beginCaptures": {
+					"0": { "name": "punctuation.paren.open" }
+				},
+				"endCaptures": {
+					"0": { "name": "punctuation.paren.close" }
+				}
+			}]
 		}
 	},
-	"scopeName": "source.tpl"
+	"scopeName": "source.ltx"
 }
