@@ -11,8 +11,8 @@
             "name": "Launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-            "args": ["--extensionDevelopmentPath=${workspaceRoot}"],
-            "outFiles": ["${workspaceRoot}/client/out/**/*.js"],
+                "--extensionDevelopmentPath=${workspaceRoot}", 
+                "${workspaceRoot}/.vscode-test"
             ],
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"
