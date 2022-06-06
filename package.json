@@ -1,6 +1,7 @@
 {
     "name": "ltx-support",
     "displayName": "LTX Support",
+    "publisher": "AziatkaVictor",
     "description": "Support of stalker logic format",
     "version": "0.0.1",
     "engines": {
@@ -12,19 +13,20 @@
     "activationEvents": [
         "onLanguage:ltx"
     ],
-    "main": "./client/out/extension",
+    "main": "./out/extension",
     "scripts": {
-        "vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
+        "vscode:prepublish": "npm run compile",
         "compile": "tsc -b",
-        "watch": "tsc -b -w",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-        "test": "sh ./scripts/e2e.sh"
+        "watch": "tsc -b -w"
     },
     "devDependencies": {
         "@types/mocha": "^5.2.0",
         "@types/node": "^8.0.0",
+        "@types/vscode": "^1.63.0",
         "tslint": "^5.11.0",
-        "typescript": "^3.1.3"
+        "typescript": "^3.1.3",
+        "iconv": "^3.0.1",
+        "xml2js": "^0.4.23"
     },
     "contributes": {
         "languages": [
@@ -44,7 +46,10 @@
             {
                 "language": "ltx",
                 "scopeName": "source.ltx",
-                "path": "./syntaxes/ltx.tmLanguage.json"
+                "path": "./syntaxes/ltx.tmLanguage.json",
+                "tokenTypes": {
+                    "entity.name.function": "string"
+                }
             }
         ],
         "snippets": [
@@ -52,6 +57,46 @@
                 "language": "ltx",
                 "path": "./syntaxes/snippets.json"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "LTX",
+            "properties": {
+                "PathToFunctionsLogic": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Your path to file with logic functions. Like: (D:\\Stalker CoP\\gamedata\\scripts\\xr_effects.script)"
+                },
+                "PathToLocalization": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Your path to file with logic functions. Like: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus)"
+                }
+            }
+        },
+        "semanticTokenScopes": [
+            {
+                "language": "ltx",
+                "scopes": {
+                    "entity.name.function": [
+                        "group.functions.logic.ltx"
+                    ],
+                    "entity.name.variable": [
+                        "group.functions.logic.args.ltx"
+                    ]
+                }
+            }
+        ],
+        "commands": [],
+        "configurationDefaults": {
+            "[ltx]": {
+                "editor.semanticHighlighting.enabled": true
+            },
+            "editor.semanticTokenColorCustomizations": {
+                "enabled": true,
+                "rules": {
+                    "entity.name.function": "#ff0000"
+                }
+            }
+        }
     }
 }
