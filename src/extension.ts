@@ -7,6 +7,7 @@ let JSONdata = [];
 
 export function activate(context: ExtensionContext) {
     languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '=');
+    languages.registerCompletionItemProvider("ltx", getLocalization());
     window.showInformationMessage('LTX Support is started!');
 }
 
@@ -82,3 +83,67 @@ function getLogicFunctionsLua(filePath: string) {
     }
 }
 
+function getLocalization(): CompletionItemProvider<CompletionItem> {
+    return {
+        provideCompletionItems() {
+            let settingsPath: string = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToLocalization");
+            let dir;
+
+            if (settingsPath) {
+                dir = settingsPath.replace("\\", "/");
+            }
+            else {
+                dir = path.resolve(__dirname, '../data/localization/');
+            }
+
+            let item = (file, name, text) => {
+                file = file.replace(".xml", "")
+                let data: CompletionItem = {
+                    label: name,
+                    kind: CompletionItemKind.Variable,
+                    detail: file + "." + name,
+                }
+                let temp = new MarkdownString(text);
+                temp.isTrusted = true;
+                temp.supportHtml = true;
+                data.documentation = temp;
+                return data;
+            }           
+
+            let arr = [];
+
+            let files = fs.readdirSync(dir);
+            files.forEach(file => {
+                
+                (parseXML(path.resolve(dir, file)).string_table.string).forEach(file_item => {
+                    let temp = item(file, file_item.$.id, file_item.text[0]);
+                    
+                    arr.push(temp);
+                });
+            });
+            return arr;
+        }
+    }
+}
+
+function parseXML(file: string) {
+    const Iconv = require('iconv').Iconv;
+    const iconv = new Iconv('cp1251', 'UTF-8');
+
+    let value = fs.readFileSync(file);
+    
+    value = iconv.convert(value);
+    let text = String(value).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
+    let data;
+
+    parseString(text, function (err, result) {
+        if (err) {
+            console.log(file);
+            console.log('There was an error when parsing: ' + err);
+        }
+        else {
+            data = result;
+        }
+    });
+    return data;
+}
