@@ -113,15 +113,22 @@ function getLocalization(): CompletionItemProvider<CompletionItem> {
             let arr = [];
 
             let files = fs.readdirSync(dir);
-            files.forEach(file => {
-                
-                (parseXML(path.resolve(dir, file)).string_table.string).forEach(file_item => {
-                    let temp = item(file, file_item.$.id, file_item.text[0]);
-                    
-                    arr.push(temp);
+            if (files !== null && files !== []) {
+                let ignoredFiles: string[] = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("IgnoreLocalizationFile");
+                files = files.filter(function (el) {
+                    return ignoredFiles.indexOf(el) < 0;
                 });
-            });
-            return arr;
+
+                files.forEach(file => {
+
+                    (parseXML(path.resolve(dir, file)).string_table.string).forEach(file_item => {
+                        let temp = item(file, file_item.$.id, file_item.text[0]);
+
+                        arr.push(temp);
+                    });
+                });
+                return arr;
+            }
         }
     }
 }

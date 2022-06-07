@@ -69,7 +69,13 @@
                 "PathToLocalization": {
                     "type": "string",
                     "default": null,
-                    "description": "Your path to file with logic functions. Like: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus)"
+                    "description": "Your path to directory with localization. Like: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus)"
+                },
+                "IgnoreLocalizationFile": {
+                    "type": "array",
+                    "items": "string",
+                    "default": [],
+                    "description": "File names, which going to be ignored. Like: ('st_characters.xml')"
                 }
             }
         },
@@ -94,7 +100,7 @@
             "editor.semanticTokenColorCustomizations": {
                 "enabled": true,
                 "rules": {
-                    "entity.name.function": "#ff0000"
+                    "test": "#ff0000"
                 }
             }
         }
