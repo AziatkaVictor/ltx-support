@@ -1,14 +1,62 @@
 import * as path from 'path';
-import { workspace, ExtensionContext, languages, CompletionItem, Range, CompletionItemKind, window, commands, extensions, Hover, MarkdownString, SignatureHelpProvider, TextDocument, Position, CancellationToken, SignatureHelpContext, ProviderResult, SignatureHelp, SignatureInformation, ParameterInformation, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider } from 'vscode';
+import { workspace, ExtensionContext, languages, CompletionItem, Range, CompletionItemKind, window, commands, extensions, Definition, MarkdownString, SignatureHelpProvider, TextDocument, Position, CancellationToken, SignatureHelpContext, ProviderResult, SignatureHelp, SignatureInformation, ParameterInformation, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, TreeItemCollapsibleState, DefinitionProvider, Location } from 'vscode';
 import * as fs from 'fs';
 import { parseString } from 'xml2js';
 
-let JSONdata = [];
+const tokenTypes = ['class', 'interface', 'enum', 'function', 'variable'];
+const tokenModifiers = ['declaration', 'definition', 'documentation'];
+const legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
+
+interface parseLtxData {
+    type: string,
+    modificator?: string[] | null,
+    data?: semanticData[]
+}
+
+interface semanticData {
+    range: Range,
+    text?: string
+}
+
+interface Data {
+    logicSections?: semanticData[],
+    logicSectionsLink?: semanticData[],
+    functions?: parseLtxData[],
+    localization?: parseLtxData[],
+}
+
+let GlobalData: Data = {
+    logicSections: [],
+    logicSectionsLink: [],
+    functions: [],
+    localization: []
+};
 
 export function activate(context: ExtensionContext) {
     languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '=');
     languages.registerCompletionItemProvider("ltx", getLocalization());
+    languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend);
     window.showInformationMessage('LTX Support is started!');
+}
+
+function getSemanticLtx() {
+    const provider: DocumentSemanticTokensProvider = {
+        provideDocumentSemanticTokens(
+            document: TextDocument
+        ): ProviderResult<SemanticTokens> {
+            const tokensBuilder = new SemanticTokensBuilder(legend);
+
+            const data = parseLtx(document);
+
+            data.forEach(Type => {
+                Type.data.forEach(item => {
+                    tokensBuilder.push(item.range, Type.type, Type.modificator);
+                });
+            });
+            return tokensBuilder.build();
+        }
+    };
+    return provider;
 }
 
 export function deactivate() {
@@ -58,10 +106,108 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
             temp.forEach(element => {
                 arr.push(item(element));
             });
-
-            return arr;
+            if (isSelectionInsideGroup()) {
+                return arr;
+            }
+            else {
+                return null;
+            }
         }
     }
+};
+function parseLtx(document: TextDocument) {
+    let array: parseLtxData[] = [];
+    let Sections: parseLtxData = {
+        type: "interface", modificator: ["definition"]
+    };
+    let SectionsLinks: parseLtxData = {
+        type: "interface", modificator: ["declaration"]
+    };
+    GlobalData.logicSections = [];
+    GlobalData.logicSectionsLink = [];
+
+    for (let line = 0; line < document.lineCount; line++) {
+        const data = document.lineAt(line).text;
+
+        let re: RegExp = /\[/;
+        let matchStart = re.exec(data);
+        re = /\]/;
+        let matchEnd = re.exec(data);
+        if (matchStart && matchEnd) {
+            let [start, end] = [matchStart.index, matchEnd.index];
+            const rangeItem = new Range(new Position(line, start + 1), new Position(line, end));
+            const textItem = document.getText(rangeItem);
+
+            let item: semanticData = {
+                range: rangeItem,
+                text: textItem
+            }
+
+            GlobalData.logicSections.push(item)
+
+            if (!Sections.data) {
+                Sections.data = [];
+            }
+            Sections.data.push(item);
+        };
+    }
+
+    for (let line = 0; line < document.lineCount; line++) {
+        const data = document.lineAt(line).text;
+
+        GlobalData.logicSections.forEach(element => {
+            let sectionName = element.text;
+            let re;
+            if (sectionName.search("@") === -1) {
+                re = new RegExp('[^\\[]' + sectionName + '(?!@)', 'g');
+            }
+            else {
+                re = new RegExp('[^\\[]' + sectionName, 'g')
+            }
+            let text = data.replace(/\;.*/, "");
+            let match = re.exec(text);
+            if (match && match['indices'][0]) {
+                console.log(match);
+                let [start, end] = match['indices'][0];
+                let item: semanticData = {
+                    range: new Range(new Position(line, start), new Position(line, end)),
+                    text: match[0].trim()
+                }
+                if (!SectionsLinks.data) {
+                    SectionsLinks.data = [];
+                }
+                GlobalData.logicSectionsLink.push(item);
+                SectionsLinks.data.push(item);
+            }
+        });
+    }
+
+    array.push(Sections);
+    array.push(SectionsLinks);
+    return array;
+}
+
+function isSelectionInsideGroup(): boolean {
+    const sel = window.activeTextEditor.selection;
+    const Line = window.activeTextEditor.document.lineAt(sel.start.line);
+    let isInCondGroup = false, isInFuncGroup = false;
+
+    let re: RegExp = /\%.*?\%/g;
+    let match = re.exec(Line.text);
+    if (match) {
+        const [checkRangeFunc_start, checkRangeFunc_end] = match['indices'][0];
+        isInFuncGroup = (checkRangeFunc_start < Line.range.start < checkRangeFunc_end);
+    }
+
+    re = /\{.*?\}/g;
+    match = re.exec(Line.text);
+    if (match) {
+        const [checkRangeCond_start, checkRangeCond_end] = match['indices'][0];
+        isInCondGroup = (checkRangeCond_start < Line.range.start < checkRangeCond_end);
+
+    }
+
+    return isInFuncGroup || isInCondGroup;
 };
 
 function getLogicFunctionsLua(filePath: string) {
