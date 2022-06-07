@@ -3,4 +3,4 @@ on_info = %=test =give_task(task_name) =test =test(test:test) +info -info =give_
 ; on_actor_inside = nil
 
 [sr_idle@name]
-on_info {!dont_have_info +have_info =condition} %=create_squad(squad_name:smart_name)% 
+on_info = {!dont_have_info +have_info =condition} %=create_squad(squad_name:smart_name) =activate_weapon%  sr_idle
