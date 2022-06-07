@@ -36,6 +36,7 @@ export function activate(context: ExtensionContext) {
     languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '=');
     languages.registerCompletionItemProvider("ltx", getLocalization());
     languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend);
+    languages.registerDefinitionProvider("ltx", addLogicDefinition());
     window.showInformationMessage('LTX Support is started!');
 }
 
@@ -115,6 +116,36 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
         }
     }
 };
+
+function addLogicDefinition(): DefinitionProvider {
+    return {
+        provideDefinition(doc, pos, token): ProviderResult<Definition> {
+            for (let index = 0; index < GlobalData.logicSectionsLink.length; index++) {
+                const item = GlobalData.logicSectionsLink[index];
+                if (isInRange(item.range, pos)) {
+                    console.log(item);
+                    console.log(pos);
+                    let definitionItem = getlogicSectionsByText(item.text);
+                    console.log(definitionItem);
+                    let data: Definition = new Location(doc.uri, definitionItem.range);
+                    console.log(data);
+                    return data;
+                }
+            }
+            return;
+        }
+    }
+}
+
+function getlogicSectionsByText(data: string) : semanticData {
+    for (let index = 0; index < GlobalData.logicSections.length; index++) {
+        const element = GlobalData.logicSections[index];
+        if (element.text === data) {
+            return element;
+        }
+    }
+}
+
 function parseLtx(document: TextDocument) {
     let array: parseLtxData[] = [];
     let Sections: parseLtxData = {
@@ -209,6 +240,13 @@ function isSelectionInsideGroup(): boolean {
 
     return isInFuncGroup || isInCondGroup;
 };
+
+function isInRange(range: Range, position: Position): boolean {
+    if ((range.start.line <= position.line) && (position.line <= range.end.line)) {
+        return (range.start.character < position.character) && (position.character < range.end.character);
+    }
+    return false;
+}
 
 function getLogicFunctionsLua(filePath: string) {
     if (filePath) {
