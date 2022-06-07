@@ -247,13 +247,13 @@ function isInRange(range: Range, position: Position): boolean {
 function getLogicFunctionsLua(filePath: string) {
     if (filePath) {
         let file = fs.readFileSync(String(filePath), 'utf8');
-        let arr = file.replace("--\\[(=*)\\[(.|\n)*?\\]\\1\\]", "").split("\n");
+        let arr = file.replace(/\-\-\[\[(.|\s)*?\]\]\-\-/g, "").replace(/--.*?\n/g, "").split("\n");
         let func_arr = [];
         arr.forEach(element => {
-            element = element.replace(' ', '').replace(' ', '');
-            let text = element.substring(element.lastIndexOf("function") + 8, element.lastIndexOf("("));
-            if ((text !== null) && (text !== '') && (element.search("function") !== -1) && (element.search("abort") === -1) && (element.search("printf") === -1)) {
-                func_arr.push(text.trim());
+            let re : RegExp = /^function .*?(?=\(.*?\)\n)/m;
+            let text = re.exec(element.trim()+'\n');
+            if (text) {
+                func_arr.push(text[0].replace("function ", ""));
             }
         });
         return func_arr;
