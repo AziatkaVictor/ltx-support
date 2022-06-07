@@ -94,16 +94,8 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
                 }
                 return item;
             }
-            let temp;
-            let settingsPath: string = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToFunctionsLogic");
-
-            if (settingsPath) {
-                temp = getLogicFunctionsLua(settingsPath);
-            }
-            else {
-                temp = getLogicFunctionsLua(path.resolve(__dirname, "../data/xr_effects.script"));
-            }
-
+            const temp = getEffectsPath();
+            
             temp.forEach(element => {
                 arr.push(item(element));
             });
@@ -116,6 +108,17 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
         }
     }
 };
+
+function getEffectsPath() {
+    let settingsPath: string = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToFunctionsLogic");
+
+    if (settingsPath) {
+        return getLogicFunctionsLua(settingsPath);
+    }
+    else {
+        return getLogicFunctionsLua(path.resolve(__dirname, "../data/xr_effects.script"));
+    }
+}
 
 function addLogicDefinition(): DefinitionProvider {
     return {
