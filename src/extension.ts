@@ -123,12 +123,8 @@ function addLogicDefinition(): DefinitionProvider {
             for (let index = 0; index < GlobalData.logicSectionsLink.length; index++) {
                 const item = GlobalData.logicSectionsLink[index];
                 if (isInRange(item.range, pos)) {
-                    console.log(item);
-                    console.log(pos);
                     let definitionItem = getlogicSectionsByText(item.text);
-                    console.log(definitionItem);
                     let data: Definition = new Location(doc.uri, definitionItem.range);
-                    console.log(data);
                     return data;
                 }
             }
@@ -198,7 +194,7 @@ function parseLtx(document: TextDocument) {
             let text = data.replace(/\;.*/, "");
             let match = re.exec(text);
             if (match && match['indices'][0]) {
-                console.log(match);
+                // console.log(match);
                 let [start, end] = match['indices'][0];
                 let item: semanticData = {
                     range: new Range(new Position(line, start), new Position(line, end)),
