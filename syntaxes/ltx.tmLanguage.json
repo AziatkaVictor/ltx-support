@@ -13,9 +13,6 @@
 		},
 		{
 			"include": "#titles"
-		},
-		{
-			"include": "#modules"
 		}
 	],
 	"repository": {
