@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { workspace, ExtensionContext, languages, CompletionItem, Range, CompletionItemKind, window, commands, extensions, Definition, MarkdownString, SignatureHelpProvider, TextDocument, Position, CancellationToken, SignatureHelpContext, ProviderResult, SignatureHelp, SignatureInformation, ParameterInformation, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, TreeItemCollapsibleState, DefinitionProvider, Location } from 'vscode';
+import { workspace, ExtensionContext, languages, CompletionItem, Range, CompletionItemKind, window, commands, extensions, Definition, MarkdownString, SignatureHelpProvider, TextDocument, Position, CancellationToken, SignatureHelpContext, ProviderResult, SignatureHelp, SignatureInformation, ParameterInformation, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, TreeItemCollapsibleState, DefinitionProvider, Location, Uri } from 'vscode';
 import * as fs from 'fs';
 import { parseString } from 'xml2js';
 
@@ -21,20 +21,22 @@ interface semanticData {
 interface Data {
     logicSections?: semanticData[],
     logicSectionsLink?: semanticData[],
-    functions?: parseLtxData[],
-    localization?: parseLtxData[],
+    functions?: semanticData[],
+    localization?: semanticData[],
+    info?: semanticData[],
 }
 
 let GlobalData: Data = {
     logicSections: [],
     logicSectionsLink: [],
     functions: [],
-    localization: []
+    localization: [],
+    info: []
 };
 
 export function activate(context: ExtensionContext) {
     languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '=');
-    languages.registerCompletionItemProvider("ltx", getLocalization());
+    languages.registerCompletionItemProvider("ltx", addCommonCompletion());
     languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend);
     languages.registerDefinitionProvider("ltx", addLogicDefinition());
     window.showInformationMessage('LTX Support is started!');
@@ -94,8 +96,15 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
                 }
                 return item;
             }
-            const temp = getEffectsPath();
-            
+            let temp;
+
+            if (getEffectsPath()) {
+                temp = getLogicFunctionsLua(getEffectsPath());
+            }
+            else {
+                temp = getLogicFunctionsLua(path.resolve(__dirname, "../data/xr_effects.script"));
+            }
+
             temp.forEach(element => {
                 arr.push(item(element));
             });
@@ -109,36 +118,56 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
     }
 };
 
-function getEffectsPath() {
-    let settingsPath: string = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToFunctionsLogic");
-
-    if (settingsPath) {
-        return getLogicFunctionsLua(settingsPath);
-    }
-    else {
-        return getLogicFunctionsLua(path.resolve(__dirname, "../data/xr_effects.script"));
-    }
+function getEffectsPath(): string {
+    return workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToFunctionsLogic");
 }
 
 function addLogicDefinition(): DefinitionProvider {
     return {
         provideDefinition(doc, pos, token): ProviderResult<Definition> {
+            let data: Definition = null;
             for (let index = 0; index < GlobalData.logicSectionsLink.length; index++) {
-                const item = GlobalData.logicSectionsLink[index];
-                if (isInRange(item.range, pos)) {
-                    let definitionItem = getlogicSectionsByText(item.text);
-                    let data: Definition = new Location(doc.uri, definitionItem.range);
-                    return data;
+                const linkItem = GlobalData.logicSectionsLink[index];
+                if (isInRange(linkItem.range, pos)) {
+                    let definitionItem = getGlobalDataItemByText(linkItem.text, GlobalData.logicSections);
+                    console.log(definitionItem);
+                    
+                    return data = new Location(doc.uri, definitionItem.range);
                 }
             }
-            return;
+                    
+            for (let index = 0; index < GlobalData.functions.length; index++) {
+                let funcItem = GlobalData.functions[index];
+                if (isInRange(funcItem.range, pos)) {
+                    let path = getEffectsPath();
+                    if (path) {
+                        let file = fs.readFileSync(String(path), 'utf8');
+                        if (file) {
+                            let array = file.split("\n");
+                            let re = new RegExp('^function ' + funcItem.text + '(?=\\(.*?\\))', 'm');
+                            funcItem = null;
+                            console.log(re);
+                            
+                            for (let line = 0; line < array.length; line++) {
+                                const element = array[line];
+                                let text = re.exec(element);
+                                console.log(text);                                
+                                if (text) {
+                                    let [start, end] = [text.index + 9, text[0].length - 9];
+                                    return data = new Location(Uri.file(getEffectsPath()), new Range(new Position(line, start), new Position(line, end)));
+                                }                                
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-function getlogicSectionsByText(data: string) : semanticData {
-    for (let index = 0; index < GlobalData.logicSections.length; index++) {
-        const element = GlobalData.logicSections[index];
+function getGlobalDataItemByText(data: string, array: semanticData[]): semanticData {
+    for (let index = 0; index < array.length; index++) {
+        const element = array[index];
         if (element.text === data) {
             return element;
         }
@@ -148,16 +177,26 @@ function getlogicSectionsByText(data: string) : semanticData {
 function parseLtx(document: TextDocument) {
     let array: parseLtxData[] = [];
     let Sections: parseLtxData = {
-        type: "interface", modificator: ["definition"]
+        type: "class", modificator: ["definition"]
     };
     let SectionsLinks: parseLtxData = {
-        type: "interface", modificator: ["declaration"]
+        type: "class", modificator: ["declaration"]
     };
+    let Info: parseLtxData = {
+        type: "variable", modificator: []
+    };
+    let Functions: parseLtxData = {
+        type: "function", modificator: ["declaration"]
+    };
+
+
     GlobalData.logicSections = [];
     GlobalData.logicSectionsLink = [];
+    GlobalData.info = [];
+    GlobalData.functions = [];
 
     for (let line = 0; line < document.lineCount; line++) {
-        const data = document.lineAt(line).text;
+        const data = document.lineAt(line).text.replace(/\;.*/, '');
 
         let re: RegExp = /\[/;
         let matchStart = re.exec(data);
@@ -183,37 +222,73 @@ function parseLtx(document: TextDocument) {
     }
 
     for (let line = 0; line < document.lineCount; line++) {
-        const data = document.lineAt(line).text;
-
+        let data = document.lineAt(line).text.replace(/\;.*/, '');
+        // TODO: Использовать RegExp для диагностики /(sr_idle@.*?|sr_idle)(?![a-zA-Z0-9_])/
         GlobalData.logicSections.forEach(element => {
             let sectionName = element.text;
-            let re;
-            if (sectionName.search("@") === -1) {
-                re = new RegExp('[^\\[]' + sectionName + '(?!@)', 'g');
-            }
-            else {
-                re = new RegExp('[^\\[]' + sectionName, 'g')
-            }
+            let re = new RegExp('([^\\w]|\\t)' + sectionName + '(?![a-zA-Z0-9_])(?!@)', 'g');
+
             let text = data.replace(/\;.*/, "");
-            let match = re.exec(text);
-            if (match && match['indices'][0]) {
-                // console.log(match);
-                let [start, end] = match['indices'][0];
-                let item: semanticData = {
-                    range: new Range(new Position(line, start), new Position(line, end)),
-                    text: match[0].trim()
+            if (data !== '' && data !== null) {
+                let match = re.exec(text);
+                if (match) {
+                    let start, end;
+                    if (match['indices']) {
+                        [start, end] = match['indices'][0];
+                    }
+                    else {
+                        [start, end] = [match.index + 1, match.index + match[0].length];
+                    }
+                    let item: semanticData = {
+                        range: new Range(new Position(line, start), new Position(line, end)),
+                        text: match[0].trim()
+                    }
+                    if (!SectionsLinks.data) {
+                        SectionsLinks.data = [];
+                    }
+                    GlobalData.logicSectionsLink.push(item);
+                    SectionsLinks.data.push(item);
                 }
-                if (!SectionsLinks.data) {
-                    SectionsLinks.data = [];
-                }
-                GlobalData.logicSectionsLink.push(item);
-                SectionsLinks.data.push(item);
             }
         });
+
+        let re = new RegExp(/(\+|\-)\w*/g);
+        let match;
+        while ((match = re.exec(data)) !== null) {
+            let [start, end] = [match.index + 1, match.index + match[0].length];
+            let item: semanticData = {
+                range: new Range(new Position(line, start), new Position(line, end)),
+                text: match[0].trim().slice(1)
+            }
+            if (!Info.data) {
+                Info.data = [];
+            }
+
+            GlobalData.info.push(item);
+            Info.data.push(item);
+        }
+
+        re = new RegExp(/(\=|\!)\w*(?<=\w)/g);
+        match;
+        while ((match = re.exec(data)) !== null) {
+            let [start, end] = [match.index + 1, match.index + match[0].length];
+            let item: semanticData = {
+                range: new Range(new Position(line, start), new Position(line, end)),
+                text: match[0].trim().slice(1)
+            }
+            if (!Functions.data) {
+                Functions.data = [];
+            }
+            
+            GlobalData.functions.push(item);
+            Functions.data.push(item);
+        }
     }
 
     array.push(Sections);
     array.push(SectionsLinks);
+    array.push(Info);
+    array.push(Functions);
     return array;
 }
 
@@ -240,9 +315,16 @@ function isSelectionInsideGroup(): boolean {
     return isInFuncGroup || isInCondGroup;
 };
 
-function isInRange(range: Range, position: Position): boolean {
-    if ((range.start.line <= position.line) && (position.line <= range.end.line)) {
-        return (range.start.character < position.character) && (position.character < range.end.character);
+function isInRange(data: Range, selection: Position | Range): boolean {
+    if (selection instanceof Position) {
+        if ((data.start.line <= selection.line) && (selection.line <= data.end.line)) {
+            return (data.start.character <= selection.character) && (selection.character <= data.end.character);
+        }
+    }
+    else {
+        if ((data.start.line <= selection.start.line) && (selection.start.line <= data.end.line)) {
+            return (data.start.character <= selection.start.character) && (selection.start.character <= data.end.character);
+        }
     }
     return false;
 }
@@ -253,8 +335,8 @@ function getLogicFunctionsLua(filePath: string) {
         let arr = file.replace(/\-\-\[\[(.|\s)*?\]\]\-\-/g, "").replace(/--.*?\n/g, "").split("\n");
         let func_arr = [];
         arr.forEach(element => {
-            let re : RegExp = /^function .*?(?=\(.*?\)\n)/m;
-            let text = re.exec(element.trim()+'\n');
+            let re: RegExp = /^function .*?(?=\(.*?\)\n)/m;
+            let text = re.exec(element.trim() + '\n');
             if (text) {
                 func_arr.push(text[0].replace("function ", ""));
             }
@@ -266,7 +348,7 @@ function getLogicFunctionsLua(filePath: string) {
     }
 }
 
-function getLocalization(): CompletionItemProvider<CompletionItem> {
+function addCommonCompletion(): CompletionItemProvider<CompletionItem> {
     return {
         provideCompletionItems() {
             let settingsPath: string = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("PathToLocalization");
@@ -279,24 +361,33 @@ function getLocalization(): CompletionItemProvider<CompletionItem> {
                 dir = path.resolve(__dirname, '../data/localization/');
             }
 
-            let item = (file, name, text) => {
-                file = file.replace(".xml", "")
+            let item = (file, name, text, kind: CompletionItemKind) => {
                 let data: CompletionItem = {
                     label: name,
-                    kind: CompletionItemKind.Variable,
-                    detail: file + "." + name,
+                    kind: kind,
                 }
-                let temp = new MarkdownString(text);
-                temp.isTrusted = true;
-                temp.supportHtml = true;
-                data.documentation = temp;
+
+                if (file) {
+                    file = file.replace(".xml", "")
+                    data.detail = file + "." + name;
+                }
+                else {
+                    data.detail = name;
+                }
+
+                if (text) {
+                    let temp = new MarkdownString(text);
+                    temp.isTrusted = true;
+                    temp.supportHtml = true;
+                    data.documentation = temp;
+                }
                 return data;
-            }           
+            }
 
             let arr = [];
 
             let files = fs.readdirSync(dir);
-            if (files !== null && files !== []) {
+            if (files && files !== []) {
                 let ignoredFiles: string[] = workspace.getConfiguration("", window.activeTextEditor.document.uri).get("IgnoreLocalizationFile");
                 files = files.filter(function (el) {
                     return ignoredFiles.indexOf(el) < 0;
@@ -305,13 +396,23 @@ function getLocalization(): CompletionItemProvider<CompletionItem> {
                 files.forEach(file => {
 
                     (parseXML(path.resolve(dir, file)).string_table.string).forEach(file_item => {
-                        let temp = item(file, file_item.$.id, file_item.text[0]);
+                        let temp = item(file, file_item.$.id, file_item.text[0], CompletionItemKind.Variable);
 
                         arr.push(temp);
                     });
                 });
-                return arr;
             }
+
+            let infoArray = [];
+            GlobalData.info.forEach(dataItem => {
+                if (!infoArray.includes(dataItem.text)) {
+                    let temp = item(null, dataItem.text, null, CompletionItemKind.Unit);
+                    infoArray.push(dataItem.text);
+                    arr.push(temp);
+                }
+            });
+
+            return arr;
         }
     }
 }
@@ -321,7 +422,7 @@ function parseXML(file: string) {
     const iconv = new Iconv('cp1251', 'UTF-8');
 
     let value = fs.readFileSync(file);
-    
+
     value = iconv.convert(value);
     let text = String(value).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
     let data;
