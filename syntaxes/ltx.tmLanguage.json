@@ -4,34 +4,9 @@
 	"patterns": [
 		{
 			"include": "#comments"
-		},
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#function_groups"
-		},
-		{
-			"include": "#titles"
 		}
 	],
 	"repository": {
-		"keywords": {
-			"patterns": [
-				{
-					"name": "keyword.control.ltx",
-					"match": "\\b(on_info|on_game_timer|on_actor_outside|on_actor_inside|active)\\b"
-				}
-			]
-		},
-		"modules": {
-			"patterns": [
-				{
-					"name": "keyword.control.ltx",
-					"match": "\\b(sr_idle|sr_timer|sr_teleport|sr_particle|sr_light)\\b"
-				}
-			]
-		},
 		"comments": {
 			"patterns": [
 				{
@@ -48,56 +23,6 @@
 							"name": "punctuation.paren.close"
 						}
 					}
-				}
-			]
-		},
-		"titles": {
-			"patterns": [
-				{
-					"name": "entity.name.type.ltx",
-					"begin": "\\[",
-					"end": "\\]",
-					"beginCaptures": {
-						"0": {
-							"name": "punctuation.paren.open"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "punctuation.paren.close"
-						}
-					}
-				}
-			]
-		},
-		"function_groups": {
-			"patterns": [
-				{
-					"name": "group.functions.ltx",
-					"begin": "\\%",
-					"end": "\\%",
-					"patterns": [
-						{"include": "#functions"},
-						{"include": "#arguments"}
-					]
-				}
-			]
-		},
-		"functions": {
-			"patterns": [
-				{
-					"contentName": "group.functions.logic.ltx",
-					"begin": "\\=",
-					"end": "\\b(?<=\\w)"
-				}
-			]
-		},
-		"arguments": {
-			"patterns": [
-				{
-					"contentName": "group.functions.logic.args.ltx",
-					"begin": "(\\(|\\:)",
-					"end": "(\\)|\\:)"
 				}
 			]
 		}

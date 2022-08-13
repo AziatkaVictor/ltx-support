@@ -1,27 +1,9 @@
 {
-	"sr_idle": {
-		"prefix": "sr_idle",
+    "logic":{
+		"prefix": "logic",
 		"body": [
-			"[sr_idle${1}]"
-		]
-	},
-    "sr_teleport": {
-		"prefix": "sr_teleport",
-		"body": [
-			"[sr_idle${1}]",
-            "[sr_idle${1}]"
-		]
-	},
-    "on_actor_inside":{
-		"prefix": "on_actor_inside",
-		"body": [
-			"on_actor_inside = "
-		]
-    },
-    "on_actor_outside":{
-		"prefix": "on_actor_outside",
-		"body": [
-			"on_actor_outside = "
+			"[logic${1}]",
+			"active = ${2}"
 		]
     }
 }

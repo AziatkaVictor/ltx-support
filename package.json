@@ -1,108 +1,113 @@
 {
-    "name": "ltx-support",
-    "displayName": "LTX Support",
-    "publisher": "AziatkaVictor",
-    "description": "Support of stalker logic format",
-    "version": "0.0.1",
-    "engines": {
-        "vscode": "^1.67.0"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "activationEvents": [
-        "onLanguage:ltx"
-    ],
-    "main": "./out/extension",
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -b",
-        "watch": "tsc -b -w"
-    },
-    "devDependencies": {
-        "@types/mocha": "^5.2.0",
-        "@types/node": "^8.0.0",
-        "@types/vscode": "^1.63.0",
-        "tslint": "^5.11.0",
-        "typescript": "^3.1.3",
-        "iconv": "^3.0.1",
-        "xml2js": "^0.4.23"
-    },
-    "contributes": {
-        "languages": [
-            {
-                "id": "ltx",
-                "aliases": [
-                    "LTX",
-                    "ltx"
-                ],
-                "extensions": [
-                    ".ltx"
-                ],
-                "configuration": "./syntaxes/language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "ltx",
-                "scopeName": "source.ltx",
-                "path": "./syntaxes/ltx.tmLanguage.json",
-                "tokenTypes": {
-                    "entity.name.function": "string"
-                }
-            }
-        ],
-        "snippets": [
-            {
-                "language": "ltx",
-                "path": "./syntaxes/snippets.json"
-            }
-        ],
-        "configuration": {
-            "title": "LTX",
-            "properties": {
-                "PathToFunctionsLogic": {
-                    "type": "string",
-                    "default": null,
-                    "description": "Your path to file with logic functions. Like: (D:\\Stalker CoP\\gamedata\\scripts\\xr_effects.script)"
-                },
-                "PathToLocalization": {
-                    "type": "string",
-                    "default": null,
-                    "description": "Your path to directory with localization. Like: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus)"
-                },
-                "IgnoreLocalizationFile": {
-                    "type": "array",
-                    "items": "string",
-                    "default": [],
-                    "description": "File names, which going to be ignored. Like: ('st_characters.xml')"
-                }
-            }
-        },
-        "semanticTokenScopes": [
-            {
-                "language": "ltx",
-                "scopes": {
-                    "entity.name.function": [
-                        "group.functions.logic.ltx"
-                    ],
-                    "entity.name.variable": [
-                        "group.functions.logic.args.ltx"
-                    ]
-                }
-            }
-        ],
-        "commands": [],
-        "configurationDefaults": {
-            "[ltx]": {
-                "editor.semanticHighlighting.enabled": true
-            },
-            "editor.semanticTokenColorCustomizations": {
-                "enabled": true,
-                "rules": {
-                    "test": "#ff0000"
-                }
-            }
-        }
-    }
+	"name": "ltx-support",
+	"displayName": "LTX Support",
+	"publisher": "AziatkaVictor",
+	"icon": "data/Icon.png",
+	"description": "Support of stalker logic format",
+	"version": "0.1.0",
+	"engines": {
+		"vscode": "^1.67.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"onLanguage:ltx"
+	],
+	"main": "./out/extension",
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.0",
+		"@types/node": "^8.0.0",
+		"@types/vscode": "^1.63.0",
+		"iconv": "^3.0.1",
+		"tslint": "^5.11.0",
+		"typescript": "^3.1.3",
+		"xml2js": "^0.4.23"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "ltx",
+				"aliases": [
+					"LTX",
+					"ltx"
+				],
+				"extensions": [
+					".ltx"
+				],
+				"configuration": "./syntaxes/language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "ltx",
+				"scopeName": "source.ltx",
+				"path": "./syntaxes/ltx.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "ltx",
+				"path": "./syntaxes/snippets.json"
+			}
+		],
+		"configuration": {
+			"title": "LTX",
+			"properties": {
+				"Directories.PathToScripts": {
+					"type": "string",
+					"default": null,
+					"description": "Путь к папке, где хранится функции. Например: (D:\\Stalker CoP\\gamedata\\scripts)"
+				},
+				"Directories.PathToLocalization": {
+					"type": "string",
+					"default": null,
+					"description": "Путь к папке, где хранится локализация. Например: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus). На данный момент не работает. (WiP)"
+				},
+				"Completion.IgnoreLocalizationFile": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Название файлов локализации, которые будут игнорироваться. Например: ('st_characters.xml'). На данный момент не работает. (WiP)"
+				},
+				"Diagnostics.EnableDiagnostic": {
+					"type": "boolean",
+					"default": false,
+					"description": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. (WiP)"
+				},
+				"Diagnostics.IgnoreParamsDiagnostic": {
+					"type": "boolean",
+					"default": false,
+					"description": "Игнорировать проверку параметров секции. На данный момент не работает. (WiP)"
+				}
+			}
+		},
+		"configurationDefaults": {
+			"[ltx]": {
+				"editor.semanticHighlighting.enabled": true
+			}
+		}
+	},
+	"dependencies": {
+		"file-exists": "^5.0.1"
+	},
+	"__metadata": {
+		"id": "dbc56428-5b52-4f1d-97db-5a5aeeae967e",
+		"publisherDisplayName": "AziatkaVictor",
+		"publisherId": "02926376-420f-44fa-8a07-e16286570a32",
+		"isPreReleaseVersion": false
+	},
+	"bugs": {
+		"url": "https://ap-pro.ru/forums/topic/3561-vscode-podderzhka-sintaksisa-cop"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AziatkaVictor/ltx-support.git"
+	}
 }
