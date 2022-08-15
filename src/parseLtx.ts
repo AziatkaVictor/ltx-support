@@ -83,7 +83,7 @@ export class LtxDocument {
         errorsData.set(currentFile, []);
         senmaticsData.set(currentFile, []);
 
-        let re = /(?<=\[).*?(?=\])/g;
+        let re = /(?<=\[)[\w, @]+(?=\])/g;
         let match;
         currentFileSectionsArray = [];
         while ((match = re.exec(content)) !== null) {
@@ -96,9 +96,10 @@ export class LtxDocument {
         for (let line = 0; line < contentArray.length; line++) {
             let item = contentArray[line].replace(/;.*/, '');
 
-            let re = /\[.*?\](\:.*?)?/g;
+            let re = /\[[\w, @]+\]/g;
             let match;
             let result;
+
             while ((match = re.exec(item)) !== null) {
                 if (!result) {
                     result = match;
@@ -108,7 +109,7 @@ export class LtxDocument {
                     let range: Range = new Range(new Position(line, match.index), new Position(line, match.index + match[0].length - 1));
                     addError(range, "В данной строчке уже есть объявление секции.", match[0]);
                 }
-            }
+            }    
 
             if (result) {
                 if (section) {
@@ -183,14 +184,20 @@ export class LtxDocument {
         }
     }
 
-    getSectionByPosition(selection: Position): LtxSection {
-        let temp;
-        this.data.forEach(section => {
-            if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
-                temp = section;
-            }
-        });
-        return temp;
+    getSectionByPosition(selection: Position): LtxSection | null {
+        try {
+            let temp;
+            this.data.forEach(section => {
+                if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
+                    temp = section;
+                }
+            });
+            return temp;
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
     }
 
     private closeSection(section: LtxSection, line: number) {
@@ -224,75 +231,6 @@ class LtxSection {
             }
         });
     }
-
-    // getSemanticInfo() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         line.data.forEach(group => {
-    //             data = data.concat(group.getInfos());
-    //         });
-    //     });
-    //     return data;
-    // }
-
-    // getSemanticSection() {
-    //     let data: LtxSemantic[] = [new LtxSemantic('class', 'declaration', this.linkRange)];
-    //     return data;
-    // }
-
-    // getSemanticFunction() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         line.data.forEach(group => {
-    //             data = data.concat(group.getFunctions());
-    //         });
-    //     });
-    //     return data;
-    // }
-
-    // getSemanticParams() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         if (line && line.propertyRange) {
-    //             data.push(new LtxSemantic('keyword', null, line.propertyRange));
-    //         }
-    //     });
-    //     return data;
-    // }
-
-    // getSemanticLinks() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         line.link.forEach(element => {
-    //             data.push(new LtxSemantic('class', 'definition', new Range(element.start, element.end)));
-    //         });
-    //     });
-    //     return data;
-    // }
-
-    // getSemanticDigit() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         if (line.other.get("digits")) {
-    //             line.other.get("digits").forEach(element => {
-    //                 data.push(new LtxSemantic('number', null, element));
-    //             });
-    //         }
-    //     });
-    //     return data;
-    // }
-
-    // getSemanticOther() {
-    //     let data: LtxSemantic[] = [];
-    //     this.content.forEach(line => {
-    //         if (line.other.get("other")) {
-    //             line.other.get("other").forEach(element => {
-    //                 data.push(new LtxSemantic('string', null, element));
-    //             });
-    //         }
-    //     });
-    //     return data;
-    // }
 
     setEndLine(line: number) {
         this.endLine = line;
@@ -432,7 +370,7 @@ class LtxLine {
 
         try {
             // Поиск названия параметра, например on_info = nil. Тут параметр on_info
-            let re = /^.*?(\ *)?(?=\=)/;
+            let re = /^\w+(\ +)?(?=\=)/;
             var param = re.exec(data);
         } catch (error) {
             console.log("Ошибка парсинга параметра!");
@@ -470,7 +408,7 @@ class LtxLine {
             }
 
             // Поиск всех condlist
-            let re = /(?<=(\=|\,)).*?(?=(,|\\n|$))/gm;
+            let re = /(?<=(\=|\,)).+(?=(,|\\n|$))/gm;
             let match;
             while ((match = re.exec(tempData)) !== null) {
                 this.condlists.push(new LtxCondlist(index, match.index, match[0]));
@@ -492,20 +430,32 @@ class LtxLine {
     }
 
     IsValidParamSyntax() {
-        let re = new RegExp(this.propertyName + "(\\s)?\=");
-        let match = re.exec(this.rawData);
-        if (!match) {
-            return false;
+        try {
+            let re = new RegExp(this.propertyName + "(\\s)?\=");
+            let match = re.exec(this.rawData);
+            if (!match) {
+                return false;
+            }
+            return true;
         }
-        return true;
+        catch (error) {
+            console.log(error);
+            return false;
+        }   
     }
 
     IsHasResult() {
-        let match = /(?<=\=).+/.exec(this.rawData)
-        if (!match) {
+        try {
+            let match = /(?<=\=).+/.exec(this.rawData)
+            if (!match) {
+                return false;
+            }
+            return true;
+        }        
+        catch (error) {
+            console.log(error);
             return false;
         }
-        return true;
     }
 }
 
@@ -572,7 +522,6 @@ class LtxCondlist {
             addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
         }
-
         
         for (let сount = 0; сount < currentFileSectionsArray.length; сount++) {
             const sectionName = currentFileSectionsArray[сount];

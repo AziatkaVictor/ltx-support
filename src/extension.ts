@@ -43,41 +43,54 @@ function onChange(change) {
     }
 }
 
-function createFileData() {    
-    if (window.activeTextEditor.document) {
-        fileData = new LtxDocument(window.activeTextEditor.document);
-        diagnosticCollection.clear();
-
-        if (isDiagnosticEnabled()) {
-            let diagnosticMap: Map<string, Diagnostic[]> = new Map();
-            workspace.textDocuments.forEach(document => {
-                if (document.languageId === "ltx") {
-                    let errors;
-
-                    if (fileData) {
-                        errors = getErrorsByFile(fileData.path);
-                    }
-
-                    let canonicalFile = document.uri.toString();
-                    let diagnostics = diagnosticMap.get(canonicalFile);
-
-                    if (!diagnostics) {
-                        diagnostics = [];
-                    }
-
-                    errors.forEach(item => {
-                        diagnostics.push(new Diagnostic(item.range, item.descr));
-                    });
-
-                    diagnosticMap.set(canonicalFile, diagnostics);
-                }
-            })
-
-            diagnosticMap.forEach((diags, file) => {
-                diagnosticCollection.set(Uri.parse(file), diags);
-            });
-        }
+function createFileData() { 
+    if (!window.activeTextEditor) {
+        return;
+    } 
+    if (!window.activeTextEditor.document) {
+        return;
     }
+
+    try {   
+        fileData = new LtxDocument(window.activeTextEditor.document);
+    }
+    catch (error) {
+        console.log(error);  
+        return;      
+    }
+
+    diagnosticCollection.clear();
+
+    if (isDiagnosticEnabled()) {
+        let diagnosticMap: Map<string, Diagnostic[]> = new Map();
+        workspace.textDocuments.forEach(document => {
+            if (document.languageId === "ltx") {
+                let errors;
+
+                if (fileData) {
+                    errors = getErrorsByFile(fileData.path);
+                }
+
+                let canonicalFile = document.uri.toString();
+                let diagnostics = diagnosticMap.get(canonicalFile);
+
+                if (!diagnostics) {
+                    diagnostics = [];
+                }
+
+                errors.forEach(item => {
+                    diagnostics.push(new Diagnostic(item.range, item.descr));
+                });
+
+                diagnosticMap.set(canonicalFile, diagnostics);
+            }
+        })
+
+        diagnosticMap.forEach((diags, file) => {
+            diagnosticCollection.set(Uri.parse(file), diags);
+        });
+    }
+
 }
 
 function getSemanticLtx() {

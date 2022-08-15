@@ -30,8 +30,22 @@ export function updateScripts() {
 }
 
 export function isInsideFunctionsGroup(file: LtxDocument): boolean {
+    if (!window.activeTextEditor) {
+        return false;
+    }
+
     const sel = window.activeTextEditor.selection;
     var isInFuncGroup = false;
+
+    if (!file.getSectionByPosition(sel.start)) {
+        return false;
+    }
+    if (!file.getSectionByPosition(sel.start).content.get(sel.start.line)) {
+        return false;
+    }
+    if (!file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists) {
+        return false;
+    }
 
     if (sel) {
         console.log(file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists);
@@ -49,8 +63,23 @@ export function isInsideFunctionsGroup(file: LtxDocument): boolean {
 };
 
 export function isInsideConditionsGroup(file: LtxDocument): boolean {
+    if (!window.activeTextEditor) {
+        return false;
+    }
+
     const sel = window.activeTextEditor.selection;
     var isInCondGroup = false;
+
+    if (!file.getSectionByPosition(sel.start)) {
+        return false;
+    }
+    if (!file.getSectionByPosition(sel.start).content.get(sel.start.line)) {
+        return false;
+    }
+    if (!file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists) {
+        return false;
+    }
+
     if (sel) {
         console.log(file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists);
         file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists.forEach(condlist => {            
