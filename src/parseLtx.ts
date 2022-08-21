@@ -514,10 +514,10 @@ class LtxCondlist {
             tempData = replaceText(tempData, match[0]);
         }
         
-        search = new RegExp("(nil|true|false)", "g")
+        search = new RegExp("\\b(nil|true|false|complete|fail)\\b", "g")
         while ((match = search.exec(tempData)) !== null) {            
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.keyword, LtxSemanticModification.declaration, tempRange, LtxSemanticDescription.signal, match[0]))
+            addSemantic(new LtxSemantic(LtxSemanticType.keyword, LtxSemanticModification.readonly, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
         }
         
