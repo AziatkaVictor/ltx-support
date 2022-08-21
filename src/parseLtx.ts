@@ -370,10 +370,9 @@ class LtxLine {
 
         try {
             // Поиск названия параметра, например on_info = nil. Тут параметр on_info
-            let re = /^\w+(\ +)?(?=\=)/;
+            let re = /\w+(?=(\s*?)?\=)/;
             var param = re.exec(data);
         } catch (error) {
-            console.log("Ошибка парсинга параметра!");
             console.log(error);
             return null;
         }
