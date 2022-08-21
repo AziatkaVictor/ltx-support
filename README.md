@@ -1,4 +1,4 @@
-# ltx-support v.0.1.1
+# ltx-support v.0.1.2
 
 Расширение для Visual Studio Code, которое добавляет поддержку синтаксиса логики из S.T.A.L.K.E.R. Call of Pripyat.
 
