@@ -399,7 +399,13 @@ class LtxLine {
                 let match;
                 while ((match = search.exec(this.rawData)) !== null) {
                     let tempRange = new Range(new Position(index, match.index), new Position(index, match.index + match[0].length))
-                    addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
+
+                    if (isNaN(+(match[0].trim()))) {
+                        addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    }
+                    else {
+                        addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    }
 
                     let tempReplace = " ".repeat(1 + match[0].length) + "=";
                     tempData = tempData.replace("=" + match[0] + "|", tempReplace);
