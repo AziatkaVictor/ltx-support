@@ -493,9 +493,11 @@ class LtxCondlist {
 
         this.condition = /\{.*?\}/.exec(tempData);
         this.function = /\%.*?\%/.exec(tempData);
+
         if (this.condition) {
             this.conditionRange = new Range(new Position(lineNumber, index + this.condition.index), new Position(lineNumber, index + this.condition[0].length + this.condition.index));
-        } if (this.function) {
+        } 
+        if (this.function) {
             this.functionRange = new Range(new Position(lineNumber, index + this.function.index), new Position(lineNumber, index + this.function[0].length + this.function.index));
         }        
 
@@ -538,7 +540,7 @@ class LtxCondlist {
             }
         }
         
-        search = /[\w,\@]+/g
+        search = /[\w\@]+/g
         while ((match = search.exec(tempData)) !== null) {            
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
