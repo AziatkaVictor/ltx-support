@@ -413,7 +413,7 @@ class LtxLine {
             }
 
             // Поиск всех condlist
-            let re = /(?<=(\=|\,)).+(?=(,|\\n|$))/gm;
+            let re = /(?<=(\=|\,)).+?(?=(\,|\\n|$))/gm;
             let match;
             while ((match = re.exec(tempData)) !== null) {
                 this.condlists.push(new LtxCondlist(index, match.index, match[0]));

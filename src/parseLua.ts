@@ -35,7 +35,6 @@ export function isInsideFunctionsGroup(file: LtxDocument): boolean {
     }
 
     const sel = window.activeTextEditor.selection;
-    var isInFuncGroup = false;
 
     if (!file.getSectionByPosition(sel.start)) {
         return false;
@@ -48,18 +47,18 @@ export function isInsideFunctionsGroup(file: LtxDocument): boolean {
     }
 
     if (sel) {
-        console.log(file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists);
-        file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists.forEach(condlist => {
-            if (condlist.functionRange) {
-                isInFuncGroup = condlist.functionRange.contains(sel.start);
-                if (isInFuncGroup === true) {
-                    return;
+        let condlists = file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists
+        for (let index = 0; index < condlists.length; index++) {
+            const element = condlists[index];
+            if (element.functionRange) {
+                if (element.functionRange.contains(sel.start)) {
+                    return true;
                 }
             }
-        });
+        }
     }
 
-    return isInFuncGroup;
+    return false;
 };
 
 export function isInsideConditionsGroup(file: LtxDocument): boolean {
@@ -68,7 +67,6 @@ export function isInsideConditionsGroup(file: LtxDocument): boolean {
     }
 
     const sel = window.activeTextEditor.selection;
-    var isInCondGroup = false;
 
     if (!file.getSectionByPosition(sel.start)) {
         return false;
@@ -81,18 +79,18 @@ export function isInsideConditionsGroup(file: LtxDocument): boolean {
     }
 
     if (sel) {
-        console.log(file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists);
-        file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists.forEach(condlist => {            
-            if (condlist.conditionRange) {
-                isInCondGroup = condlist.conditionRange.contains(sel.start);
-                if (isInCondGroup === true) {
-                    return;
+        let condlists = file.getSectionByPosition(sel.start).content.get(sel.start.line).condlists
+        for (let index = 0; index < condlists.length; index++) {
+            const element = condlists[index];
+            if (element.conditionRange) {
+                if (element.conditionRange.contains(sel.start)) {
+                    return true;
                 }
             }
-        });
+        }
     }
 
-    return isInCondGroup;
+    return false;
 }
 
 export function getLogicFunctionsLua() {
