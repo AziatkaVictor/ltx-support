@@ -57,6 +57,7 @@ export function getSemanticsByFile(currentFile: string) {
 export class LtxDocument {
     readonly path: string
     readonly data: LtxSection[] = []
+    readonly raw: LtxLine[] = []
 
     getSections(): LtxSection[] {
         return this.data;
@@ -166,6 +167,9 @@ export class LtxDocument {
                 if (line === contentArray.length - 1) {
                     this.closeSection(section, line);
                 }
+            }
+            else if (!result) {
+                this.raw.push(new LtxLine(line, item, null));
             }
         }
 
