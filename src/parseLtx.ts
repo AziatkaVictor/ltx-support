@@ -371,11 +371,12 @@ class LtxLine {
     constructor(index: number, data: string, sectionType: LtxSectionType) {
         this.index = index;
         this.rawData = data;
+        var param;
 
         try {
             // Поиск названия параметра, например on_info = nil. Тут параметр on_info
-            let re = /\w+(?=(\s*?)?\=)/;
-            var param = re.exec(data);
+            let re = /^(\s*?)?[\w\$]+?(?=(\s*?)?\=)/gm;
+            param = re.exec(data);
         } catch (error) {
             console.log(error);
             return null;
@@ -387,13 +388,15 @@ class LtxLine {
             this.propertyRange = new Range(new Position(index, param.index), new Position(index, param.index + param[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.property, LtxSemanticModification.readonly, this.propertyRange, LtxSemanticDescription.signal, this.propertyName))
 
-            if (sectionType.params.get(param[0].trim())) {
-                let property = sectionType.params.get(param[0].trim());
-                this.propertySettings = property;
-                this.isPropertyValid = true;
-            }
-            else {
-                this.isPropertyValid = false;
+            if (sectionType) {
+                if (sectionType.params.get(param[0].trim())) {
+                    let property = sectionType.params.get(param[0].trim());
+                    this.propertySettings = property;
+                    this.isPropertyValid = true;
+                }
+                else {
+                    this.isPropertyValid = false;
+                }
             }
             var tempData = data + "\n";
 
