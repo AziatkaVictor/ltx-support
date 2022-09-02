@@ -402,7 +402,7 @@ class LtxLine {
 
             // Поиск всех сигналов
             if (this.rawData.indexOf("|") !== -1) {
-                let search = /(?<=\=).+(?=\|)/g
+                let search = /(?<=(\=|\|)).+?(?=\|)/g
                 let match;
                 while ((match = search.exec(this.rawData)) !== null) {
                     let tempRange = new Range(new Position(index, match.index), new Position(index, match.index + match[0].length))
