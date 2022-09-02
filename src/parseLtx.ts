@@ -407,11 +407,14 @@ class LtxLine {
                 while ((match = search.exec(this.rawData)) !== null) {
                     let tempRange = new Range(new Position(index, match.index), new Position(index, match.index + match[0].length))
 
-                    if (isNaN(+(match[0].trim()))) {
-                        addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    if (match[0].trim().toLowerCase().indexOf("true") !== -1 || match[0].trim().toLowerCase().indexOf("false") !== -1) {
+                        addSemantic(new LtxSemantic(LtxSemanticType.keyword, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    }
+                    else if (!isNaN(+(match[0].trim()))) {
+                        addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
                     }
                     else {
-                        addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                        addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
                     }
 
                     let tempReplace = " ".repeat(1 + match[0].length) + "=";
