@@ -542,7 +542,7 @@ class LtxCondlist {
         
         for (let сount = 0; сount < currentFileSectionsArray.length; сount++) {
             const sectionName = currentFileSectionsArray[сount];
-            search = new RegExp("(\\w+@\\w+|(?<=\\b)" + sectionName + "(?=\\b))", "g")
+            search = new RegExp("(?<=\\b)" + sectionName + "(?![\\w\\@]+)(?=\\b)", "g")
             while ((match = search.exec(tempData)) !== null) {
                 let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))                
                 addSemantic(new LtxSemantic(LtxSemanticType.class, LtxSemanticModification.definition, tempRange, LtxSemanticDescription.signal, match[0]))
@@ -550,7 +550,7 @@ class LtxCondlist {
             }
         }
         
-        search = /[\w\@]+/g
+        search = /[\w\*\.\@\$]+/g
         while ((match = search.exec(tempData)) !== null) {            
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
