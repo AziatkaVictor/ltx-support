@@ -57,10 +57,29 @@ export function getSemanticsByFile(currentFile: string) {
 export class LtxDocument {
     readonly path: string
     readonly data: LtxSection[] = []
-    readonly raw: LtxLine[] = []
+    readonly raw: Map<number, LtxLine> = new Map<number, LtxLine>()
 
     getSections(): LtxSection[] {
         return this.data;
+    }
+
+    getLine(sel) {
+        if (sel) {
+            if (!this.getSectionByPosition(sel.start)) {
+                if (this.raw.get(sel.start.line)) {
+                    return this.raw.get(sel.start.line);
+                }
+                else {
+                    return null;
+                }
+            }
+            else {
+                if (this.getSectionByPosition(sel.start).content) {
+                    return this.getSectionByPosition(sel.start).content.get(sel.start.line);
+                }
+            }
+        }
+        return null;
     }
 
     constructor(path: string | TextDocument) {
@@ -169,7 +188,7 @@ export class LtxDocument {
                 }
             }
             else if (!result) {
-                this.raw.push(new LtxLine(line, item, null));
+                this.raw.set(line, new LtxLine(line, item, null));
             }
         }
 
