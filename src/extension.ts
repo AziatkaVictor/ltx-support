@@ -21,10 +21,10 @@ export function activate(context: ExtensionContext) {
 
     workspace.onDidChangeConfiguration(updateData);
 
-    languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '=');
-    languages.registerCompletionItemProvider("ltx", addLogicConditions(), '=', '!');
+    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '='));
+    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", addLogicConditions(), '=', '!'));
     // languages.registerCompletionItemProvider("ltx", addCommonCompletion());
-    languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend);
+    context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend));
     // languages.registerDefinitionProvider("ltx", addLogicDefinition());
 
     window.showInformationMessage('LTX Support is started!');
