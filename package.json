@@ -28,8 +28,7 @@
 		"@types/vscode": "^1.63.0",
 		"iconv": "^3.0.1",
 		"tslint": "^5.11.0",
-		"typescript": "^3.1.3",
-		"xml2js": "^0.4.23"
+		"typescript": "^3.1.3"
 	},
 	"contributes": {
 		"languages": [
@@ -97,7 +96,8 @@
 		}
 	},
 	"dependencies": {
-		"file-exists": "^5.0.1"
+		"file-exists": "^5.0.1",
+		"xml2js": "^0.4.23"
 	},
 	"__metadata": {
 		"id": "dbc56428-5b52-4f1d-97db-5a5aeeae967e",
