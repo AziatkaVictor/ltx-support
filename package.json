@@ -60,29 +60,29 @@
 		"configuration": {
 			"title": "LTX",
 			"properties": {
-				"Directories.PathToScripts": {
+				"LTX.Directories.PathToScripts": {
 					"type": "string",
 					"default": null,
 					"description": "Путь к папке, где хранится функции. Например: (D:\\Stalker CoP\\gamedata\\scripts)"
 				},
-				"Directories.PathToLocalization": {
+				"LTX.Directories.PathToLocalization": {
 					"type": "string",
 					"default": null,
 					"description": "Путь к папке, где хранится локализация. Например: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus). На данный момент не работает. (WiP)"
 				},
-				"Completion.IgnoreLocalizationFile": {
+				"LTX.Completion.IgnoreLocalizationFile": {
 					"type": "array",
 					"items": {
 						"type": "string"
 					},
 					"description": "Название файлов локализации, которые будут игнорироваться. Например: ('st_characters.xml'). На данный момент не работает. (WiP)"
 				},
-				"Diagnostics.EnableDiagnostic": {
+				"LTX.Diagnostics.EnableDiagnostic": {
 					"type": "boolean",
 					"default": false,
 					"description": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. (WiP)"
 				},
-				"Diagnostics.IgnoreParamsDiagnostic": {
+				"LTX.Diagnostics.IgnoreParamsDiagnostic": {
 					"type": "boolean",
 					"default": false,
 					"description": "Игнорировать проверку параметров секции. На данный момент не работает. (WiP)"
