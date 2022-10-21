@@ -16,7 +16,6 @@ const condsData: string[] = require("../data/sections_documintation.json").based
 var errorsData: Map<string, LtxError[]> = new Map<string, LtxError[]>();
 var globalSenmaticsData: Map<string, LtxSemantic[]> = new Map<string, LtxSemantic[]>();
 var currentFile: string;
-var currentFileSectionName: string;
 var currentFileSectionsArray: string[];
 
 function addError(range: Range, description: string, element?: string) {
@@ -117,9 +116,7 @@ export class LtxDocument {
                 if (section) {
                     this.closeSection(section, line);
                 }
-
                 section = new LtxSection(result[0], line, result.index);
-                currentFileSectionName = section.name;
             }
             else if (section) {
                 if (item.trim() !== "") {
