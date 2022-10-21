@@ -16,7 +16,7 @@ export function activate(context: ExtensionContext) {
     diagnosticCollection = languages.createDiagnosticCollection("ltx");
 
     workspace.onDidChangeTextDocument(onChange);
-    workspace.onDidOpenTextDocument(createFileData);
+    // workspace.onDidOpenTextDocument(createFileData);
     window.onDidChangeActiveTextEditor(createFileData);
 
     workspace.onDidChangeConfiguration(updateData);
