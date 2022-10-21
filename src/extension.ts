@@ -43,24 +43,27 @@ function onChange(change) {
     }
 }
 
-function createFileData() { 
+function createFileData() {
     if (!window.activeTextEditor) {
         return;
-    } 
+    }
     if (!window.activeTextEditor.document) {
         return;
     }
+    if (window.activeTextEditor.document.languageId !== "ltx") {
+        return;
+    }
 
-    try {   
+    try {
         fileData = new LtxDocument(window.activeTextEditor.document);
     }
     catch (error) {
-        console.log(error);  
-        return;      
+        window.showErrorMessage('Error when parsing the '.concat(window.activeTextEditor.document.fileName));
+        console.log(error);
+        return;
     }
 
     diagnosticCollection.clear();
-
     if (isDiagnosticEnabled()) {
         let diagnosticMap: Map<string, Diagnostic[]> = new Map();
         workspace.textDocuments.forEach(document => {
@@ -77,11 +80,9 @@ function createFileData() {
                 if (!diagnostics) {
                     diagnostics = [];
                 }
-
                 errors.forEach(item => {
                     diagnostics.push(new Diagnostic(item.range, item.descr));
                 });
-
                 diagnosticMap.set(canonicalFile, diagnostics);
             }
         })
@@ -90,7 +91,6 @@ function createFileData() {
             diagnosticCollection.set(Uri.parse(file), diags);
         });
     }
-
 }
 
 function getSemanticLtx() {
