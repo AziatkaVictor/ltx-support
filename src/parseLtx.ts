@@ -91,6 +91,11 @@ export class LtxDocument {
         }
         this.sectionsName = currentFileSectionsArray;
 
+        if (args.indexOf('fast') !== -1) {
+            console.timeEnd('LtxDocument: '.concat(path.fileName))
+            return;
+        }
+
         let contentArray = content.split("\n");
         let section: LtxSection;
 
@@ -110,7 +115,7 @@ export class LtxDocument {
                     let range: Range = new Range(new Position(line, match.index), new Position(line, match.index + match[0].length - 1));
                     addError(range, "В данной строчке уже есть объявление секции.", match[0]);
                 }
-            }    
+            }
 
             if (result) {
                 if (section) {
@@ -119,7 +124,7 @@ export class LtxDocument {
                 section = new LtxSection(result[0], line, result.index);
             }
             else if (section) {
-                if (item.trim() !== "") {
+                if (item.trim() !== "" && args.indexOf('fast') === -1) {
                     // Инициализация строки
                     let lineData = new LtxLine(line, item, section.type);
 
