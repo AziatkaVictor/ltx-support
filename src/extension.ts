@@ -23,6 +23,7 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", addLogicFunctions(), '='));
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", addLogicConditions(), '=', '!'));
+    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", addInformation()));
     // languages.registerCompletionItemProvider("ltx", addCommonCompletion());
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend));
     // languages.registerDefinitionProvider("ltx", addLogicDefinition());
