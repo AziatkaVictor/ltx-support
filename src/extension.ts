@@ -186,6 +186,49 @@ function addLogicConditions(): CompletionItemProvider<CompletionItem> {
     };
 }
 
+function addInformation(): CompletionItemProvider<CompletionItem> {
+    return {
+        async provideCompletionItems() {
+            if (!fileData) {
+                createFileData();
+            }
+
+            console.time('addSquad')
+            var items = []
+            var files = await workspace.findFiles('{misc/squad_descr_*.ltx,misc/squad_descr.ltx}');
+            
+            for (let index = 0; index < files.length; index++) {
+                const file = files[index];
+                let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
+                let ltxData = new LtxDocument(doc, ['fast']);
+                var tempItems = []
+                ltxData.sectionsName.forEach(async section => {
+                    tempItems.push(new CompletionItem(section, CompletionItemKind.Issue));
+                })
+                items = items.concat(tempItems);
+            }
+            console.timeEnd('addSquad')     
+            
+            console.time('addTasks')
+            files = await workspace.findFiles('{misc/tm_*.ltx}');
+            
+            for (let index = 0; index < files.length; index++) {
+                const file = files[index];
+                let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
+                let ltxData = new LtxDocument(doc, ['fast']);
+                var tempItems = []
+                ltxData.sectionsName.forEach(async section => {
+                    tempItems.push(new CompletionItem(section, CompletionItemKind.Field));
+                })
+                items = items.concat(tempItems);
+            }
+            console.timeEnd('addTasks')
+
+            return items;
+        }
+    };
+}
+
 // function addLogicDefinition(): DefinitionProvider {
 //     return {
 //         provideDefinition(doc, pos, token): ProviderResult<Definition> {
