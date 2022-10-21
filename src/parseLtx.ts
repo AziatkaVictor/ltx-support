@@ -156,18 +156,18 @@ export class LtxDocument {
                                 // addError(range, text, lineData.propertyName);
                             }
                         }
-                    }
 
-                    if (lineData.IsValidParamSyntax()) {
-                        // Если isHaveResult ложно, то значит, что у строки нету значения. Выводим ошибку.
-                        if (!lineData.IsHasResult()) {
-                            addError(lineData.propertyRange, "Параметр не может быть пустым.", lineData.propertyName);
+                        if (lineData.IsValidParamSyntax()) {
+                            // Если isHaveResult ложно, то значит, что у строки нету значения. Выводим ошибку.
+                            if (!lineData.IsHasResult()) {
+                                addError(lineData.propertyRange, "Параметр не может быть пустым.", lineData.propertyName);
+                            }
+                        }
+                        else {
+                            addError(new Range(new Position(line, 0), new Position(line, item.length)), "Некорректная запись.")
                         }
                     }
-                    else {
-                        addError(new Range(new Position(line, 0), new Position(line, item.length)), "Некорректная запись.")
-                    }
-                    
+
                     // Добавляем строку в массив, внутрь секции
                     section.content.set(line, lineData);
                 }
@@ -182,6 +182,7 @@ export class LtxDocument {
             }
         }
 
+        if (isIgnoreParamsDiagnostic() === false) {
             for (let i = 0; i < this.data.length; i++) {
                 const element_i = this.data[i];
 
@@ -195,6 +196,7 @@ export class LtxDocument {
                     }
                 }
             }
+        }
   
         this.SemanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = errorsData.get(currentFile);
