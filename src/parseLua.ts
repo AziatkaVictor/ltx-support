@@ -10,23 +10,29 @@ var scriptFiles: string[] | null;
 var dirPath;
 
 export function getFunctions() {
+    console.time('getFunctions')
     if (!functionsData) {
         getLogicFunctionsLua();
     }
+    console.timeEnd('getFunctions')
     return functionsData;
 }
 
 export function getConditions() {
+    console.time('getConditions')
     if (!conditionsData) {
         getLogicConditionsLua();
     }
+    console.timeEnd('getConditions')
     return conditionsData;
 }
 
 export function updateScripts() {
+    console.time('updateScripts')
     readScriptDir();
     getLogicFunctionsLua();
     getLogicConditionsLua();
+    console.timeEnd('updateScripts')
 }
 
 export function isInsideFunctionsGroup(file: LtxDocument): boolean {

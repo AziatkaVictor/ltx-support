@@ -74,6 +74,7 @@ export class LtxDocument {
 
     constructor(path: TextDocument, args : string[] = []) {
         let content;
+        console.time('LtxDocument: '.concat(path.fileName));
 
         this.path = path.uri.fsPath;
         content = path.getText();
@@ -194,6 +195,7 @@ export class LtxDocument {
   
         this.SemanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = errorsData.get(currentFile);
+        console.timeEnd('LtxDocument: '.concat(path.fileName));
     }
 
     getSectionByPosition(selection: Position): LtxSection | null {
