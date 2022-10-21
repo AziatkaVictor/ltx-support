@@ -1,7 +1,7 @@
 import { workspace, ExtensionContext, languages, CompletionItem, CompletionItemKind, window, MarkdownString, TextDocument, ProviderResult, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, Uri, DiagnosticCollection, Diagnostic, ConfigurationChangeEvent } from 'vscode';
 import * as fs from 'fs';
 import { parseString } from 'xml2js';
-import { getErrorsByFile, getSemanticsByFile, LtxDocument } from "./parseLtx";
+import { LtxDocument } from "./parseLtx";
 import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './parseLua';
 import { isDiagnosticEnabled } from './utils';
 
@@ -68,7 +68,7 @@ function createFileData() {
                 let errors;
 
                 if (fileData) {
-                    errors = getErrorsByFile(fileData.path);
+                    errors = fileData.errorsData;
                 }
 
                 let canonicalFile = document.uri.toString();
@@ -102,7 +102,7 @@ function getSemanticLtx() {
                 createFileData();
             }
 
-            let temp = getSemanticsByFile(document.uri.fsPath)
+            let temp = fileData.SemanticData;
             temp.forEach(item => {
                 let modification = [];
                 if (item.modification) {

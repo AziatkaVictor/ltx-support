@@ -14,7 +14,7 @@ const paramsData = require("../data/sections_documintation.json").params;
 const condsData: string[] = require("../data/sections_documintation.json").basedConditions;
 
 var errorsData: Map<string, LtxError[]> = new Map<string, LtxError[]>();
-var senmaticsData: Map<string, LtxSemantic[]> = new Map<string, LtxSemantic[]>();
+var globalSenmaticsData: Map<string, LtxSemantic[]> = new Map<string, LtxSemantic[]>();
 var currentFile: string;
 var currentFileSectionName: string;
 var currentFileSectionsArray: string[];
@@ -32,32 +32,22 @@ function addError(range: Range, description: string, element?: string) {
 }
 
 function addSemantic(element: LtxSemantic) {
-    let temp = senmaticsData.get(currentFile);
+    let temp = globalSenmaticsData.get(currentFile);
 
     if (!temp) {
         temp = []
     }
 
     temp.push(element);
-    senmaticsData.set(currentFile, temp);
-}
-
-export function getErrors() {
-
-}
-
-export function getErrorsByFile(currentFile: string) {
-    return errorsData.get(currentFile);
-}
-
-export function getSemanticsByFile(currentFile: string) {
-    return senmaticsData.get(currentFile);
+    globalSenmaticsData.set(currentFile, temp);
 }
 
 export class LtxDocument {
     readonly path: string
     readonly data: LtxSection[] = []
     readonly raw: Map<number, LtxLine> = new Map<number, LtxLine>()
+    readonly SemanticData: LtxSemantic[]
+    readonly errorsData: LtxError[]
 
     getSections(): LtxSection[] {
         return this.data;
@@ -192,19 +182,22 @@ export class LtxDocument {
             }
         }
 
-        for (let i = 0; i < this.data.length; i++) {
-            const element_i = this.data[i];
+            for (let i = 0; i < this.data.length; i++) {
+                const element_i = this.data[i];
 
-            for (let k = 0; k < this.data.length; k++) {
-                if (k !== i) {
-                    const element_k = this.data[k];
+                for (let k = 0; k < this.data.length; k++) {
+                    if (k !== i) {
+                        const element_k = this.data[k];
 
-                    if (element_i.name === element_k.name) {
-                        addError(element_i.linkRange, "Повторение имени секции.", element_i.name)
+                        if (element_i.name === element_k.name) {
+                            addError(element_i.linkRange, "Повторение имени секции.", element_i.name)
+                        }
                     }
                 }
             }
-        }
+  
+        this.SemanticData = globalSenmaticsData.get(currentFile);
+        this.errorsData = errorsData.get(currentFile);
     }
 
     getSectionByPosition(selection: Position): LtxSection | null {
