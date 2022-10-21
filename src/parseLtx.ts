@@ -45,6 +45,7 @@ function addSemantic(element: LtxSemantic) {
 export class LtxDocument {
     readonly path: string
     readonly data: LtxSection[] = []
+    readonly sectionsName: string[] = []
     readonly raw: Map<number, LtxLine> = new Map<number, LtxLine>()
     readonly SemanticData: LtxSemantic[]
     readonly errorsData: LtxError[]
@@ -72,24 +73,14 @@ export class LtxDocument {
         return null;
     }
 
-    constructor(path: string | TextDocument) {
+    constructor(path: TextDocument, args : string[] = []) {
         let content;
 
-        if (typeof path === "string") {
-            let fs = require('fs');
-            content = fs.readFileSync(String(path), 'utf8');
-            this.path = path;
+        this.path = path.uri.fsPath;
+        content = path.getText();
+        currentFile = path.uri.fsPath;
 
-            // Массив с ошибками
-            currentFile = path;
-        }
-        else {
-            this.path = path.uri.fsPath;
-            content = path.getText();
-
-            // Массив с ошибками
-            currentFile = path.uri.fsPath;
-        }
+        // Массив с ошибками
         errorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
 
@@ -99,6 +90,7 @@ export class LtxDocument {
         while ((match = re.exec(content)) !== null) {
             currentFileSectionsArray.push(match[0]);
         }
+        this.sectionsName = currentFileSectionsArray;
 
         let contentArray = content.split("\n");
         let section: LtxSection;
