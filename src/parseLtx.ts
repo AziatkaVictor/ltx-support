@@ -91,7 +91,7 @@ export class LtxDocument {
             currentFile = path.uri.fsPath;
         }
         errorsData.set(currentFile, []);
-        senmaticsData.set(currentFile, []);
+        globalSenmaticsData.set(currentFile, []);
 
         let re = /(?<=\[)[\w, @]+(?=\])/g;
         let match;
