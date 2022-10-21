@@ -38,7 +38,7 @@ function updateData(event: ConfigurationChangeEvent) {
     return;
 }
 
-function onChange(change) {    
+function onChange(change) {
     if (change.contentChanges.length !== 0) {
         createFileData();
     }
@@ -133,8 +133,8 @@ function addLogicFunctions(): CompletionItemProvider<CompletionItem> {
             const data = require("../data/logic_documintation.json");
             let temp;
             let items = [];
-            
-            if (isInsideFunctionsGroup(fileData)) {                
+
+            if (isInsideFunctionsGroup(fileData)) {
                 temp = getFunctions();
                 temp.forEach(LuaItem => {
                     let item = new CompletionItem(LuaItem, CompletionItemKind.Function)

@@ -3,7 +3,6 @@ import {
     Position,
     TextDocument
 } from "vscode";
-import { getConditions, getFunctions } from "./parseLua";
 import { isIgnoreParamsDiagnostic } from "./utils";
 
 /** Информация о секциях и их параметрах */
@@ -18,6 +17,12 @@ var globalSenmaticsData: Map<string, LtxSemantic[]> = new Map<string, LtxSemanti
 var currentFile: string;
 var currentFileSectionsArray: string[];
 
+/**
+ * Добавление ошибки в глобальный массив, лучше всего располагать под `isIgnoreParamsDiagnostic()`
+ * @param range Положение ошибки в тексте
+ * @param description Описание ошибки
+ * @param element Имя элемента (необязательно)
+ */
 function addError(range: Range, description: string, element?: string) {
     if (element) {
         description = element + ": " + description;
@@ -30,6 +35,10 @@ function addError(range: Range, description: string, element?: string) {
     errorsData.set(currentFile, temp);
 }
 
+/**
+ * Добавляем подсветку синтаксиса в глобальный массив
+ * @param element Элемент подсветки синтаксиса
+ */
 function addSemantic(element: LtxSemantic) {
     let temp = globalSenmaticsData.get(currentFile);
 
@@ -448,7 +457,7 @@ class LtxLine {
     isValidConditions() {
         return true;
     }
-    
+
     // TODO: Сделать проверку функций
     isValidFunctions() {
         return true;
@@ -466,7 +475,7 @@ class LtxLine {
         catch (error) {
             console.log(error);
             return false;
-        }   
+        }
     }
 
     IsHasResult() {
@@ -476,7 +485,7 @@ class LtxLine {
                 return false;
             }
             return true;
-        }        
+        }
         catch (error) {
             console.log(error);
             return false;
@@ -508,7 +517,7 @@ class LtxCondlist {
     readonly functionRange?: Range | null;
     readonly sectionLink?: LtxSectionLink;
 
-    constructor(lineNumber : number, index : number, data : string) {
+    constructor(lineNumber: number, index: number, data: string) {
         let tempData = data;
 
         this.condition = /\{.*?\}/.exec(tempData);
@@ -516,10 +525,10 @@ class LtxCondlist {
 
         if (this.condition) {
             this.conditionRange = new Range(new Position(lineNumber, index + this.condition.index), new Position(lineNumber, index + this.condition[0].length + this.condition.index));
-        } 
+        }
         if (this.function) {
             this.functionRange = new Range(new Position(lineNumber, index + this.function.index), new Position(lineNumber, index + this.function[0].length + this.function.index));
-        }        
+        }
 
         let search = /(\+|\-)\w*\b(?<=\w)/g
         let match;
@@ -535,33 +544,33 @@ class LtxCondlist {
             addSemantic(new LtxSemantic(LtxSemanticType.function, LtxSemanticModification.declaration, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
         }
-        
+
         search = new RegExp("\\b(nil|true|false|complete|fail)\\b", "g")
-        while ((match = search.exec(tempData)) !== null) {            
+        while ((match = search.exec(tempData)) !== null) {
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.keyword, LtxSemanticModification.readonly, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
         }
-        
+
         search = /(?<!\w)\d+/g
-        while ((match = search.exec(tempData)) !== null) {            
+        while ((match = search.exec(tempData)) !== null) {
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
         }
-        
+
         for (let сount = 0; сount < currentFileSectionsArray.length; сount++) {
             const sectionName = currentFileSectionsArray[сount];
             search = new RegExp("(?<=\\b)" + sectionName + "(?![\\w\\@]+)(?=\\b)", "g")
             while ((match = search.exec(tempData)) !== null) {
-                let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))                
+                let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
                 addSemantic(new LtxSemantic(LtxSemanticType.class, LtxSemanticModification.definition, tempRange, LtxSemanticDescription.signal, match[0]))
                 tempData = replaceText(tempData, sectionName);
             }
         }
-        
+
         search = /[\w\*\.\@\$]+/g
-        while ((match = search.exec(tempData)) !== null) {            
+        while ((match = search.exec(tempData)) !== null) {
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
             tempData = replaceText(tempData, match[0]);
@@ -589,7 +598,7 @@ class LtxError {
 
 
 /**
- * Класс, который используется для подсветки синтаксиса, храниться в глобальной переменной.
+ * Класс, который используется для подсветки синтаксиса.
  * 
  * @param type - enum, который характеризует тип (переменяя, функция)
  * @param modification - enum, который характеризует метод использования (объявление, ссылка)

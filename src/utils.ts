@@ -1,4 +1,4 @@
-import { window, workspace } from "vscode";
+import { workspace } from "vscode";
 
 export function getPathToScripts() : string | null {
     return workspace.getConfiguration("", workspace.workspaceFile).get("LTX.Directories.PathToScripts");
