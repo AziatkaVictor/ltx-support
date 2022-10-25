@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { parseString } from 'xml2js';
 import { LtxDocument } from "./parseLtx";
 import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './parseLua';
-import { isDiagnosticEnabled } from './utils';
+import { getPathToMisc, isDiagnosticEnabled } from './utils';
 
 const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string'];
 const tokenModifiers = ['declaration', 'definition', 'documentation', 'readonly'];
@@ -193,10 +193,10 @@ function addInformation(): CompletionItemProvider<CompletionItem> {
             if (!fileData) {
                 createFileData();
             }
-
+            var path = getPathToMisc();
             console.time('addSquad')
             var items = []
-            var files = await workspace.findFiles('{misc/squad_descr_*.ltx,misc/squad_descr.ltx}');
+            var files = await workspace.findFiles('{' + path + 'squad_descr_*.ltx,' + path + 'squad_descr.ltx}');
             
             for (let index = 0; index < files.length; index++) {
                 const file = files[index];
@@ -211,7 +211,7 @@ function addInformation(): CompletionItemProvider<CompletionItem> {
             console.timeEnd('addSquad')     
             
             console.time('addTasks')
-            files = await workspace.findFiles('{misc/tm_*.ltx}');
+            files = await workspace.findFiles('{' + path + 'tm_*.ltx}');         
             
             for (let index = 0; index < files.length; index++) {
                 const file = files[index];
