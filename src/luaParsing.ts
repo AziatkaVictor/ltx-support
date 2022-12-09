@@ -1,7 +1,7 @@
 import { window } from "vscode";
 import * as fs from 'fs';
 import * as path from 'path';
-import { LtxDocument } from "./ltxParsing";
+import { LtxDocument } from "./ltx/ltxDocument";
 import { getPathToScripts } from "./settings";
 
 var functionsData;
@@ -129,21 +129,20 @@ export function readScriptDir() {
 function parseLua(filePath: string, secondFilePath?: string) {
     try {
         let file = fs.readFileSync(filePath, "utf8");
-        if (file) {
-            let arr: string[] = file.replace(/--\[\[((.|\n)*?)\]\]/g, "").replace(/--.*(?=\n)/g, "").split("\n");
-            let func_arr = [];
-            arr.forEach(element => {
-                let re: RegExp = /(?<=^function\s).*?(?=\(.*?\))/m;
-                let text = re.exec(element.trim() + '\n');
-                if (text) {
-                    func_arr.push(text[0]);
-                }
-            });
-            return func_arr;
-        }
-        else {
+        if (!file) {
             throw new Error("File is null: " + filePath);
         }
+        
+        let arr: string[] = file.replace(/--\[\[((.|\n)*?)\]\]/g, "").replace(/--.*(?=\n)/g, "").split("\n");
+        let func_arr = [];
+        arr.forEach(element => {
+            let re: RegExp = /(?<=^function\s).*?(?=\(.*?\))/m;
+            let text = re.exec(element.trim() + '\n');
+            if (text) {
+                func_arr.push(text[0]);
+            }
+        });
+        return func_arr;
     }
     catch (error) {
         console.log(error);
