@@ -103,7 +103,7 @@ function getSemanticLtx() {
                 createFileData();
             }
 
-            let temp = fileData.SemanticData;
+            let temp = fileData.getSemanticData();
             temp.forEach(item => {
                 let modification = [];
                 if (item.modification) {
@@ -203,7 +203,7 @@ function addInformation(): CompletionItemProvider<CompletionItem> {
                 let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
                 let ltxData = new LtxDocument(doc, ['fast']);
                 var tempItems = []
-                ltxData.sectionsName.forEach(async section => {
+                ltxData.getSectionsName().forEach(async section => {
                     tempItems.push(new CompletionItem(section, CompletionItemKind.Issue));
                 })
                 items = items.concat(tempItems);
@@ -218,7 +218,7 @@ function addInformation(): CompletionItemProvider<CompletionItem> {
                 let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
                 let ltxData = new LtxDocument(doc, ['fast']);
                 var tempItems = []
-                ltxData.sectionsName.forEach(async section => {
+                ltxData.getSectionsName().forEach(async section => {
                     tempItems.push(new CompletionItem(section, CompletionItemKind.Field));
                 })
                 items = items.concat(tempItems);

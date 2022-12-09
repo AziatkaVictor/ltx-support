@@ -1,18 +1,19 @@
 import {
     Range,
     Position,
-    TextDocument
+    TextDocument,
+    Selection
 } from "vscode";
 import { isIgnoreParamsDiagnostic } from "./settings";
 
 /** Информация о секциях и их параметрах */
-const sectionsData = require("../data/sections_documintation.json").sections;
+const SECTIONS_DATA = require("../data/sections_documintation.json").sections;
 /** Информация о параметрах, которые используются в секциях */
-const paramsData = require("../data/sections_documintation.json").params;
+const PARAMS_DATA = require("../data/sections_documintation.json").params;
 /** Список параметров, которые есть в любой секции */
-const condsData: string[] = require("../data/sections_documintation.json").basedConditions;
+const CONDITIONS_DATA: string[] = require("../data/sections_documintation.json").basedConditions;
 
-var errorsData: Map<string, LtxError[]> = new Map<string, LtxError[]>();
+var globalErrorsData: Map<string, LtxError[]>       = new Map<string, LtxError[]>();
 var globalSenmaticsData: Map<string, LtxSemantic[]> = new Map<string, LtxSemantic[]>();
 var currentFile: string;
 var currentFileSectionsArray: string[];
@@ -27,12 +28,12 @@ function addError(range: Range, description: string, element?: string) {
     if (element) {
         description = element + ": " + description;
     }
-    let temp = errorsData.get(currentFile);
+    let temp = globalErrorsData.get(currentFile);
     if (!temp) {
         temp = []
     }
     temp.push(new LtxError(element, range, description));
-    errorsData.set(currentFile, temp);
+    globalErrorsData.set(currentFile, temp);
 }
 
 /**
@@ -41,56 +42,112 @@ function addError(range: Range, description: string, element?: string) {
  */
 function addSemantic(element: LtxSemantic) {
     let temp = globalSenmaticsData.get(currentFile);
-
     if (!temp) {
         temp = []
     }
-
     temp.push(element);
     globalSenmaticsData.set(currentFile, temp);
 }
 
+/**
+ * Главный класс, который отвечает за парсинг *.ltx файлов, сохранения структуры в переменные и массивы. 
+ */ 
 export class LtxDocument {
-    readonly path: string
-    readonly data: LtxSection[] = []
-    readonly sectionsName: string[] = []
-    readonly raw: Map<number, LtxLine> = new Map<number, LtxLine>()
-    readonly SemanticData: LtxSemantic[]
+    readonly filePath: string
+
+    private data: LtxSection[] = []
+    private rawData: Map<number, LtxLine> = new Map<number, LtxLine>()
+    private sectionsName: string[] = []
+    private semanticData: LtxSemantic[]
+
     readonly errorsData: LtxError[]
 
     getSections(): LtxSection[] {
         return this.data;
     }
 
-    getLine(sel) {
-        if (sel) {
-            if (!this.getSectionByPosition(sel.start)) {
-                if (this.raw.get(sel.start.line)) {
-                    return this.raw.get(sel.start.line);
-                }
-                else {
-                    return null;
-                }
-            }
-            else {
-                if (this.getSectionByPosition(sel.start).content) {
-                    return this.getSectionByPosition(sel.start).content.get(sel.start.line);
-                }
-            }
-        }
-        return null;
+    getSectionsName(): string[] {
+        return this.sectionsName;
     }
 
+    getSemanticData(): LtxSemantic[] {
+        return this.semanticData;
+    }
+    
+    getErrorsData() : LtxError[] {
+        return this.errorsData;
+    }    
+
+    /**
+     * Получить данные строки по положению курсора в документе
+     * @param selection Курсор в текстовом документе 
+     * @returns Возвращает данные строки, в которой находиться курсор
+     */
+    getLine(selection : Selection) : LtxLine {
+        // Проверяем наличие курсора в текстовом документе
+        if (!selection) {
+            return null;
+        }
+        let startPosition = selection.start;
+
+        // Проверка, на отсутствие секции по положению курсора
+        if (!this.getSectionByPosition(startPosition)) {
+            if (!this.rawData.get(startPosition.line)) {
+                return null;
+            }
+            return this.rawData.get(startPosition.line);
+        }
+
+        // Проверяем, можем ли мы найти секцию, внутри которой находиться курсор
+        let sectionContent = this.getSectionByPosition(startPosition).lines;
+        if (sectionContent) {
+            return sectionContent.get(startPosition.line);
+        }
+    }
+
+    getSectionByPosition(selection: Position): LtxSection | null {
+        try {
+            let temp;
+            this.data.forEach(section => {
+                if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
+                    temp = section;
+                }
+            });
+            return temp;
+        }
+        catch (error) {
+            console.log(error);
+            return;
+        }
+    }
+
+    /**
+     * Функция, которая вызывается в тот момент, когда заканчивается секция в документе. Так же в этой функции вызывается проверка параметров.
+     * @param section Ссылка на секцию, которую нужно закрыть
+     * @param index Номер строки
+     */
+    private closeSection(section: LtxSection, index: number) {
+        section.setEndLine(index);
+        if (isIgnoreParamsDiagnostic() === false) {
+            section.checkExceptedParams();
+        }
+        this.data.push(section);
+    }
+
+    /**
+     * @param path Документ, который необходимо запарсить.
+     * @param args[] Массив текстовых параметров, которые отвечают за поведение конструктора (например `fast` отключает все лишнее, чтобы ускорить процесс парсинга, нужен для предложения переменных в автодополнении) 
+     */ 
     constructor(path: TextDocument, args : string[] = []) {
         let content;
         console.time('LtxDocument: '.concat(path.fileName));
 
-        this.path = path.uri.fsPath;
+        this.filePath = path.uri.fsPath;
         content = path.getText();
         currentFile = path.uri.fsPath;
 
         // Массив с ошибками
-        errorsData.set(currentFile, []);
+        globalErrorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
 
         let re = /(?<=\[)[\w, @]+(?=\])/g;
@@ -101,6 +158,7 @@ export class LtxDocument {
         }
         this.sectionsName = currentFileSectionsArray;
 
+        // TODO: Заменить на enum
         if (args.indexOf('fast') !== -1) {
             console.timeEnd('LtxDocument: '.concat(path.fileName))
             return;
@@ -173,7 +231,7 @@ export class LtxDocument {
                     }
 
                     // Добавляем строку в массив, внутрь секции
-                    section.content.set(line, lineData);
+                    section.lines.set(line, lineData);
                 }
 
                 // Если это последняя строка документа, то закрываем секцию
@@ -182,7 +240,7 @@ export class LtxDocument {
                 }
             }
             else if (!result) {
-                this.raw.set(line, new LtxLine(line, item, null));
+                this.rawData.set(line, new LtxLine(line, item, null));
             }
         }
 
@@ -202,33 +260,9 @@ export class LtxDocument {
             }
         }
   
-        this.SemanticData = globalSenmaticsData.get(currentFile);
-        this.errorsData = errorsData.get(currentFile);
+        this.semanticData = globalSenmaticsData.get(currentFile);
+        this.errorsData = globalErrorsData.get(currentFile);
         console.timeEnd('LtxDocument: '.concat(path.fileName));
-    }
-
-    getSectionByPosition(selection: Position): LtxSection | null {
-        try {
-            let temp;
-            this.data.forEach(section => {
-                if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
-                    temp = section;
-                }
-            });
-            return temp;
-        }
-        catch (error) {
-            console.log(error);
-            return;
-        }
-    }
-
-    private closeSection(section: LtxSection, line: number) {
-        section.setEndLine(line);
-        if (isIgnoreParamsDiagnostic() === false) {
-            section.checkExceptedParams();
-        }
-        this.data.push(section);
     }
 }
 
@@ -238,11 +272,11 @@ class LtxSection {
     readonly startLine: number
     readonly linkRange?: Range
     endLine?: number
-    content: Map<number, LtxLine> = new Map<number, LtxLine>()
+    lines: Map<number, LtxLine> = new Map<number, LtxLine>()
 
     checkExceptedParams() {
         let data = [];
-        this.content.forEach(line => {
+        this.lines.forEach(line => {
             data.push(line.propertyName);
         });
 
@@ -257,7 +291,7 @@ class LtxSection {
 
     setEndLine(line: number) {
         this.endLine = line;
-        if (this.content.size === 0) {
+        if (this.lines.size === 0) {
             addError(this.linkRange, "Секция должна содержать параметры. Если хотите закончить логику, то лучше использовать nil.", this.name);
         }
     }
@@ -284,17 +318,17 @@ class LtxSectionType {
         this.name = name
         this.params = new Map<string, LtxSectionProperty>();
 
-        if (sectionsData[name]) {
+        if (SECTIONS_DATA[name]) {
             // Получаем название параметров нужной нам секции, из файла json
-            let keys: string[] = Object.keys(sectionsData[name]);
-            keys = keys.concat(condsData);
+            let keys: string[] = Object.keys(SECTIONS_DATA[name]);
+            keys = keys.concat(CONDITIONS_DATA);
 
             // Перебираем их
             keys.forEach(itemName => {
                 let property: LtxSectionProperty | null = null;
 
-                if (!condsData.includes(itemName)) {
-                    let item = sectionsData[name][itemName];
+                if (!CONDITIONS_DATA.includes(itemName)) {
+                    let item = SECTIONS_DATA[name][itemName];
                     if (Object.keys(item).length !== 0) {
                         if (!item.isOptional) {
                             property = new LtxSectionProperty(itemName, item.isOptional)
@@ -330,8 +364,8 @@ class LtxSectionProperty {
     readonly isOptional: boolean = true
 
     constructor(name: string, isOptional?: boolean) {
-        if (paramsData[name]) {
-            this.dataType = paramsData[name].type;
+        if (PARAMS_DATA[name]) {
+            this.dataType = PARAMS_DATA[name].type;
 
             switch (this.dataType) {
                 case "boolean":
