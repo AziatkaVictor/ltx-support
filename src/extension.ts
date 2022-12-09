@@ -1,7 +1,7 @@
 import { workspace, ExtensionContext, languages, CompletionItem, CompletionItemKind, window, MarkdownString, TextDocument, ProviderResult, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, Uri, DiagnosticCollection, Diagnostic, ConfigurationChangeEvent } from 'vscode';
 import * as fs from 'fs';
 import { parseString } from 'xml2js';
-import { LtxDocument } from "./parseLtx";
+import { LtxDocument } from "./ltxParsing";
 import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './luaParsing';
 import { getPathToMisc, isDiagnosticEnabled } from './settings';
 
