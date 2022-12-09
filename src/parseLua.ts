@@ -2,7 +2,7 @@ import { window } from "vscode";
 import * as fs from 'fs';
 import * as path from 'path';
 import { LtxDocument } from "./parseLtx";
-import { getPathToScripts } from "./utils";
+import { getPathToScripts } from "./settings";
 
 var functionsData;
 var conditionsData;

@@ -3,7 +3,7 @@ import {
     Position,
     TextDocument
 } from "vscode";
-import { isIgnoreParamsDiagnostic } from "./utils";
+import { isIgnoreParamsDiagnostic } from "./settings";
 
 /** Информация о секциях и их параметрах */
 const sectionsData = require("../data/sections_documintation.json").sections;
