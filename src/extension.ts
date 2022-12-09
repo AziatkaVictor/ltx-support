@@ -2,7 +2,7 @@ import { workspace, ExtensionContext, languages, CompletionItem, CompletionItemK
 import * as fs from 'fs';
 import { parseString } from 'xml2js';
 import { LtxDocument } from "./parseLtx";
-import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './parseLua';
+import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './luaParsing';
 import { getPathToMisc, isDiagnosticEnabled } from './settings';
 
 const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string'];
