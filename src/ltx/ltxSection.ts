@@ -1,4 +1,5 @@
 import { Position, Range } from "vscode";
+import { isIgnoreParamsDiagnostic } from "../settings";
 import { addError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSectionType } from "./ltxSectionType";
@@ -10,7 +11,9 @@ export class LtxSection {
     readonly startLine: number
     readonly linkRange?: Range
     endLine?: number
+
     lines: Map<number, LtxLine> = new Map<number, LtxLine>()
+    private tempLines: Map<number, string> = new Map<number, string>()
 
     checkExceptedParams() {
         let data = [];
@@ -27,11 +30,40 @@ export class LtxSection {
         });
     }
 
-    setEndLine(line: number) {
+    close(line: number) {
         this.endLine = line;
+        if (isIgnoreParamsDiagnostic() === false) {
+            this.checkExceptedParams();
+        }
         if (this.lines.size === 0) {
             addError(this.linkRange, "Секция должна содержать параметры. Если хотите закончить логику, то лучше использовать nil.", this.name);
         }
+    }
+
+    addTempLine(index : number, line : string) {
+        this.tempLines.set(index, line);
+    }
+
+    parseLines() {
+        // Async
+        console.time('Async section: '.concat(this.name));
+        let promise = async () => { 
+            let data = await new Map<number, LtxLine>()
+            for await (const [key, value] of this.tempLines) {
+                data.set(key, new LtxLine(key, value, this.type));
+            }    
+            return data; 
+        }   
+        this.lines = promise.call("").then(async value => {
+            return await value;
+        });
+        console.timeEnd('Async section: '.concat(this.name));
+        // For
+        // console.time('Section: '.concat(this.name));
+        // this.tempLines.forEach((value, key) => {
+        //     new LtxLine(key, value, this.type)
+        // })
+        // console.timeEnd('Section: '.concat(this.name));
     }
 
     constructor(name: string, startLine: number, startCharacter: number) {

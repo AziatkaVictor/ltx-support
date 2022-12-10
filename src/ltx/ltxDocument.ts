@@ -17,14 +17,16 @@ export var currentFile: string;
  */ 
 export class LtxDocument {
     readonly filePath: string
-    private data: LtxSection[] = []
+    private sections: LtxSection[] = []
     private rawData: Map<number, LtxLine> = new Map<number, LtxLine>()
     private sectionsName: string[] = []
     private semanticData: LtxSemantic[]
     readonly errorsData: LtxError[]
 
+    private tempSection: LtxSection;
+
     getSections(): LtxSection[] {
-        return this.data;
+        return this.sections;
     }
 
     getSectionsName(): string[] {
@@ -69,9 +71,10 @@ export class LtxDocument {
     getSectionByPosition(selection: Position): LtxSection | null {
         try {
             let temp;
-            this.data.forEach(section => {
+            this.sections.forEach(section => {
                 if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
                     temp = section;
+                    return;
                 }
             });
             return temp;
@@ -88,19 +91,22 @@ export class LtxDocument {
      * @param index Номер строки
      */
     private closeSection(section: LtxSection, index: number) {
-        section.setEndLine(index);
-        if (isIgnoreParamsDiagnostic() === false) {
-            section.checkExceptedParams();
-        }
-        this.data.push(section);
+        section.close(index);
+        this.sections.push(section);
     }
 
-    private findSection(item, lineIndex : number) {
+    /**
+     * Поиск объявления секции в тексте, если находим несколько секций, то возвращаем первую, остальные указываем как ошибки
+     * @param text Текст, в котором ищем секцию
+     * @param lineIndex Номер строки
+     * @returns Возвращаем первую секцию, которую мы нашли
+     */
+    private findSection(text : string, lineIndex : number) {
         var re = /\[[\w, @]+\]/g;
         var match : RegExpExecArray;
         var result : RegExpExecArray;
 
-        while ((match = re.exec(item)) !== null) {
+        while ((match = re.exec(text)) !== null) {
             if (!result) {
                 result = match;
                 continue;
@@ -128,66 +134,41 @@ export class LtxDocument {
         return sectionsArray;
     }
 
-    private parseLine(contentArray, section, lineIndex, args) {
-        let item = contentArray[lineIndex].replace(/;.*/, '');
-        let result = this.findSection(item, lineIndex);
+    private parseLine(line: string, lineIndex: number, args: string[]) {
+        let result = this.findSection(line, lineIndex);
 
         if (result) {
-            if (section) {
-                this.closeSection(section, lineIndex);
+            if (this.tempSection) {
+                this.closeSection(this.tempSection, lineIndex);
             }
-            section = new LtxSection(result[0], lineIndex, result.index);
+            this.tempSection = new LtxSection(result[0], lineIndex, result.index);
+            return;
         }
-        else if (section) {
-            if (item.trim() !== "" && args.indexOf('fast') === -1) {
-                // Инициализация строки
-                let lineData = new LtxLine(lineIndex, item, section.type);
-
-                if (isIgnoreParamsDiagnostic() === false) {
-                    // Если isValid ложно, то значит, что расширение не смогло найти в базе этой секции данный параметр. Выводим ошибку.
-                    if (lineData.isPropertyValid === false) {
-                        let range: Range = new Range(new Position(lineIndex, 0), new Position(lineIndex, item.length));
-                        addError(range, "Некорректный параметр.", lineData.propertyName);
-                    }
-                    else {
-                        // Если isValidConditions ложно, то значит, что было указано условие, хотя параметр того не поддерживает. Выводим ошибку.
-                        if (!lineData.isValidConditions()) {
-                            // TODO: Сделать отправку ошибки кондишена
-                            // let range = lineData.data.get("conditions").range;
-                            // let text = "Параметр не может содержать условия.";
-                            // addError(range, text, lineData.propertyName);
-                        }
-                        // Если isValidFunctions ложно, то значит, что было указаны функции, хотя параметр того не поддерживает. Выводим ошибку.
-                        if (!lineData.isValidFunctions()) {
-                            // TODO: Сделать отправку ошибки функций
-                            // let range = lineData.data.get("functions").range;
-                            // let text = "Параметр не может содержать функции.";
-                            // addError(range, text, lineData.propertyName);
-                        }
-                    }
-
-                    if (lineData.IsValidParamSyntax()) {
-                        // Если isHaveResult ложно, то значит, что у строки нету значения. Выводим ошибку.
-                        if (!lineData.IsHasResult()) {
-                            addError(lineData.propertyRange, "Параметр не может быть пустым.", lineData.propertyName);
-                        }
-                    }
-                    else {
-                        addError(new Range(new Position(lineIndex, 0), new Position(lineIndex, item.length)), "Некорректная запись.")
-                    }
-                }
-
-                // Добавляем строку в массив, внутрь секции
-                section.lines.set(lineIndex, lineData);
-            }
-
-            // Если это последняя строка документа, то закрываем секцию
-            if (lineIndex === contentArray.length - 1) {
-                this.closeSection(section, lineIndex);
-            }
+        else if (this.tempSection) {
+            if (line.trim() !== "" && args.indexOf('fast') === -1) {
+                this.tempSection.addTempLine(lineIndex, line);
+            }  
+            return;
         }
-        else if (!result) {
-            this.rawData.set(lineIndex, new LtxLine(lineIndex, item, null));
+
+        // this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
+    }
+
+    private parsingSections(content : string, args : string[]) {
+        let contentArray = content.split("\n");
+
+        for (let lineIndex = 0; lineIndex < contentArray.length; lineIndex++) {
+            let line = contentArray[lineIndex].replace(/;.*/, '');
+            this.parseLine(line, lineIndex, args);
+        }
+        // Закрываем последнюю секцию
+        if (this.tempSection) {
+            this.closeSection(this.tempSection, contentArray.length - 1);
+        }
+        // Асинхронно анализируем строки
+        for (let index = 0; index < this.sections.length; index++) {
+            const element = this.sections[index];
+            element.parseLines();
         }
     }
 
@@ -212,21 +193,16 @@ export class LtxDocument {
             console.timeEnd('LtxDocument: '.concat(document.fileName))
             return;
         }
-
-        let contentArray = content.split("\n");
-        let section: LtxSection;
-
-        for (let lineIndex = 0; lineIndex < contentArray.length; lineIndex++) {
-            this.parseLine(contentArray, section, lineIndex, args);
-        }
+        
+        this.parsingSections(content, args);
 
         if (isIgnoreParamsDiagnostic() === false) {
-            for (let i = 0; i < this.data.length; i++) {
-                const element_i = this.data[i];
+            for (let i = 0; i < this.sections.length; i++) {
+                const element_i = this.sections[i];
 
-                for (let k = 0; k < this.data.length; k++) {
+                for (let k = 0; k < this.sections.length; k++) {
                     if (k !== i) {
-                        const element_k = this.data[k];
+                        const element_k = this.sections[k];
 
                         if (element_i.name === element_k.name) {
                             addError(element_i.linkRange, "Повторение имени секции.", element_i.name)

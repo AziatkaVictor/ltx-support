@@ -1,5 +1,7 @@
 import { Position, Range } from "vscode"
+import { isIgnoreParamsDiagnostic } from "../settings"
 import { LtxCondlist } from "./ltxCondlist"
+import { addError } from "./ltxError"
 import { LtxSectionProperty } from "./ltxSectionProperty"
 import { LtxSectionType } from "./ltxSectionType"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
@@ -119,6 +121,43 @@ export class LtxLine {
         catch (error) {
             console.log(error);
             return false;
+        }
+    }
+
+    private diagnosticLine() {
+        if (isIgnoreParamsDiagnostic() === true) {
+            return;
+        }
+
+        // Если isValid ложно, то значит, что расширение не смогло найти в базе этой секции данный параметр. Выводим ошибку.
+        if (this.isPropertyValid === false) {              
+            let range: Range = new Range(new Position(this.index, 0), new Position(this.index, this.rawData.length));
+            addError(range, "Некорректный параметр.", this.propertyName);
+        }
+
+        // Если isValidConditions ложно, то значит, что было указано условие, хотя параметр того не поддерживает. Выводим ошибку.
+        if (!this.isValidConditions()) {
+            // TODO: Сделать отправку ошибки кондишена
+            // let range = lineData.data.get("conditions").range;
+            // let text = "Параметр не может содержать условия.";
+            // addError(range, text, lineData.propertyName);
+        }
+        // Если isValidFunctions ложно, то значит, что было указаны функции, хотя параметр того не поддерживает. Выводим ошибку.
+        if (!this.isValidFunctions()) {
+            // TODO: Сделать отправку ошибки функций
+            // let range = lineData.data.get("functions").range;
+            // let text = "Параметр не может содержать функции.";
+            // addError(range, text, lineData.propertyName);
+        }
+
+        if (this.IsValidParamSyntax()) {
+            // Если isHaveResult ложно, то значит, что у строки нету значения. Выводим ошибку.
+            if (!this.IsHasResult()) {
+                addError(this.propertyRange, "Параметр не может быть пустым.", this.propertyName);
+            }
+        }
+        else {
+            addError(new Range(new Position(this.index, 0), new Position(this.index, this.rawData.length)), "Некорректная запись.")
         }
     }
 }
