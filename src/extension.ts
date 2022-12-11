@@ -198,29 +198,27 @@ function addInformation(): CompletionItemProvider<CompletionItem> {
             var items = []
             var files = await workspace.findFiles('{' + path + 'squad_descr_*.ltx,' + path + 'squad_descr.ltx}');
             
-            for (let index = 0; index < files.length; index++) {
-                const file = files[index];
+            for await (const file of files) {
                 let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
                 let ltxData = new LtxDocument(doc, ['fast']);
                 var tempItems = []
-                ltxData.getSectionsName().forEach(async section => {
+                for await (const section of ltxData.getSectionsName()) {
                     tempItems.push(new CompletionItem(section, CompletionItemKind.Issue));
-                })
+                }
                 items = items.concat(tempItems);
             }
-            console.timeEnd('addSquad')     
+            console.timeEnd('addSquad')
             
             console.time('addTasks')
             files = await workspace.findFiles('{' + path + 'tm_*.ltx}');         
             
-            for (let index = 0; index < files.length; index++) {
-                const file = files[index];
+            for await (const file of files) {
                 let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
                 let ltxData = new LtxDocument(doc, ['fast']);
                 var tempItems = []
-                ltxData.getSectionsName().forEach(async section => {
+                for await (const section of ltxData.getSectionsName()) {
                     tempItems.push(new CompletionItem(section, CompletionItemKind.Field));
-                })
+                }
                 items = items.concat(tempItems);
             }
             console.timeEnd('addTasks')
