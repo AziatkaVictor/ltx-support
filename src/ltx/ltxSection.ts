@@ -48,7 +48,7 @@ export class LtxSection {
         // Async
         console.time('Async section: '.concat(this.name));
         let promise = async () => { 
-            let data = await new Map<number, LtxLine>()
+            let data = new Map<number, LtxLine>();
             for await (const [key, value] of this.tempLines) {
                 data.set(key, new LtxLine(key, value, this.type));
             }    
