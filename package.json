@@ -4,7 +4,7 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -82,12 +82,13 @@
 				"title": "Completion",
 				"properties": {
 					"ltx-support.completion.ignoreLocalizationFile": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"description": "Название файлов локализации, которые будут игнорироваться. Например: ('st_characters.xml'). На данный момент не работает. (WiP)"
-				}}
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Название файлов локализации, которые будут игнорироваться. Например: ('st_characters.xml'). На данный момент не работает. (WiP)"
+					}
+				}
 			},
 			{
 				"title": "Diagnostics",
