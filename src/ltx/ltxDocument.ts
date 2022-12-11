@@ -135,6 +135,9 @@ export class LtxDocument {
     }
 
     private parseLine(line: string, lineIndex: number, args: string[]) {
+        if (line.trim() === "") {
+            return;
+        }
         let result = this.findSection(line, lineIndex);
 
         if (result) {
@@ -145,7 +148,7 @@ export class LtxDocument {
             return;
         }
         else if (this.tempSection) {
-            if (line.trim() !== "" && args.indexOf('fast') === -1) {
+            if (args.indexOf('fast') === -1) {
                 this.tempSection.addTempLine(lineIndex, line);
             }  
             return;
@@ -166,10 +169,16 @@ export class LtxDocument {
             this.closeSection(this.tempSection, contentArray.length - 1);
         }
         // Асинхронно анализируем строки
-        for (let index = 0; index < this.sections.length; index++) {
-            const element = this.sections[index];
-            element.parseLines();
-        }
+        // for (let index = 0; index < this.sections.length; index++) {
+        //     const element = this.sections[index];
+        //     element.parseLines();
+        // }
+        let promise = async () => { 
+            for await (const section of this.sections) {
+                section.parseLines();
+            }    
+        }   
+        promise.call("");
     }
 
     /**
@@ -177,7 +186,12 @@ export class LtxDocument {
      * @param args[] Массив текстовых параметров, которые отвечают за поведение конструктора (например `fast` отключает все лишнее, чтобы ускорить процесс парсинга, нужен для предложения переменных в автодополнении) 
      */ 
     constructor(document: TextDocument, args : string[] = []) {
-        console.time('LtxDocument: '.concat(document.fileName));
+        if (args.indexOf('fast') !== -1) {
+            console.time('LtxDocument (Fast): '.concat(document.fileName));
+        }
+        else {
+            console.time('LtxDocument: '.concat(document.fileName));
+        }
 
         this.filePath = document.uri.fsPath;
         currentFile = document.uri.fsPath;
@@ -190,7 +204,7 @@ export class LtxDocument {
 
         // TODO: Заменить на enum
         if (args.indexOf('fast') !== -1) {
-            console.timeEnd('LtxDocument: '.concat(document.fileName))
+            console.timeEnd('LtxDocument (Fast): '.concat(document.fileName))
             return;
         }
         
