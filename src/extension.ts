@@ -94,7 +94,7 @@ function createFileData() {
 }
 
 function getSemanticLtx() {
-    const provider: DocumentSemanticTokensProvider = {
+    return {
         provideDocumentSemanticTokens(document: TextDocument): ProviderResult<SemanticTokens> {
             const tokensBuilder = new SemanticTokensBuilder(legend);
 
@@ -115,7 +115,6 @@ function getSemanticLtx() {
             return tokensBuilder.build();
         }
     };
-    return provider;
 }
 
 export function deactivate() {
@@ -223,6 +222,18 @@ async function getTasks(document: TextDocument) {
     return items;
 }
 
+async function getSections(document: TextDocument) {
+    var items = [];
+    if (!documents.get(document)) {
+        createFileData();
+    }
+    var ltxData = documents.get(document);
+    for await (const section of Array.from(new Set(ltxData.getSectionsName()))) {
+        items.push(new CompletionItem(section, CompletionItemKind.Class));
+    }
+    return items;
+}
+
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
         async provideCompletionItems(document: TextDocument) {
@@ -232,6 +243,7 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
                 items = items.concat(await getSquads(document));
                 items = items.concat(await getTasks(document));
             }
+            items = items.concat(await getSections(document));
             return items;
         }
     };
