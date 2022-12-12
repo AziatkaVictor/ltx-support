@@ -9,6 +9,7 @@ const legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 let diagnosticCollection: DiagnosticCollection;
 let fileData: LtxDocument;
+var documents: Map<TextDocument, LtxDocument> = new Map<TextDocument, LtxDocument>();
 
 export function activate(context: ExtensionContext) {
     diagnosticCollection = languages.createDiagnosticCollection("ltx");
@@ -16,7 +17,6 @@ export function activate(context: ExtensionContext) {
     workspace.onDidChangeTextDocument(onChange);
     workspace.onDidOpenTextDocument(createFileData);
     window.onDidChangeActiveTextEditor(createFileData);
-
     workspace.onDidChangeConfiguration(updateData);
 
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getLogicFunctions(), '='));
@@ -52,7 +52,9 @@ function createFileData() {
     }
 
     try {
-        fileData = new LtxDocument(window.activeTextEditor.document);
+        let tempData = new LtxDocument(window.activeTextEditor.document);
+        fileData = tempData;
+        documents.set(window.activeTextEditor.document, tempData);
     }
     catch (error) {
         window.showErrorMessage('Error when parsing the '.concat(window.activeTextEditor.document.fileName));
@@ -96,11 +98,11 @@ function getSemanticLtx() {
         provideDocumentSemanticTokens(document: TextDocument): ProviderResult<SemanticTokens> {
             const tokensBuilder = new SemanticTokensBuilder(legend);
 
-            if (!fileData) {
+            if (!documents.get(document)) {
                 createFileData();
             }
-
-            let temp = fileData.getSemanticData();
+            var data = documents.get(document);
+            let temp = data.getSemanticData();
             temp.forEach(item => {
                 let modification = [];
                 if (item.modification) {
@@ -122,15 +124,15 @@ export function deactivate() {
 
 function getLogicFunctions(): CompletionItemProvider<CompletionItem> {
     return {
-        provideCompletionItems() {
-            if (!fileData) {
+        provideCompletionItems(document: TextDocument) {
+            if (!documents.get(document)) {
                 createFileData();
             }
-
-            const data = require("../data/logic_documentation.json");
+            var data = documents.get(document);
+            const docs = require("../data/logic_documentation.json");
             let temp;
 
-            if (!isInsideFunctionsGroup(fileData)) {
+            if (!isInsideFunctionsGroup(data)) {
                 return;
             }
 
@@ -138,8 +140,8 @@ function getLogicFunctions(): CompletionItemProvider<CompletionItem> {
             return temp.map((element : string) => {
                 let item = new CompletionItem(element, CompletionItemKind.Function)
                 item.detail = "xr_effects." + element;
-                if (data[element]) {
-                    let Mark = new MarkdownString(data[element]['documentation']);
+                if (docs[element]) {
+                    let Mark = new MarkdownString(docs[element]['documentation']);
                     Mark.isTrusted = true;
                     Mark.supportHtml = true;
                     item.documentation = Mark;
@@ -152,13 +154,14 @@ function getLogicFunctions(): CompletionItemProvider<CompletionItem> {
 
 function getLogicConditions(): CompletionItemProvider<CompletionItem> {
     return {
-        provideCompletionItems() {
-            if (!fileData) {
+        provideCompletionItems(document: TextDocument) {
+            if (!documents.get(document)) {
                 createFileData();
             }
-            const data = require("../data/logic_documentation.json");
+            var data = documents.get(document);
+            const docs = require("../data/logic_documentation.json");
 
-            if (!isInsideConditionsGroup(fileData)) {
+            if (!isInsideConditionsGroup(data)) {
                 return;
             }
 
@@ -166,8 +169,8 @@ function getLogicConditions(): CompletionItemProvider<CompletionItem> {
             return temp.map((element : string) => {
                 let item = new CompletionItem(element, CompletionItemKind.Function)
                 item.detail = "xr_conditions." + element;
-                if (data[element]) {
-                    let Mark = new MarkdownString(data[element]['documentation']);
+                if (docs[element]) {
+                    let Mark = new MarkdownString(docs[element]['documentation']);
                     Mark.isTrusted = true;
                     Mark.supportHtml = true;
                     item.documentation = Mark;
@@ -180,8 +183,8 @@ function getLogicConditions(): CompletionItemProvider<CompletionItem> {
 
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
-        async provideCompletionItems() {
-            if (!fileData) {
+        async provideCompletionItems(document: TextDocument) {
+            if (!documents.get(document)) {
                 createFileData();
             }
             var path = getPathToMisc();
