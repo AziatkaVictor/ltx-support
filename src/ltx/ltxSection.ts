@@ -44,26 +44,13 @@ export class LtxSection {
         this.tempLines.set(index, line);
     }
 
-    parseLines() {
-        // Async
-        console.time('Async section: '.concat(this.name));
-        let promise = async () => { 
-            let data = new Map<number, LtxLine>();
-            for await (const [key, value] of this.tempLines) {
-                data.set(key, new LtxLine(key, value, this.type));
-            }    
-            return data; 
-        }   
-        this.lines = promise.call("").then(async value => {
-            return await value;
-        });
-        console.timeEnd('Async section: '.concat(this.name));
-        // For
-        // console.time('Section: '.concat(this.name));
-        // this.tempLines.forEach((value, key) => {
-        //     new LtxLine(key, value, this.type)
-        // })
-        // console.timeEnd('Section: '.concat(this.name));
+    async parseLines() {
+        let data = new Map<number, LtxLine>();
+        for await (const [key, value] of this.tempLines) {
+            data.set(key, new LtxLine(key, value, this.type));
+        } 
+        this.lines = data; 
+        return;
     }
 
     constructor(name: string, startLine: number, startCharacter: number) {
