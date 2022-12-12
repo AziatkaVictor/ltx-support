@@ -153,8 +153,7 @@ export class LtxDocument {
             }  
             return;
         }
-
-        // this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
+        this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
     }
 
     private parsingSections(content : string, args : string[]) {
