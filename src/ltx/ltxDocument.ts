@@ -156,7 +156,7 @@ export class LtxDocument {
         this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
     }
 
-    private parsingSections(content : string, args : string[]) {
+    private async parsingSections(content : string, args : string[]) {
         let contentArray = content.split("\n");
 
         for (let lineIndex = 0; lineIndex < contentArray.length; lineIndex++) {
@@ -167,17 +167,11 @@ export class LtxDocument {
         if (this.tempSection) {
             this.closeSection(this.tempSection, contentArray.length - 1);
         }
+
         // Асинхронно анализируем строки
-        // for (let index = 0; index < this.sections.length; index++) {
-        //     const element = this.sections[index];
-        //     element.parseLines();
-        // }
-        let promise = async () => { 
-            for await (const section of this.sections) {
-                section.parseLines();
-            }    
-        }   
-        promise.call("");
+        for await (const section of this.sections) {
+            section.parseLines();
+        }    
     }
 
     /**
