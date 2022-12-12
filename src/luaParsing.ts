@@ -1,11 +1,11 @@
-import { window } from "vscode";
+import { Position, window } from "vscode";
 import * as fs from 'fs';
 import * as path from 'path';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { getPathToScripts } from "./settings";
 
-var functionsData;
-var conditionsData;
+var functionsData : string[];
+var conditionsData : string[];
 var scriptFiles: string[] | null;
 var dirPath;
 
@@ -41,19 +41,24 @@ export function isInsideFunctionsGroup(file: LtxDocument): boolean {
     }
 
     const sel = window.activeTextEditor.selection;
+    const start = new Position(sel.start.line, sel.start.character - 1);
     var content = file.getLine(sel);
 
-    if (sel && content) {
-        let condlists = content.condlists
-        for (let index = 0; index < condlists.length; index++) {
-            const element = condlists[index];
-            if (element.functionRange) {
-                if (element.functionRange.contains(sel.start)) {
-                    return true;
-                }
-            }
+    if (!sel && !content) {
+        return false;
+    }
+    
+    let condlists = content.condlists
+    for (let index = 0; index < condlists.length; index++) {
+        const element = condlists[index];
+        if (!element.functionRange) {
+            continue;
+        }
+        if (element.functionRange.contains(start)) {
+            return true;
         }
     }
+
     return false;
 };
 
@@ -63,17 +68,21 @@ export function isInsideConditionsGroup(file: LtxDocument): boolean {
     }
 
     const sel = window.activeTextEditor.selection;
+    const start = new Position(sel.start.line, sel.start.character - 1);
     var content = file.getLine(sel);
 
-    if (sel && content) {
-        let condlists = content.condlists
-        for (let index = 0; index < condlists.length; index++) {
-            const element = condlists[index];
-            if (element.conditionRange) {
-                if (element.conditionRange.contains(sel.start)) {
-                    return true;
-                }
-            }
+    if (!sel && !content) {
+        return false;
+    }
+
+    let condlists = content.condlists
+    for (let index = 0; index < condlists.length; index++) {
+        const element = condlists[index];
+        if (!element.conditionRange) {
+            continue;
+        }
+        if (element.conditionRange.contains(start)) {
+            return true;
         }
     }
     return false;
