@@ -242,6 +242,7 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
             if (isInsideConditionsGroup(data) || isInsideFunctionsGroup(data)) {
                 items = items.concat(await getSquads(document));
                 items = items.concat(await getTasks(document));
+                return items;
             }
             items = items.concat(await getSections(document));
             return items;
