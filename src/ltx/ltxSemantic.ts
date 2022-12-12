@@ -59,5 +59,6 @@ export enum LtxSemanticModification {
 
 export enum LtxSemanticDescription {
     signal = "signal",
-    info = "info"
+    info = "info",
+    sectionLink = "sectionLink"
 }
