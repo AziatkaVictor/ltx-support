@@ -181,42 +181,57 @@ function getLogicConditions(): CompletionItemProvider<CompletionItem> {
     };
 }
 
+async function getSquadFiles(document: TextDocument) {
+    var files: Uri[];
+    var path = getPathToMisc();
+    files = await workspace.findFiles('{' + path + 'squad_descr_*.ltx,' + path + 'squad_descr.ltx}', document.uri.fsPath);
+    return files;
+}
+
+async function getTaskFiles(document: TextDocument) {
+    var files: Uri[];
+    var path = getPathToMisc();
+    files = await workspace.findFiles('{' + path + 'tm_*.ltx}', document.uri.fsPath);
+    return files;
+}
+
+async function getSquads(document: TextDocument) {
+    console.time('addSquad')
+    var items = [];
+    var files = await getSquadFiles(document);
+    for await (const file of files) {
+        let ltxData = await LtxDocument.prototype.getSectionsByUri(file);
+        for await (const section of ltxData) {
+            items.push(new CompletionItem(section, CompletionItemKind.User));
+        }
+    }
+    console.timeEnd('addSquad')
+    return items;
+}
+
+async function getTasks(document: TextDocument) {
+    console.time('addTasks')
+    var items = [];
+    var files = await getTaskFiles(document);
+    for await (const file of files) {
+        let ltxData =  await LtxDocument.prototype.getSectionsByUri(file);
+        for await (const section of ltxData) {
+            items.push(new CompletionItem(section, CompletionItemKind.Enum));
+        }
+    }
+    console.timeEnd('addTasks')
+    return items;
+}
+
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
         async provideCompletionItems(document: TextDocument) {
-            if (!documents.get(document)) {
-                createFileData();
+            var items: CompletionItem[] = []
+            var data = documents.get(document);
+            if (isInsideConditionsGroup(data) || isInsideFunctionsGroup(data)) {
+                items = items.concat(await getSquads(document));
+                items = items.concat(await getTasks(document));
             }
-            var path = getPathToMisc();
-            console.time('addSquad')
-            var items = []
-            var files = await workspace.findFiles('{' + path + 'squad_descr_*.ltx,' + path + 'squad_descr.ltx}');
-
-            for await (const file of files) {
-                let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
-                let ltxData = new LtxDocument(doc, ['fast']);
-                var tempItems = []
-                for await (const section of ltxData.getSectionsName()) {
-                    tempItems.push(new CompletionItem(section, CompletionItemKind.Issue));
-                }
-                items = items.concat(tempItems);
-            }
-            console.timeEnd('addSquad')
-
-            console.time('addTasks')
-            files = await workspace.findFiles('{' + path + 'tm_*.ltx}');
-
-            for await (const file of files) {
-                let doc = await workspace.openTextDocument(file).then(doc => { return doc; });
-                let ltxData = new LtxDocument(doc, ['fast']);
-                var tempItems = []
-                for await (const section of ltxData.getSectionsName()) {
-                    tempItems.push(new CompletionItem(section, CompletionItemKind.Field));
-                }
-                items = items.concat(tempItems);
-            }
-            console.timeEnd('addTasks')
-
             return items;
         }
     };

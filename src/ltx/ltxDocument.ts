@@ -2,13 +2,16 @@ import {
     Range,
     Position,
     TextDocument,
-    Selection
+    Selection,
+    Uri,
+    workspace
 } from "vscode";
 import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic } from "./ltxSemantic";
 import { isIgnoreParamsDiagnostic } from "../settings";
+import { TextDecoder } from "util";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -40,6 +43,10 @@ export class LtxDocument {
     getErrorsData() : LtxError[] {
         return this.errorsData;
     }    
+
+    async getSectionsByUri(uri : Uri) : Promise<string[]> {
+        return this.findAllSectionsNames(new TextDecoder().decode(await workspace.fs.readFile(uri)))
+    }
 
     /**
      * Получить данные строки по положению курсора в документе
