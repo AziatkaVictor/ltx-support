@@ -21,6 +21,7 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getLogicFunctions(), '='));
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getLogicConditions(), '=', '!'));
+    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getInfo(), '-', '+'));
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getOtherSections()));
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend));
 
@@ -234,6 +235,29 @@ async function getSections(document: TextDocument) {
     return items;
 }
 
+async function getInfos(document: TextDocument) {
+    var items = [];
+    if (!documents.get(document)) {
+        createFileData();
+    }
+    var ltxData = documents.get(document);
+    for await (const info of Array.from(new Set(ltxData.getInfos()))) {
+        items.push(new CompletionItem(info, CompletionItemKind.Event));
+    }
+    return items;
+}
+
+function getInfo(): CompletionItemProvider<CompletionItem> {
+    return {
+        async provideCompletionItems(document: TextDocument) {
+            var data = documents.get(document);
+            if (isInsideConditionsGroup(data) || isInsideFunctionsGroup(data)) {
+                return await getInfos(document);
+            }
+        }
+    };
+}
+
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
         async provideCompletionItems(document: TextDocument) {
@@ -242,6 +266,7 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
             if (isInsideConditionsGroup(data) || isInsideFunctionsGroup(data)) {
                 items = items.concat(await getSquads(document));
                 items = items.concat(await getTasks(document));
+                items = items.concat(await getInfos(document));
                 return items;
             }
             items = items.concat(await getSections(document));

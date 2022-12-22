@@ -9,7 +9,7 @@ import {
 import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
-import { globalSenmaticsData, LtxSemantic } from "./ltxSemantic";
+import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription, LtxSemanticType } from "./ltxSemantic";
 import { isIgnoreParamsDiagnostic } from "../settings";
 import { TextDecoder } from "util";
 export var sectionsArray: string[];
@@ -30,6 +30,16 @@ export class LtxDocument {
 
     getSections(): LtxSection[] {
         return this.sections;
+    }
+
+    getInfos(): string[] {
+        let items = []
+        for (const item of this.semanticData) {
+            if (item.description === LtxSemanticDescription.info) {
+                items.push(item.text.slice(1, item.text.length))
+            }
+        }
+        return items;
     }
 
     getSectionsName(): string[] {
