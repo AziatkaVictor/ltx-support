@@ -12,6 +12,7 @@ import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription, LtxSemanticType } from "./ltxSemantic";
 import { isIgnoreParamsDiagnostic } from "../settings";
 import { TextDecoder } from "util";
+import { getFileData } from "../lua/fileReader";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -55,7 +56,7 @@ export class LtxDocument {
     }    
 
     async getSectionsByUri(uri : Uri) : Promise<string[]> {
-        return this.findAllSectionsNames(new TextDecoder().decode(await workspace.fs.readFile(uri)))
+        return this.findAllSectionsNames(getFileData(uri.fsPath))
     }
 
     /**
