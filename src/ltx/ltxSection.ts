@@ -53,6 +53,10 @@ export class LtxSection {
         return;
     }
 
+    getSectionTypeName() {
+        return this.type.name;
+    }
+
     constructor(name: string, startLine: number, startCharacter: number) {
         this.name = name;
         this.type = new LtxSectionType((/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0]);

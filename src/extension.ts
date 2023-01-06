@@ -1,6 +1,6 @@
-import { workspace, ExtensionContext, languages, CompletionItem, CompletionItemKind, window, MarkdownString, TextDocument, ProviderResult, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, Uri, DiagnosticCollection, Diagnostic, ConfigurationChangeEvent } from 'vscode';
+import { workspace, ExtensionContext, languages, CompletionItem, CompletionItemKind, window, MarkdownString, TextDocument, ProviderResult, SemanticTokensLegend, DocumentSemanticTokensProvider, SemanticTokens, SemanticTokensBuilder, CompletionItemProvider, Uri, DiagnosticCollection, Diagnostic, ConfigurationChangeEvent, Position } from 'vscode';
 import { LtxDocument } from "./ltx/ltxDocument";
-import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './luaParsing';
+import { getConditions, getFunctions, isInsideConditionsGroup, isInsideFunctionsGroup, updateScripts } from './lua/luaParser';
 import { getPathToMisc, isDiagnosticEnabled } from './settings';
 
 const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string'];
@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", getOtherSections()));
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", getSemanticLtx(), legend));
 
-    window.showInformationMessage('LTX Support is started!');
+    window.showInformationMessage('LTX Support is started!');    
 }
 
 function updateData(event: ConfigurationChangeEvent) {
@@ -62,7 +62,7 @@ function createFileData() {
         console.log(error);
         return;
     }
-
+    
     diagnosticCollection.clear();
     if (isDiagnosticEnabled()) {
         let diagnosticMap: Map<string, Diagnostic[]> = new Map();
@@ -216,7 +216,7 @@ async function getTasks(document: TextDocument) {
     for await (const file of files) {
         let ltxData =  await LtxDocument.prototype.getSectionsByUri(file);
         for await (const section of ltxData) {
-            items.push(new CompletionItem(section, CompletionItemKind.Enum));
+            items.push(new CompletionItem(section, CompletionItemKind.Event));
         }
     }
     console.timeEnd('addTasks')
@@ -262,6 +262,18 @@ function getInfo(): CompletionItemProvider<CompletionItem> {
     };
 }
 
+async function getParams(document: TextDocument, position : Position) {
+    var items = [];
+    if (!documents.get(document)) {
+        createFileData();
+    }
+    var ltxData = documents.get(document);
+    for await (const info of ltxData.getSectionByPosition(position).type.getParams()) {
+        items.push(new CompletionItem(info, CompletionItemKind.Enum));
+    }
+    return items;
+}
+
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
         async provideCompletionItems(document: TextDocument, position : Position) {
@@ -272,6 +284,9 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
                 items = items.concat(await getTasks(document));
                 items = items.concat(await getInfos(document));
                 return items;
+            }
+            if (data.getSectionByPosition(position) && !data.getLineByPosition(position).isPropertyValid && !isInsideConditionsGroup(data) && !isInsideFunctionsGroup(data)) {
+                items = items.concat(await getParams(document, position));
             }
             if (data.getLineByPosition(position).inInsideCondlist(position) && !isInsideConditionsGroup(data) && !isInsideFunctionsGroup(data)) {
                 items = items.concat(await getSections(document, position));

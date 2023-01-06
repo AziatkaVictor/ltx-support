@@ -1,4 +1,5 @@
 import { CONDITIONS_DATA, SECTIONS_DATA } from "../data";
+import { getParams } from "../lua/modulesParser";
 import { LtxSectionProperty } from "./ltxSectionProperty";
 
 
@@ -6,6 +7,10 @@ export class LtxSectionType {
     readonly name: string
     readonly params: Map<string, LtxSectionProperty>
     readonly isValid: boolean
+
+    getParams() {
+        return getParams(this.name);
+    }
 
     constructor(name: string) {
         this.name = name

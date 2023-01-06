@@ -19,6 +19,16 @@ export class LtxLine {
 
     readonly condlists: LtxCondlist[] = []
 
+    inInsideCondlist(position : Position) {
+        for (let index = 0; index < this.condlists.length; index++) {
+            const condlist = this.condlists[index];
+            if (condlist.isInside(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     constructor(index: number, data: string, sectionType: LtxSectionType) {
         this.index = index;
         this.rawData = data;

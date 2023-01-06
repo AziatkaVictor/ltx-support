@@ -24,3 +24,10 @@ export function getDefaultPathToFunctions() : string {
     return "../../data/scripts/xr_effects.script";
 }
 
+export function getDefaultPathToModules() : string {
+    return "../../data/scripts/modules.script";
+}
+
+export function getDefaultPathToScripts() : string {
+    return "../../data/scripts/";
+}
