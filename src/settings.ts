@@ -15,3 +15,12 @@ export function isIgnoreParamsDiagnostic() : boolean {
 export function isDiagnosticEnabled() : boolean {
     return false; //workspace.getConfiguration("", workspace.workspaceFile).get("Diagnostics.EnableDiagnostic");
 }
+
+export function getDefaultPathToConditions() : string {
+    return "../../data/scripts/xr_conditions.script";
+}
+
+export function getDefaultPathToFunctions() : string {
+    return "../../data/scripts/xr_effects.script";
+}
+

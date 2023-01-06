@@ -1,13 +1,14 @@
 import { Position, window } from "vscode";
-import * as fs from 'fs';
 import * as path from 'path';
-import { LtxDocument } from "./ltx/ltxDocument";
-import { getPathToScripts } from "./settings";
+import * as fs from 'fs';
+import { LtxDocument } from "../ltx/ltxDocument";
+import { getDefaultPathToConditions, getDefaultPathToFunctions, getPathToScripts } from "../settings";
+import { getFileData } from "./fileReader";
 
 var functionsData : string[];
 var conditionsData : string[];
-var scriptFiles: string[] | null;
-var dirPath;
+export var scriptFiles: string[] | null;
+export var dirPath: string;
 
 export function getFunctions() {
     console.time('getFunctions')
@@ -95,13 +96,13 @@ export function getLogicFunctionsLua() {
 
     if (scriptFiles.indexOf("xr_effects.script") !== -1) {
         let filePath = path.resolve(dirPath, "./xr_effects.script");
-        functionsData = parseLua(filePath, path.resolve(__dirname, "../data/xr_effects.script"));
+        functionsData = parseLua(filePath, path.resolve(__dirname, getDefaultPathToFunctions()));
     }
     else {
         if (dirPath && dirPath.trim() !== "") {
             window.showErrorMessage('Ошибка! Не удаётся найти файл: ' + dirPath + "\\xr_effects.script");
         }
-        let filePath = path.resolve(__dirname, "../data/xr_effects.script");
+        let filePath = path.resolve(__dirname, getDefaultPathToFunctions());
         functionsData = parseLua(filePath);
     }
 }
@@ -113,13 +114,13 @@ export function getLogicConditionsLua() {
 
     if (scriptFiles.indexOf("xr_conditions.script") !== -1) {
         let filePath = path.resolve(dirPath, "./xr_conditions.script");
-        conditionsData = parseLua(filePath, path.resolve(__dirname, "../data/xr_conditions.script"));
+        conditionsData = parseLua(filePath, path.resolve(__dirname, getDefaultPathToConditions()));
     }
     else {
         if (dirPath && dirPath.trim() !== "") {
             window.showErrorMessage('Ошибка! Не удаётся найти файл: ' + dirPath + "\\xr_conditions.script");
         }
-        let filePath = path.resolve(__dirname, "../data/xr_conditions.script");
+        let filePath = path.resolve(__dirname, getDefaultPathToConditions());
         conditionsData = parseLua(filePath);
     }
 }
@@ -137,7 +138,7 @@ export function readScriptDir() {
 
 function parseLua(filePath: string, secondFilePath?: string) {
     try {
-        let file = fs.readFileSync(filePath, "utf8");
+        let file = getFileData(filePath);
         if (!file) {
             throw new Error("File is null: " + filePath);
         }
