@@ -285,7 +285,7 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
                 items = items.concat(await getInfos(document));
                 return items;
             }
-            if (data.getSectionByPosition(position) && !data.getLineByPosition(position).isPropertyValid && !isInsideConditionsGroup(data) && !isInsideFunctionsGroup(data)) {
+            if (data.getSectionByPosition(position) && !data.getLineByPosition(position).inInsideCondlist(position)) {
                 items = items.concat(await getParams(document, position));
             }
             if (data.getLineByPosition(position).inInsideCondlist(position) && !isInsideConditionsGroup(data) && !isInsideFunctionsGroup(data)) {
