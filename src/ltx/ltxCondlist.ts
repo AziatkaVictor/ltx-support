@@ -4,6 +4,7 @@ import { LtxSectionLink } from "./ltxSectionLink";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 
 export class LtxCondlist {
+    readonly range: Range;
     readonly condition?;
     readonly conditionRange?: Range | null;
     readonly function?;
@@ -13,9 +14,14 @@ export class LtxCondlist {
     private replaceText(data, text) {
         return data.replace(new RegExp("(?<=\\b)\\" + text + "(?=\\b)"), " ".repeat(text.length));
     }
+    
+    isInside(position : Position) {
+        return this.range.contains(position);
+    }
 
     constructor(lineNumber: number, index: number, data: string) {
         let tempData = data;
+        this.range = new Range(new Position(lineNumber, index), new Position(lineNumber, index + data.length))
 
         this.condition = /\{.*?\}/.exec(tempData);
         this.function = /\%.*?\%/.exec(tempData);

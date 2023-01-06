@@ -223,13 +223,17 @@ async function getTasks(document: TextDocument) {
     return items;
 }
 
-async function getSections(document: TextDocument) {
+async function getSections(document: TextDocument, position : Position) {
     var items = [];
     if (!documents.get(document)) {
         createFileData();
     }
     var ltxData = documents.get(document);
+    var currentSection = ltxData.getSectionByPosition(position).name;
     for await (const section of Array.from(new Set(ltxData.getSectionsName()))) {
+        if (section === currentSection) {
+            continue;
+        }
         items.push(new CompletionItem(section, CompletionItemKind.Class));
     }
     return items;
@@ -260,7 +264,7 @@ function getInfo(): CompletionItemProvider<CompletionItem> {
 
 function getOtherSections(): CompletionItemProvider<CompletionItem> {
     return {
-        async provideCompletionItems(document: TextDocument) {
+        async provideCompletionItems(document: TextDocument, position : Position) {
             var items: CompletionItem[] = []
             var data = documents.get(document);
             if (isInsideConditionsGroup(data) || isInsideFunctionsGroup(data)) {
@@ -269,7 +273,9 @@ function getOtherSections(): CompletionItemProvider<CompletionItem> {
                 items = items.concat(await getInfos(document));
                 return items;
             }
-            items = items.concat(await getSections(document));
+            if (data.getLineByPosition(position).inInsideCondlist(position) && !isInsideConditionsGroup(data) && !isInsideFunctionsGroup(data)) {
+                items = items.concat(await getSections(document, position));
+            }
             return items;
         }
     };

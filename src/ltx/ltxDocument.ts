@@ -85,6 +85,27 @@ export class LtxDocument {
         }
     }
 
+    getLineByPosition(position : Position) {
+        // Проверяем наличие курсора в текстовом документе
+        if (!position) {
+            return null;
+        }
+
+        // Проверка, на отсутствие секции по положению курсора
+        if (!this.getSectionByPosition(position)) {
+            if (!this.rawData.get(position.line)) {
+                return null;
+            }
+            return this.rawData.get(position.line);
+        }
+
+        // Проверяем, можем ли мы найти секцию, внутри которой находиться курсор
+        let sectionContent = this.getSectionByPosition(position).lines;
+        if (sectionContent) {
+            return sectionContent.get(position.line);
+        }
+    }
+
     getSectionByPosition(selection: Position): LtxSection | null {
         try {
             let temp;
