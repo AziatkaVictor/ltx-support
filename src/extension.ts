@@ -231,10 +231,9 @@ async function getSections(document: TextDocument, position : Position) {
     var ltxData = documents.get(document);
     var currentSection = ltxData.getSectionByPosition(position).name;
     for await (const section of Array.from(new Set(ltxData.getSectionsName()))) {
-        if (section === currentSection) {
-            continue;
+        if (section !== currentSection) {
+            items.push(new CompletionItem(section, CompletionItemKind.Class));
         }
-        items.push(new CompletionItem(section, CompletionItemKind.Class));
     }
     return items;
 }

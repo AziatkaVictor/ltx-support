@@ -58,7 +58,7 @@ export class LtxSection {
     }
 
     constructor(name: string, startLine: number, startCharacter: number) {
-        this.name = name;
+        this.name = name.slice(1, name.length - 1);
         this.type = new LtxSectionType((/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0]);
         this.linkRange = new Range(new Position(startLine, startCharacter + 1), new Position(startLine, startCharacter + name.length - 1))
         addSemantic(new LtxSemantic(LtxSemanticType.struct, LtxSemanticModification.declaration, this.linkRange, LtxSemanticDescription.signal, this.name))
