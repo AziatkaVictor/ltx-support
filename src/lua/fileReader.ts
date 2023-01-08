@@ -14,8 +14,11 @@ export function removeLuaComments(file : string) : string {
 }
 
 export function analyzeFile(fileName : string, firstPath : string, secondPath : string, callback : (path : string) => string[]) : string[] {
-    if (fs.existsSync(workspace.workspaceFolders[0].uri.path + "/" + firstPath + fileName)) {
-        return callback(path.resolve(workspace.workspaceFolders[0].uri.path, firstPath, "./" + fileName));
+    var item = (workspace.workspaceFolders[0].uri.path + "/" + firstPath + fileName).replace(/\//g, "\\");
+    item = item.slice(1, item.length);
+        
+    if (fs.existsSync(item)) {
+        return callback(path.resolve(item));
     }
     else {
         return callback(path.resolve(__dirname, secondPath + "./" + fileName));

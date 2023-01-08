@@ -1,7 +1,7 @@
 import { workspace } from "vscode";
 
 export function getPathToScripts() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Directories.pathToScripts");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToScripts");
 }
 
 export function getPathToMisc() : string | null {
