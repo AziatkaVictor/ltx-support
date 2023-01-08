@@ -59,31 +59,32 @@ export class LtxDocument {
         return this.findAllSectionsNames(getFileData(uri.fsPath))
     }
 
-    /**
-     * Получить данные строки по положению курсора в документе
-     * @param selection Курсор в текстовом документе 
-     * @returns Возвращает данные строки, в которой находиться курсор
-     */
-    getLine(selection : Selection) : LtxLine {
-        // Проверяем наличие курсора в текстовом документе
-        if (!selection) {
-            return null;
-        }
-        let startPosition = selection.start;
-
-        // Проверка, на отсутствие секции по положению курсора
-        if (!this.getSectionByPosition(startPosition)) {
-            if (!this.rawData.get(startPosition.line)) {
-                return null;
+    isInsideFunctionGroup(position : Position) : boolean {
+        var condlists = this.getLine(position).condlists;
+        for (let index = 0; index < condlists.length; index++) {
+            const element = condlists[index];
+            if (!element.functionRange) {
+                continue;
             }
-            return this.rawData.get(startPosition.line);
+            if (element.functionRange.contains(position)) {
+                return true;
+            }
         }
+        return false;
+    }
 
-        // Проверяем, можем ли мы найти секцию, внутри которой находиться курсор
-        let sectionContent = this.getSectionByPosition(startPosition).lines;
-        if (sectionContent) {
-            return sectionContent.get(startPosition.line);
+    isInsideConditionGroup(position : Position) : boolean {
+        var condlists = this.getLine(position).condlists;
+        for (let index = 0; index < condlists.length; index++) {
+            const element = condlists[index];
+            if (!element.conditionRange) {
+                continue;
+            }
+            if (element.conditionRange.contains(position)) {
+                return true;
+            }
         }
+        return false;
     }
 
     getLineByPosition(position : Position) {
