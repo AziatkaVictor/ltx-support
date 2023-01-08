@@ -61,15 +61,15 @@
 			{
 				"title": "Directories",
 				"properties": {
-					"ltx-support.Directories.pathToScripts": {
+					"ltx-support.directories.pathToScripts": {
 						"type": "string",
-						"default": null,
-						"description": "Путь к папке, где хранится функции. Например: (D:\\Stalker CoP\\gamedata\\scripts)"
+						"default": "scripts\\",
+						"description": "Путь к папке, где хранятся функции."
 					},
 					"ltx-support.directories.pathToLocalization": {
 						"type": "string",
-						"default": null,
-						"description": "Путь к папке, где хранится локализация. Например: (D:\\Stalker CoP\\gamedata\\configs\\text\\rus). На данный момент не работает. (WiP)"
+						"default": "configs\\text\\rus\\",
+						"description": "Путь к папке, где хранится локализация. На данный момент не работает. (WiP)"
 					},
 					"ltx-support.directories.pathToMisc": {
 						"type": "string",
