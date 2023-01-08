@@ -3,15 +3,13 @@ import {
     Position,
     TextDocument,
     Selection,
-    Uri,
-    workspace
+    Uri
 } from "vscode";
 import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
-import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription, LtxSemanticType } from "./ltxSemantic";
+import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
 import { isIgnoreParamsDiagnostic } from "../settings";
-import { TextDecoder } from "util";
 import { getFileData } from "../lua/fileReader";
 export var sectionsArray: string[];
 export var currentFile: string;
@@ -87,7 +85,12 @@ export class LtxDocument {
         return false;
     }
 
-    getLineByPosition(position : Position) {
+    /**
+     * Получить данные строки по положению курсора в документе
+     * @param position Курсор в текстовом документе 
+     * @returns Возвращает данные строки, в которой находиться курсор
+     */
+    getLine(position : Position) : LtxLine {
         // Проверяем наличие курсора в текстовом документе
         if (!position) {
             return null;
