@@ -1,6 +1,4 @@
-import { getDefaultPathToModules, getDefaultPathToScripts, getPathToScripts } from "../settings";
-import { readScriptDir, scriptFiles } from "./luaParser";
-import * as path from 'path';
+import { getDefaultPathToScripts, getPathToScripts } from "../settings";
 import { analyzeFile, findElements} from "./fileReader";
 
 var modulesData : string[];
@@ -20,10 +18,7 @@ export function getParams(sectionName : string) {
 }
 
 function getModules() {
-    if (!scriptFiles) {
-        readScriptDir();
-    }
-    modulesData = Array.from(new Set(analyzeFile(scriptFiles, "modules.script", getPathToScripts(), getDefaultPathToScripts(), findModulesFileNames)));
+    modulesData = Array.from(new Set(analyzeFile("modules.script", getPathToScripts(), getDefaultPathToScripts(), findModulesFileNames)));
 }
 
 function getSectionsData() {
@@ -34,7 +29,7 @@ function getSectionsData() {
     // Получаем список параметров для каждого типа секций логики
     for (let index = 0; index < modulesData.length; index++) {
         const data = modulesData[index].split(':');
-        var fileData = analyzeFile(scriptFiles, data[1], getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile);
+        var fileData = analyzeFile(data[1], getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile);
         if (!fileData) {
             continue;
         }
@@ -42,7 +37,7 @@ function getSectionsData() {
     }
 
     // Получаем базовые параметры секций, которые если у любого типа (например on_info)
-    basedConditions = analyzeFile(scriptFiles, "xr_logic.script", getPathToScripts(), getDefaultPathToScripts(), findBasedConditions)
+    basedConditions = analyzeFile("xr_logic.script", getPathToScripts(), getDefaultPathToScripts(), findBasedConditions)
 }
 
 function findModulesFileNames(filePath : string) {

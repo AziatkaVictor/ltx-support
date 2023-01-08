@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { GlobPattern, TextDocument, Uri, workspace } from 'vscode';
 
 export function getFileData(filePath : string) {
     if (fs.existsSync(filePath)) {
@@ -12,15 +13,13 @@ export function removeLuaComments(file : string) : string {
     return file.replace(/--\[\[((.|\n)*?)\]\]/g, "").replace(/--.*(?=$)/gm, "");
 }
 
-export function analyzeFile(fileStorage : string[], fileName : string, firstPath : string, secondPath : string, callback : (path : string) => string[]) : string[] {
-    var data = [];
-    if (fileStorage.indexOf(fileName) !== -1 && firstPath) {
-        data = callback(path.resolve(firstPath, "./" + fileName));
+export function analyzeFile(fileName : string, firstPath : string, secondPath : string, callback : (path : string) => string[]) : string[] {
+    if (fs.existsSync(workspace.workspaceFolders[0].uri.path + "/" + firstPath + fileName)) {
+        return callback(path.resolve(workspace.workspaceFolders[0].uri.path, firstPath, "./" + fileName));
     }
     else {
-        data = callback(path.resolve(__dirname, secondPath + "./" + fileName));
+        return callback(path.resolve(__dirname, secondPath + "./" + fileName));
     }
-    return data;
 }
 
 export function getClearLuaFile(filePath : string) {
@@ -44,3 +43,10 @@ export function findElements(filePath : string, re : RegExp, callback : (match) 
     }
     return data;
 }
+
+export async function findFilesInWorkspace(pattern : GlobPattern, document?: TextDocument) : Promise<Uri[]> { 
+    if (document) {
+        return await workspace.findFiles(pattern, document.uri.fsPath);
+    }
+    return await workspace.findFiles(pattern);
+} 
