@@ -17,18 +17,22 @@ export function getParams(sectionName : string) {
     return sectionsData.get(sectionName).concat(basedConditions);
 }
 
-function getModules() {
+export function getModules() {
+    if (!modulesData) {
+        updateModules();
+    }
+    return modulesData.concat("logic:xr_logic.script");
+}
+
+function updateModules() {
     modulesData = Array.from(new Set(analyzeFile("modules.script", getPathToScripts(), getDefaultPathToScripts(), findModulesFileNames)));
 }
 
-function getSectionsData() {
-    if (!modulesData) {
-        getModules();
-    }
-    
+function getSectionsData() { 
+    let modules = getModules();
     // Получаем список параметров для каждого типа секций логики
-    for (let index = 0; index < modulesData.length; index++) {
-        const data = modulesData[index].split(':');
+    for (let index = 0; index < modules.length; index++) {
+        const data = modules[index].split(':');
         var fileData = analyzeFile(data[1], getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile);
         if (!fileData) {
             continue;
