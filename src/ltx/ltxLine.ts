@@ -29,18 +29,18 @@ export class LtxLine {
         return false;
     }
 
-    constructor(index: number, data: string, sectionType: LtxSectionType) {
+    constructor(index: number, data: string) {
         this.index = index;
         this.rawData = data;
         var param;
 
         try {
-            // Поиск названия параметра, например on_info = nil. Тут параметр on_info
+            // Поиск названия параметра
             let re = /^(\s*?)?[\w\$]+?(?=(\s*?)?\=)/gm;
             param = re.exec(data);
         } catch (error) {
             console.log(error);
-            return null;
+            return;
         }
 
         if (param) {
@@ -48,17 +48,6 @@ export class LtxLine {
             this.propertyName = param[0].trim();
             this.propertyRange = new Range(new Position(index, param.index), new Position(index, param.index + param[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.property, LtxSemanticModification.readonly, this.propertyRange, LtxSemanticDescription.signal, this.propertyName))
-
-            if (sectionType) {
-                if (sectionType.params.get(param[0].trim())) {
-                    let property = sectionType.params.get(param[0].trim());
-                    this.propertySettings = property;
-                    this.isPropertyValid = true;
-                }
-                else {
-                    this.isPropertyValid = false;
-                }
-            }
             var tempData = data + "\n";
 
             // Поиск всех сигналов
@@ -162,9 +151,9 @@ export class LtxLine {
 
         if (this.IsValidParamSyntax()) {
             // Если isHaveResult ложно, то значит, что у строки нету значения. Выводим ошибку.
-            if (!this.IsHasResult()) {
-                addError(this.propertyRange, "Параметр не может быть пустым.", this.propertyName);
-            }
+            // if (!this.IsHasResult()) {
+            //     addError(this.propertyRange, "Параметр не может быть пустым.", this.propertyName);
+            // }
         }
         else {
             addError(new Range(new Position(this.index, 0), new Position(this.index, this.rawData.length)), "Некорректная запись.")

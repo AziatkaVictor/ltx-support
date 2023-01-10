@@ -140,8 +140,8 @@ export class LtxDocument {
      * @param section Ссылка на секцию, которую нужно закрыть
      * @param index Номер строки
      */
-    private closeSection(section: LtxSection, index: number) {
-        section.close(index);
+    private closeSection(section: LtxSection) {
+        section.close();
         this.sections.push(section);
     }
 
@@ -152,7 +152,7 @@ export class LtxDocument {
      * @returns Возвращаем первую секцию, которую мы нашли
      */
     private findSection(text : string, lineIndex : number) {
-        var re = /\[[\w, @]+\]/g;
+        var re = /\[[\w, @]*\]/g;
         var match : RegExpExecArray;
         var result : RegExpExecArray;
 
@@ -163,7 +163,7 @@ export class LtxDocument {
             }
             // Добавляем ошибки, если секция в этой строке уже была найдена
             let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length - 1));
-            addError(range, "В данной строчке уже есть объявление секции.", match[0]);
+            addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
         }
         
         return result;
@@ -192,18 +192,18 @@ export class LtxDocument {
 
         if (result) {
             if (this.tempSection) {
-                this.closeSection(this.tempSection, lineIndex);
+                this.closeSection(this.tempSection);
             }
-            this.tempSection = new LtxSection(result[0], lineIndex, result.index);
+            this.tempSection = new LtxSection(result[0], lineIndex, result.index, this.fileType);
             return;
         }
         else if (this.tempSection) {
-            if (args.indexOf('fast') === -1) {
+            if (args.indexOf('fast') === -1 || line.indexOf("[") === -1 || line.indexOf("]") === -1) {
                 this.tempSection.addTempLine(lineIndex, line);
             }  
             return;
         }
-        this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
+        this.rawData.set(lineIndex, new LtxLine(lineIndex, line));
     }
 
     private async parsingSections(content : string, args : string[]) {
@@ -215,7 +215,7 @@ export class LtxDocument {
         }
         // Закрываем последнюю секцию
         if (this.tempSection) {
-            this.closeSection(this.tempSection, contentArray.length - 1);
+            this.closeSection(this.tempSection);
         }
 
         // Асинхронно анализируем строки

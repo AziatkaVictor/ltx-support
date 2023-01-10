@@ -1,5 +1,6 @@
-import { Position, Range } from "vscode";
-import { isIgnoreParamsDiagnostic } from "../settings";
+import { DiagnosticSeverity, Position, Range } from "vscode";
+import { isDiagnosticEnabled } from "../settings";
+import { LtxDocumentType } from "./ltxDocument";
 import { addError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSectionType } from "./ltxSectionType";
@@ -12,31 +13,25 @@ export class LtxSection {
     readonly linkRange?: Range
     endLine?: number
 
-    lines: Map<number, LtxLine> = new Map<number, LtxLine>()
+    lines: Map<number, LtxLine>
     private tempLines: Map<number, string> = new Map<number, string>()
 
-    checkExceptedParams() {
-        let data = [];
-        this.lines.forEach(line => {
-            data.push(line.propertyName);
-        });
-
-        this.type.params.forEach(element => {
-            if (element.isOptional === false) {
-                if (data.indexOf(element.name) === -1) {
-                    addError(this.linkRange, "Отсутствует необходимый параметр.", element.name)
-                }
-            }
-        });
+    validate() { 
+        if (this.tempLines.size === 0) {            
+            addError(this.linkRange, "Рекомендуется, если хотите закончить логику, использовать nil.", this.name, DiagnosticSeverity.Warning, "ReplaceToNil");
+        }
     }
 
-    close(line: number) {
-        this.endLine = line;
-        if (isIgnoreParamsDiagnostic() === false) {
-            this.checkExceptedParams();
+    close() {
+        if (this.tempLines.size !== 0 ) {
+            this.endLine = Math.max(...Array.from(this.tempLines.keys()));
         }
-        if (this.lines.size === 0) {
-            addError(this.linkRange, "Секция должна содержать параметры. Если хотите закончить логику, то лучше использовать nil.", this.name);
+        else {
+            this.endLine = this.startLine;
+        }
+        
+        if (isDiagnosticEnabled()) {
+            this.validate();
         }
     }
 
@@ -45,27 +40,32 @@ export class LtxSection {
     }
 
     async parseLines() {
+        if (this.tempLines.size === 0) {
+            return;
+        }
         let data = new Map<number, LtxLine>();
         for await (const [key, value] of this.tempLines) {
-            data.set(key, new LtxLine(key, value, this.type));
+            data.set(key, new LtxLine(key, value));
         } 
         this.lines = data; 
-        return;
     }
 
     getSectionTypeName() {
         return this.type.name;
     }
 
-    constructor(name: string, startLine: number, startCharacter: number) {
-        this.name = name.slice(1, name.length - 1);
-        this.type = new LtxSectionType((/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0]);
-        this.linkRange = new Range(new Position(startLine, startCharacter + 1), new Position(startLine, startCharacter + name.length - 1))
-        addSemantic(new LtxSemantic(LtxSemanticType.struct, LtxSemanticModification.declaration, this.linkRange, LtxSemanticDescription.signal, this.name))
-        this.startLine = startLine;
+    constructor(name: string, startLine: number, startCharacter: number, filetype : LtxDocumentType) {
+        this.name = name.slice(1, name.length - 1).trim();
+        if (this.name !== "") {
+            this.type = new LtxSectionType((/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0]);
 
-        if (this.type.isValid === false) {
-            addError(this.linkRange, "Неизвестный тип секции.", this.name);
+            if (!this.type.isValid && filetype === LtxDocumentType.Logic) {
+                addError(this.linkRange, "Неизвестный тип секции", this.name, DiagnosticSeverity.Warning);
+            }
         }
+        
+        this.linkRange = new Range(new Position(startLine, startCharacter + 1), new Position(startLine, startCharacter + name.length - 1));
+        this.startLine = startLine;
+        addSemantic(new LtxSemantic(LtxSemanticType.struct, LtxSemanticModification.declaration, this.linkRange, LtxSemanticDescription.signal, this.name))
     }
 }

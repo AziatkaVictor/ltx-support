@@ -1,5 +1,3 @@
-import { PARAMS_DATA } from "../data"
-
 export class LtxSectionProperty {
     readonly name: string
     readonly dataType: "condlist" | "boolean" | "number" | "string" | "string_and_condlist" | "number_and_condlist"
@@ -10,11 +8,6 @@ export class LtxSectionProperty {
     readonly isOptional: boolean = true
 
     constructor(name: string, isOptional?: boolean) {
-        if (!PARAMS_DATA[name]) {
-            return null;
-        }
-        this.dataType = PARAMS_DATA[name].type;
-
         switch (this.dataType) {
             case "boolean":
                 this.isCanHaveFunctions = false;
@@ -45,10 +38,6 @@ export class LtxSectionProperty {
             default:
                 this.dataType = "condlist";
                 break;
-        }
-
-        if (isOptional === false) {
-            this.isOptional = isOptional;
         }
     }
 }
