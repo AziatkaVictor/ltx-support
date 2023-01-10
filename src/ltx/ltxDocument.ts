@@ -14,6 +14,11 @@ import { getFileData } from "../lua/fileReader";
 export var sectionsArray: string[];
 export var currentFile: string;
 
+export enum LtxDocumentType {
+    Logic,
+    Squad
+}
+
 /**
  * Главный класс, который отвечает за парсинг *.ltx файлов, сохранения структуры в переменные и массивы. 
  */ 
@@ -22,10 +27,12 @@ export class LtxDocument {
     private sections: LtxSection[] = []
     private rawData: Map<number, LtxLine> = new Map<number, LtxLine>()
     private sectionsName: string[] = []
+
     private semanticData: LtxSemantic[]
     readonly errorsData: LtxError[]
 
-    private tempSection: LtxSection;
+    private fileType: LtxDocumentType
+    private tempSection: LtxSection
 
     getSections(): LtxSection[] {
         return this.sections;
@@ -216,6 +223,12 @@ export class LtxDocument {
             section.parseLines();
         }    
     }
+    
+    private setDocumentType() {
+        if (this.filePath.indexOf("configs/scripts") !== 0) {
+            this.fileType = LtxDocumentType.Logic;
+        }
+    }
 
     /**
      * @param document Документ, который необходимо запарсить.
@@ -231,11 +244,13 @@ export class LtxDocument {
 
         this.filePath = document.uri.fsPath;
         currentFile = document.uri.fsPath;
-        var content = document.getText();
+        this.setDocumentType();
 
         // Массив с ошибками
         globalErrorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
+
+        var content = document.getText();
         this.sectionsName = this.findAllSectionsNames(content);
 
         // TODO: Заменить на enum
