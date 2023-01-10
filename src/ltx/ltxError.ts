@@ -1,4 +1,4 @@
-import { Range } from "vscode";
+import { DiagnosticSeverity, Range } from "vscode";
 import { currentFile } from "./ltxDocument";
 export var globalErrorsData: Map<string, LtxError[]> = new Map<string, LtxError[]>();
 
@@ -8,7 +8,7 @@ export var globalErrorsData: Map<string, LtxError[]> = new Map<string, LtxError[
  * @param description Описание ошибки
  * @param element Имя элемента (необязательно)
  */
-export function addError(range: Range, description: string, element?: string) {
+export function addError(range: Range, description: string, element?: string, errorType? : DiagnosticSeverity, tag? : string) {
     if (element) {
         description = element + ": " + description;
     }
@@ -16,7 +16,7 @@ export function addError(range: Range, description: string, element?: string) {
     if (!temp) {
         temp = []
     }
-    temp.push(new LtxError(element, range, description));
+    temp.push(new LtxError(element, range, description, errorType, tag));
     globalErrorsData.set(currentFile, temp);
 }
 
@@ -24,10 +24,14 @@ export class LtxError {
     data: string
     range: Range
     descr: string
+    errorType: DiagnosticSeverity
+    tag: string
 
-    constructor(data: string, range: Range, descr: string) {
+    constructor(data: string, range: Range, descr: string, errorType = DiagnosticSeverity.Error, tag? : string) {
         this.data = data;
         this.range = range;
         this.descr = descr;
+        this.errorType = errorType;
+        this.tag = tag;
     }
 }

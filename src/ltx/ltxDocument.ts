@@ -2,8 +2,8 @@ import {
     Range,
     Position,
     TextDocument,
-    Selection,
-    Uri
+    Uri,
+    DiagnosticSeverity
 } from "vscode";
 import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
@@ -261,19 +261,16 @@ export class LtxDocument {
         
         this.parsingSections(content, args);
 
+        // FIXME Неверный цикл
         if (isIgnoreParamsDiagnostic() === false) {
-            for (let i = 0; i < this.sections.length; i++) {
-                const element_i = this.sections[i];
-
-                for (let k = 0; k < this.sections.length; k++) {
-                    if (k !== i) {
-                        const element_k = this.sections[k];
-
-                        if (element_i.name === element_k.name) {
-                            addError(element_i.linkRange, "Повторение имени секции.", element_i.name)
-                        }
-                    }
+            let start = 0;
+            let end = this.sections.length -1;
+            while (start < end) { 
+                if (this.sections[start].name === this.sections[end].name) {
+                    addError(this.sections[end].linkRange, "Повторение имени секции.", this.sections[end].name)
                 }
+                if (start % 2 === 0) start += 1;
+                else end -= 1;
             }
         }
   

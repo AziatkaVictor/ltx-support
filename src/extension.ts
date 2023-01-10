@@ -1,13 +1,13 @@
-import { workspace, ExtensionContext, languages, window, TextDocument, ProviderResult, SemanticTokensLegend, SemanticTokens, SemanticTokensBuilder, Uri, DiagnosticCollection, Diagnostic, ConfigurationChangeEvent } from 'vscode';
+import { ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, Uri, window, workspace } from 'vscode';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './lua/actionsParser';
 import { provideLogicActions } from './providers/logicActionsProvider';
-import { isDiagnosticEnabled } from './settings';
+import { provideLogicAssets } from './providers/logicAssetsProvider';
 import { provideLogicInfo } from './providers/logicInfoProvider';
 import { provideLogicParams } from './providers/logicParamsProvider';
-import { provideLogicAssets } from './providers/logicAssetsProvider';
 import { provideLogicSections } from './providers/logicSectionsProvider';
 import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
+import { isDiagnosticEnabled } from './settings';
 
 let diagnosticCollection: DiagnosticCollection;
 let fileData: LtxDocument;
@@ -53,15 +53,9 @@ function onChange(change) {
 }
 
 function createFileData() {
-    if (!window.activeTextEditor) {
-        return;
-    }
-    if (!window.activeTextEditor.document) {
-        return;
-    }
-    if (window.activeTextEditor.document.languageId !== "ltx") {
-        return;
-    }
+    if (!window.activeTextEditor) return;
+    if (!window.activeTextEditor.document) return;
+    if (window.activeTextEditor.document.languageId !== "ltx") return;
 
     try {
         let tempData = new LtxDocument(window.activeTextEditor.document);
@@ -81,12 +75,7 @@ function createFileData() {
             if (document.languageId !== "ltx") {
                 return;
             }
-            let errors;
-
-            if (fileData) {
-                errors = fileData.errorsData;
-            }
-
+            var errors = getLtxDocument(document).errorsData;
             let canonicalFile = document.uri.toString();
             let diagnostics = diagnosticMap.get(canonicalFile);
 
@@ -94,7 +83,9 @@ function createFileData() {
                 diagnostics = [];
             }
             errors.forEach(item => {
-                diagnostics.push(new Diagnostic(item.range, item.descr));
+                let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
+                diagnosticItem.code = item.tag;
+                diagnostics.push(diagnosticItem);
             });
             diagnosticMap.set(canonicalFile, diagnostics);
         })
