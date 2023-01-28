@@ -72,7 +72,7 @@ export class LtxCondlist {
             }
         }
 
-        search = /[\w\*\.\@\$]+/g
+        search = /[\w\*\.\@\$\\]+/g
         while ((match = search.exec(tempData)) !== null) {
             let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
             addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
