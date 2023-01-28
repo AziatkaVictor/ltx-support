@@ -64,7 +64,7 @@ export class LtxCondlist {
 
         for (let count = 0; count < sectionsArray.length; count++) {
             const sectionName = sectionsArray[count];
-            search = new RegExp("(?<=\\b)" + sectionName + "(?![\\w\\@]+)(?=\\b)", "g")
+            search = new RegExp("(?<![\\w\\\\\"])" + sectionName + "(?![\\w\\@]+)(?=\\b)", "g")
             while ((match = search.exec(tempData)) !== null) {
                 let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
                 addSemantic(new LtxSemantic(LtxSemanticType.class, LtxSemanticModification.definition, tempRange, LtxSemanticDescription.sectionLink, match[0]))
