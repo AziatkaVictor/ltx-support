@@ -5,15 +5,12 @@ import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModificati
 
 export class LtxCondlist {
     readonly range: Range;
+    readonly lineIndex: number;
     readonly condition?;
     readonly conditionRange?: Range | null;
     readonly function?;
     readonly functionRange?: Range | null;
     readonly sectionLink?: LtxSectionLink;
-
-    private replaceText(data, text) {
-        return data.replace(new RegExp("(?<=\\b)\\" + text + "(?=\\b)"), " ".repeat(text.length));
-    }
     
     isInside(position : Position) {
         return this.range.contains(position);
@@ -22,6 +19,7 @@ export class LtxCondlist {
     constructor(lineNumber: number, index: number, data: string) {
         let tempData = data;
         this.range = new Range(new Position(lineNumber, index), new Position(lineNumber, index + data.length))
+        this.lineIndex = lineNumber;
 
         this.condition = /\{.*?\}/.exec(tempData);
         this.function = /\%.*?\%/.exec(tempData);
@@ -33,50 +31,28 @@ export class LtxCondlist {
             this.functionRange = new Range(new Position(lineNumber, index + this.function.index), new Position(lineNumber, index + this.function[0].length + this.function.index - 1));
         }
 
-        let search = /(\+|\-)\w*\b(?<=\w)/g
-        let match;
-        while ((match = search.exec(tempData)) !== null) {
-            let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.variable, LtxSemanticModification.declaration, tempRange, LtxSemanticDescription.info, match[0]))
-            tempData = this.replaceText(tempData, match[0]);
-        }
-
-        search = /(\=|\!)\w*\b(?<=\w)/g
-        while ((match = search.exec(tempData)) !== null) {
-            let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.function, LtxSemanticModification.declaration, tempRange, LtxSemanticDescription.signal, match[0]))
-            tempData = this.replaceText(tempData, match[0]);
-        }
-
-        search = new RegExp("\\b(nil|true|false|complete|fail)\\b", "g")
-        while ((match = search.exec(tempData)) !== null) {
-            let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.keyword, LtxSemanticModification.readonly, tempRange, LtxSemanticDescription.signal, match[0]))
-            tempData = this.replaceText(tempData, match[0]);
-        }
-
-        search = /(?<!\w)\d+/g
-        while ((match = search.exec(tempData)) !== null) {
-            let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
-            tempData = this.replaceText(tempData, match[0]);
-        }
+        this.findElements(/(\+|\-)\w*\b(?<=\w)/g, tempData, index, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);
+        this.findElements(/(\=|\!)\w*\b(?<=\w)/g, tempData, index, LtxSemanticType.keyword, LtxSemanticModification.readonly, LtxSemanticDescription.signal);
+        this.findElements(/\b(nil|true|false|complete|fail)\b/g, tempData, index, LtxSemanticType.keyword, LtxSemanticModification.readonly, LtxSemanticDescription.signal);
+        this.findElements(/(?<!\w)\d+/g, tempData, index, LtxSemanticType.function, LtxSemanticModification.declaration, LtxSemanticDescription.signal);
 
         for (let count = 0; count < sectionsArray.length; count++) {
-            const sectionName = sectionsArray[count];
-            search = new RegExp("(?<![\\w\\\\\"])" + sectionName + "(?![\\w\\@]+)(?=\\b)", "g")
-            while ((match = search.exec(tempData)) !== null) {
-                let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-                addSemantic(new LtxSemantic(LtxSemanticType.class, LtxSemanticModification.definition, tempRange, LtxSemanticDescription.sectionLink, match[0]))
-                tempData = this.replaceText(tempData, sectionName);
-            }
+            this.findElements(new RegExp("(?<![\\w\\\\\"])" + sectionsArray[count] + "(?![\\w\\@]+)(?=\\b)", "g"), tempData, index, LtxSemanticType.class, LtxSemanticModification.definition, LtxSemanticDescription.sectionLink);
         }
 
-        search = /[\w\*\.\@\$\\]+/g
-        while ((match = search.exec(tempData)) !== null) {
-            let tempRange = new Range(new Position(lineNumber, index + match.index), new Position(lineNumber, index + match.index + match[0].length))
-            addSemantic(new LtxSemantic(LtxSemanticType.string, null, tempRange, LtxSemanticDescription.signal, match[0]))
-            tempData = this.replaceText(tempData, match[0]);
+        this.findElements(/[\w\*\.\@\$\\]+/g, tempData, index, LtxSemanticType.string, null, LtxSemanticDescription.signal);
+    }
+
+    private findElements(RegExp : RegExp, content : string, index : number, SemanticType : LtxSemanticType, SemanticModification, SemanticDescription) {
+        var match;
+        while ((match = RegExp.exec(content)) !== null) {
+            let range = new Range(new Position(this.lineIndex, index + match.index), new Position(this.lineIndex, index + match.index + match[0].length))
+            addSemantic(new LtxSemantic(SemanticType, SemanticModification, range, SemanticDescription, match[0]))
+            content = this.replaceText(content, match[0]);
         }
+    }
+
+    private replaceText(data, text) {
+        return data.replace(new RegExp("(?<=\\b)\\" + text + "(?=\\b)"), " ".repeat(text.length));
     }
 }
