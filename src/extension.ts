@@ -10,7 +10,6 @@ import { legend, provideLogicSemantic } from './providers/logicSemanticProvider'
 import { isDiagnosticEnabled } from './settings';
 
 let diagnosticCollection: DiagnosticCollection;
-let fileData: LtxDocument;
 export var documents: Map<TextDocument, LtxDocument> = new Map<TextDocument, LtxDocument>();
 
 export function getLtxDocument(document : TextDocument) {
@@ -58,9 +57,7 @@ function createFileData() {
     if (window.activeTextEditor.document.languageId !== "ltx") return;
 
     try {
-        let tempData = new LtxDocument(window.activeTextEditor.document);
-        fileData = tempData;
-        documents.set(window.activeTextEditor.document, tempData);
+        documents.set(window.activeTextEditor.document, new LtxDocument(window.activeTextEditor.document));
     }
     catch (error) {
         window.showErrorMessage('Error when parsing the '.concat(window.activeTextEditor.document.fileName));
