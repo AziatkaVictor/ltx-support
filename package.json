@@ -57,6 +57,12 @@
 				"path": "./syntaxes/snippets.json"
 			}
 		],
+		"commands":[
+			{
+				"command": "ltx-support.addDocumentation",
+				"title": "ltx-support: Add Documentation"
+			}
+		],
 		"configuration": [
 			{
 				"title": "Directories",
@@ -75,6 +81,19 @@
 						"type": "string",
 						"default": "configs\\misc\\",
 						"description": "Путь к папке, где хранится файлы с квестами, сквадами и прочим. По умолчанию стоит 'configs\\misc\\'."
+					}
+				}
+			},
+			{
+				"title": "Documentation",
+				"properties": {
+					"ltx-support.documentation.xr_effectsDocumentation": {
+						"type":"object",
+						"description": "Документация для xr_effects.sripts, которая создана через комманду `ltx-support: Add Documentation`."
+					},
+					"ltx-support.documentation.xr_conditionsDocumentation": {
+						"type":"object",
+						"description": "Документация для xr_conditions.sripts, которая создана через комманду `ltx-support: Add Documentation`."
 					}
 				}
 			},

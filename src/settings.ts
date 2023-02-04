@@ -8,6 +8,14 @@ export function getPathToMisc() : string | null {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToMisc");
 }
 
+export function getUserDocumentation(filename : string) : Object {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation");
+}
+
+export async function setUserDocumentation(filename : string, value) {
+    await workspace.getConfiguration("", workspace.workspaceFile).update("ltx-support.documentation." + filename + "Documentation", value);
+}
+
 export function isIgnoreParamsDiagnostic() : boolean {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.diagnostics.ignoreParamsDiagnostic");
 }
