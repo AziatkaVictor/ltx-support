@@ -49,7 +49,7 @@ export async function addActionsDocumentnation() {
 
 
     docs[name] = {
-        "documentation" : descr
+        "documentation" : descr.replace(/(<br>|\\n)/g, "\n")
     }
     console.log(JSON.stringify(docs));
     setDocumentationFile(file, docs);
