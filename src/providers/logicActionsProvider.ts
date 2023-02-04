@@ -11,20 +11,33 @@ export async function provideLogicActions(document: TextDocument, position: Posi
         return getLogicCompletionItems(getFunctions(), "xr_effects.");
     }
     else if (data.isInsideConditionGroup(position)) {
-        return getLogicCompletionItems(getConditions(), "xr_conditions.");
+
+function getDocumentationFile(name : string) {
+    try {
+        return require(docsPath + name + "_docs.json");
+    } catch (error) {   
+        console.log(error);
+        return;
     }
 }
 
 function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
     return items.map((element : string) => {
-        let item = new CompletionItem(element, CompletionItemKind.Function)
-        item.detail = filename + element;
-        if (docs[element]) {
-            let Mark = new MarkdownString(docs[element]['documentation']);
-            Mark.isTrusted = true;
-            Mark.supportHtml = true;
-            item.documentation = Mark;
+        var item = new CompletionItem(element, CompletionItemKind.Function)
+        item.detail = filename + "." + element;
+
+        const docs = getDocumentationFile(filename);
+        if (!docs) {
+            return item;
         }
+        if (!docs[element]) {
+            return item;
+        }
+        
+        let Mark = new MarkdownString(docs[element]['documentation']);
+        Mark.isTrusted = true;
+        Mark.supportHtml = true;
+        item.documentation = Mark;
         return item;
     });
 }
