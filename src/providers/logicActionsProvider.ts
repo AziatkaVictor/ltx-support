@@ -5,6 +5,7 @@ import { getUserDocumentation, setUserDocumentation } from "../settings";
 
 const docsPath = "../../data/documentation/";
 const files = new Map<string, Function>([["xr_effects", getFunctions],["xr_conditions", getConditions]]);
+const argsList = ["StoryID", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial", "Custom Argument"]
 
 export async function provideLogicActions(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
@@ -47,9 +48,27 @@ export async function addActionsDocumentnation() {
         return;
     }
 
+    var argsDirty = await window.showQuickPick(argsList.sort(), {title:"Выбирите аргументы для функции `" + name + "`. После этого можно будет выбрать очерёдность аргументов.", canPickMany:true});
+    var args = [];
+    if (!argsDirty) {
+        argsDirty = []
+    }
+    else if (argsDirty.length !== 0) {
+        let index = 0;
+        while (true) {
+            if (argsDirty.length === 0) {
+                break;
+            }
+            let argSelection = await window.showQuickPick(argsDirty, {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`"});
+            args.push(argSelection);
+            argsDirty.splice(argsDirty.indexOf(argSelection), 1);
+            index++;
+        }
+    }    
 
     docs[name] = {
-        "documentation" : descr.replace(/(<br>|\\n)/g, "\n")
+        "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
+        "args" : args
     }
     setDocumentationFile(file, docs);
     window.showInformationMessage("Документация для функции `" + name + "` из файла `" + file + "` успешно добавлена!");
@@ -83,7 +102,14 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
             return item;
         }
         
-        let Mark = new MarkdownString(docs[element]['documentation']);
+        var Mark : MarkdownString;
+        if (docs[element]['args'] && docs[element]['args'].length !== 0) {
+            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>**Args:** " + docs[element]['args'].map(value => {return "`" + value + "`"}).toString() + "<hr>**Example:** `=" + element + "(" + docs[element]['args'].join(":") + ")`");
+        }
+        else {
+            Mark = new MarkdownString(docs[element]['documentation']);
+        }
+
         Mark.isTrusted = true;
         Mark.supportHtml = true;
         item.documentation = Mark;
