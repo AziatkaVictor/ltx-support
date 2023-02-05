@@ -1,11 +1,10 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, TextDocument, window } from "vscode";
 import { getLtxDocument } from "../extension";
 import { getConditions, getFunctions } from "../lua/actionsParser";
-import { getUserDocumentation, setUserDocumentation } from "../settings";
+import { getUserArgsDocumentation, getUserDocumentation, setUserDocumentation } from "../settings";
 
 const docsPath = "../../data/documentation/";
 const files = new Map<string, Function>([["xr_effects", getFunctions],["xr_conditions", getConditions]]);
-const argsList = ["StoryID", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial", "Custom Argument"]
 
 export async function provideLogicActions(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
@@ -48,6 +47,7 @@ export async function addActionsDocumentnation() {
         return;
     }
 
+    const argsList = getUserArgsDocumentation();
     var argsDirty = await window.showQuickPick(argsList.sort(), {title:"Выбирите аргументы для функции `" + name + "`. После этого можно будет выбрать очерёдность аргументов.", canPickMany:true});
     var args = [];
     if (!argsDirty) {

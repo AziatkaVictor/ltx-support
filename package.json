@@ -75,12 +75,12 @@
 					"ltx-support.directories.pathToLocalization": {
 						"type": "string",
 						"default": "configs\\text\\rus\\",
-						"description": "Путь к папке, где хранится локализация. На данный момент не работает. (WiP)"
+						"description": "Путь к папке, где хранится локализация. На данный момент не работает. `WiP`"
 					},
 					"ltx-support.directories.pathToMisc": {
 						"type": "string",
 						"default": "configs\\misc\\",
-						"description": "Путь к папке, где хранится файлы с квестами, сквадами и прочим. По умолчанию стоит 'configs\\misc\\'."
+						"description": "Путь к папке, где хранится файлы с квестами, сквадами и прочим."
 					}
 				}
 			},
@@ -89,11 +89,19 @@
 				"properties": {
 					"ltx-support.documentation.xr_effectsDocumentation": {
 						"type":"object",
-						"description": "Документация для xr_effects.sripts, которая создана через комманду `ltx-support: Add Documentation`."
+						"description": "Документация для `xr_effects.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
 					},
 					"ltx-support.documentation.xr_conditionsDocumentation": {
 						"type":"object",
-						"description": "Документация для xr_conditions.sripts, которая создана через комманду `ltx-support: Add Documentation`."
+						"description": "Документация для `xr_conditions.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
+					},
+					"ltx-support.documentation.argsTypeForFunctionsDocumentation": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": ["StoryID", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial"],
+						"description": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
 					}
 				}
 			},
@@ -105,7 +113,7 @@
 						"items": {
 							"type": "string"
 						},
-						"description": "Название файлов локализации, которые будут игнорироваться. Например: ('st_characters.xml'). На данный момент не работает. (WiP)"
+						"description": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`. На данный момент не работает. `WiP`"
 					}
 				}
 			},
@@ -115,12 +123,12 @@
 					"ltx-support.diagnostics.enableDiagnostic": {
 						"type": "boolean",
 						"default": false,
-						"description": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. (WiP)"
+						"description": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. `WiP`"
 					},
 					"ltx-support.diagnostics.ignoreParamsDiagnostic": {
 						"type": "boolean",
 						"default": false,
-						"description": "Игнорировать проверку параметров секции. На данный момент не работает. (WiP)"
+						"description": "Игнорировать проверку параметров секции. На данный момент не работает. `WiP`"
 					}
 				}
 			}
