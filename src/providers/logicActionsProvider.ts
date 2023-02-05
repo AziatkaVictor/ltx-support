@@ -107,7 +107,7 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
             Mark = new MarkdownString(docs[element]['documentation'] + "<hr>**Args:** " + docs[element]['args'].map(value => {return "`" + value + "`"}).toString() + "<hr>**Example:** `=" + element + "(" + docs[element]['args'].join(":") + ")`");
         }
         else {
-            Mark = new MarkdownString(docs[element]['documentation']);
+            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>**Example:** `=" + element + "`");
         }
 
         Mark.isTrusted = true;
