@@ -41,30 +41,24 @@ export async function addActionsDocumentnation() {
         }
     }
 
-    var descr = await window.showInputBox({placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown\nТекст"}); 
+    var descr = await window.showInputBox({placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown"}); 
     if (!descr || descr.trim() === "") {
         window.showErrorMessage("Операция прервана. Описание не может быть пустым.")
         return;
     }
 
     const argsList = getUserArgsDocumentation();
-    var argsDirty = await window.showQuickPick(argsList.sort(), {title:"Выбирите аргументы для функции `" + name + "`. После этого можно будет выбрать очерёдность аргументов.", canPickMany:true});
     var args = [];
-    if (!argsDirty) {
-        argsDirty = []
-    }
-    else if (argsDirty.length !== 0) {
-        let index = 0;
-        while (true) {
-            if (argsDirty.length === 0) {
-                break;
-            }
-            let argSelection = await window.showQuickPick(argsDirty, {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`"});
-            args.push(argSelection);
-            argsDirty.splice(argsDirty.indexOf(argSelection), 1);
-            index++;
+    const doneButton = "[ Done ]";
+    let index = 0;
+    while (true) {
+        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`. Нажмите `" + doneButton + "` чтобы закончить. Выбирать аргумент необязательно."});
+        if (argSelection === doneButton) {
+            break;
         }
-    }    
+        args.push(argSelection);
+        index++;
+    }
 
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
@@ -104,10 +98,10 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
         
         var Mark : MarkdownString;
         if (docs[element]['args'] && docs[element]['args'].length !== 0) {
-            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>**Args:** " + docs[element]['args'].map(value => {return "`" + value + "`"}).toString() + "<hr>**Example:** `=" + element + "(" + docs[element]['args'].join(":") + ")`");
+            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>Args: " + docs[element]['args'].map(value => {return "`" + value + "`"}).toString() + "<hr>Example: `=" + element + "(" + docs[element]['args'].join(":") + ")`");
         }
         else {
-            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>**Example:** `=" + element + "`");
+            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>Example: `=" + element + "`");
         }
 
         Mark.isTrusted = true;
