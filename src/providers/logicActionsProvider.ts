@@ -23,7 +23,7 @@ export async function addActionsDocumentnation() {
         window.showErrorMessage("Операция прервана. Не был выбран файл.")
         return;
     }
-    var name = await window.showQuickPick(files.get(file)(), {placeHolder:"Выберите функцию", title : file}); 
+    var name = await window.showQuickPick(files.get(file)().sort(), {placeHolder:"Выберите функцию", title : file}); 
     if (!name) {
         window.showErrorMessage("Операция прервана. Не была выбрана функция для которой бы писалась документация.")
         return;
@@ -51,9 +51,7 @@ export async function addActionsDocumentnation() {
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n")
     }
-    console.log(JSON.stringify(docs));
     setDocumentationFile(file, docs);
-
     window.showInformationMessage("Документация для функции `" + name + "` из файла `" + file + "` успешно добавлена!");
 }
 
