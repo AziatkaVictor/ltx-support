@@ -48,21 +48,23 @@ export async function addActionsDocumentnation() {
     }
 
     const argsList = getUserArgsDocumentation();
-    var args = [];
     const doneButton = "[ Done ]";
+    var args = [];
     let index = 0;
     while (true) {
-        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`. Нажмите `" + doneButton + "` чтобы закончить. Выбирать аргумент необязательно."});
-        if (argSelection === doneButton) {
+        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`. Нажмите `" + doneButton + "` чтобы закончить. Опционально."});
+        if (!argSelection || argSelection === doneButton) {
             break;
         }
         args.push(argSelection);
         index++;
     }
 
+    var example = await window.showInputBox({placeHolder:"Напишите пример, например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
-        "args" : args
+        "args" : args,
+        "example" : example
     }
     setDocumentationFile(file, docs);
     window.showInformationMessage("Документация для функции `" + name + "` из файла `" + file + "` успешно добавлена!");
@@ -95,15 +97,16 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
         if (!docs[element]) {
             return item;
         }
-        
-        var Mark : MarkdownString;
-        if (docs[element]['args'] && docs[element]['args'].length !== 0) {
-            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>Args: " + docs[element]['args'].map(value => {return "`" + value + "`"}).toString() + "<hr>Example: `=" + element + "(" + docs[element]['args'].join(":") + ")`");
-        }
-        else {
-            Mark = new MarkdownString(docs[element]['documentation'] + "<hr>Example: `=" + element + "`");
-        }
 
+        var text : string = docs[element]['documentation'];
+        if (docs[element]['args'] && docs[element]['args'].length !== 0) {
+            text += "<hr>Args: " + docs[element]['args'].map(value => {return "`" + value + "`"}).join(", ");
+        }
+        if (docs[element]['example']) {
+            text += "<hr>Example: `" + docs[element]['example'] + "`";
+        }
+        
+        var Mark = new MarkdownString(text);
         Mark.isTrusted = true;
         Mark.supportHtml = true;
         item.documentation = Mark;
