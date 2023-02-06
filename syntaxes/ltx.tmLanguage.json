@@ -4,6 +4,27 @@
 	"patterns": [
 		{
 			"include": "#comments"
+		},
+		{
+			"include": "#info"
+		},
+		{
+			"include": "#keyword"
+		},
+		{
+			"include": "#function"
+		},
+		{
+			"include": "#number"
+		},
+		{
+			"include": "#property"
+		},
+		{
+			"include": "#sections"
+		},
+		{
+			"include": "#string"
 		}
 	],
 	"repository": {
@@ -23,6 +44,62 @@
 							"name": "punctuation.paren.close"
 						}
 					}
+				}
+			]
+		},
+		"info": {
+			"patterns": [
+				{
+					"name": "variable",
+					"match": "(\\-|\\+)\\w+"
+				}
+			]
+		},
+		"function": {
+			"patterns": [
+				{
+					"name": "support.function",
+					"match": "(\\=|\\!)\\w+"
+				}
+			]
+		},
+		"number": {
+			"patterns": [
+				{
+					"name": "constant.numeric",
+					"match": "(?<!\\w)\\d+(?!\\w)"
+				}
+			]
+		},
+		"property": {
+			"patterns": [
+				{
+					"name": "variable.other.constant.property",
+					"match": "^(\\s*?)?[\\w\\$]+?(?=(\\s*?)?\\=)"
+				}
+			]
+		},
+		"sections": {
+			"patterns": [
+				{
+					"name": "support.class",
+					"match": "(\\[[\\w@]+\\]|\\w+@+\\w+)"
+				}
+			]
+		},
+		"string": {
+			"patterns": [
+				{
+					"name": "string",
+					"match": "[\\w\\*\\.\\@\\$\\\\]+"
+				}
+			]
+		},
+		"keyword": {
+			"patterns": [
+				{
+					"name": "keyword.control",
+					"match": "\\b(nil|true|false|complete|fail|reversed)\\b"
 				}
 			]
 		}
