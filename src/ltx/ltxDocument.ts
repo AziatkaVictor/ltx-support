@@ -55,6 +55,14 @@ export class LtxDocument {
     getSemanticData(): LtxSemantic[] {
         return this.semanticData;
     }
+
+    getSemanticByPostition(position : Position): LtxSemantic {
+        for (let semanticItem of this.semanticData) {
+            if (semanticItem.range.contains(position)) {
+                return semanticItem;
+            }
+        }
+    }
     
     getErrorsData() : LtxError[] {
         return this.errorsData;
@@ -152,7 +160,7 @@ export class LtxDocument {
      * @returns Возвращаем первую секцию, которую мы нашли
      */
     private findSection(text : string, lineIndex : number) {
-        var re = /\[[\w, @]*\]/g;
+        var re = /\[[\w@]*\]/g;
         var match : RegExpExecArray;
         var result : RegExpExecArray;
 
@@ -175,7 +183,7 @@ export class LtxDocument {
      * @returns Возвращаем массив с названием всех секций
      */
     private findAllSectionsNames(text : string) : string[] {
-        let re = /(?<=\[)[\w, @]+(?=\])/g;
+        let re = /(?<=\[)[\w@]+(?=\])/g;
         let match;
         sectionsArray = [];
         while ((match = re.exec(text)) !== null) {
