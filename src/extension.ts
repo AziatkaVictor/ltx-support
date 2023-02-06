@@ -3,6 +3,7 @@ import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './lua/actionsParser';
 import { addActionsDocumentnation, provideLogicActions } from './providers/logicActionsProvider';
 import { provideLogicAssets } from './providers/logicAssetsProvider';
+import { provideHover } from './providers/logicHoverProvider';
 import { provideLogicInfo } from './providers/logicInfoProvider';
 import { provideLogicParams } from './providers/logicParamsProvider';
 import { provideLogicSections } from './providers/logicSectionsProvider';
@@ -34,6 +35,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideLogicSections}, "["));
 
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
+    context.subscriptions.push(languages.registerHoverProvider("ltx", {provideHover : provideHover}));
     
     context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addActionsDocumentnation));
 
