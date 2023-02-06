@@ -39,8 +39,6 @@ export class LtxCondlist {
         for (let count = 0; count < sectionsArray.length; count++) {
             this.findElements(new RegExp("(?<![\\w\\\\\"])" + sectionsArray[count] + "(?![\\w\\@]+)(?=\\b)", "g"), LtxSemanticType.class, LtxSemanticModification.definition, null);
         }
-
-        this.findElements(/[\w\*\.\@\$\\]+/g, LtxSemanticType.string, null, null);
     }
 
     private findElements(RegExp : RegExp, SemanticType : LtxSemanticType, SemanticModification, SemanticDescription) {
