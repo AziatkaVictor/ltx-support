@@ -124,28 +124,40 @@ async function writeExample(docs : Object, name : string) {
     return await window.showInputBox({value:docs[name] ? docs[name]["example"] : "", placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
 }
 
+function getDocsFilename(item : string) {
+    for (let file of Array.from(files.keys())) {
+        if (files.get(file)().indexOf(item) !== -1) {     
+            return file;
+        }
+    }    
+    return;
+}
+
+export function getFunctionsDocumentation(functionName : string) {
+    var docs = getDocumentationFile(getDocsFilename(functionName));
+    if (!docs) {
+        return new MarkdownString();
+    }
+    if (!docs[functionName]) {
+        return new MarkdownString();
+    }
+
+    var text = new MarkdownString(docs[functionName]['documentation']);
+    if (docs[functionName]['args'] && docs[functionName]['args'].length !== 0) {
+        text.appendMarkdown("\n\n---\n")
+        text.appendMarkdown("Args:" + docs[functionName]['args'].map((value : string) => {return `\`${value}\``}).join(", "));
+    }
+    if (docs[functionName]['example']) {
+        text.appendCodeblock(docs[functionName]['example'], "ltx");
+    }
+    return text;
+}
+
 function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
     return items.map((element : string) => {
         var item = new CompletionItem(element, CompletionItemKind.Function)
-        item.detail = filename + "." + element;
-
-        const docs = getDocumentationFile(filename);
-        if (!docs) {
-            return item;
-        }
-        if (!docs[element]) {
-            return item;
-        }
-
-        var text : string = docs[element]['documentation'];
-        if (docs[element]['args'] && docs[element]['args'].length !== 0) {
-            text += "<hr>Args: " + docs[element]['args'].map(value => {return "`" + value + "`"}).join(", ");
-        }
-        if (docs[element]['example']) {
-            text += "<hr>Example: `" + docs[element]['example'] + "`";
-        }
-        
-        var Mark = new MarkdownString(text);
+        item.detail = filename + "." + element;   
+        var Mark = getFunctionsDocumentation(element);
         Mark.isTrusted = true;
         Mark.supportHtml = true;
         item.documentation = Mark;
