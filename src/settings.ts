@@ -9,7 +9,7 @@ export function getPathToMisc() : string | null {
 }
 
 export function getUserDocumentation(filename : string) : Object {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation") || {};
 }
 
 export function getUserArgsDocumentation() : string[] {

@@ -28,64 +28,26 @@ export async function provideLogicActions(document: TextDocument, position: Posi
 }
 
 export async function addActionsDocumentnation() {
-    var file = await window.showQuickPick(Array.from(files.keys()), {placeHolder:"Выберите файл"});
-    if (!file) {
-        window.showErrorMessage("Операция прервана. Не был выбран файл.")
+    try {
+        var file = await pickFile(); 
+        var docs = getUserDocumentation(file);
+        var name = await pickFunction(docs, file);
+        await checkDocs(docs, file);
+        var descr = await writeDocumentation(docs, file);
+        var args = await pickArguments(name);
+        var example = await writeExample(docs, file);
+    } catch (error) {
+        console.error(error);
         return;
     }
-
-    var docs = getUserDocumentation(file);
-    if (!docs) {
-        docs = {};
-    }
-
-    var name : any = await window.showQuickPick(files.get(file)().sort().map((value) => { return new functionPickItem(docs[value] ? "Уже есть документация" : "", value);}), {placeHolder:"Выберите функцию", title : file}); 
-    if (!name) {
-        window.showErrorMessage("Операция прервана. Не была выбрана функция для которой бы писалась документация.")
-        return;
-    }
-    name = name.label;
-
-    var docsDescr = ""; 
-    var docsExample = "";
-
-    if (docs[name]) {
-        let solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция `" + name + "`. Перезаписать её?"})
-        if (!solution || solution === "No") {
-            window.showErrorMessage("Операция прервана.")
-            return;
-        }
-        docsDescr = docs[name]["documentation"];
-        docsExample = docs[name]["example"];
-    }
-
-    var descr = await window.showInputBox({value:docsDescr, placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown"}); 
-    if (!descr || descr.trim() === "") {
-        window.showErrorMessage("Операция прервана. Описание не может быть пустым.")
-        return;
-    }
-
-    const argsList = getUserArgsDocumentation();
-    const doneButton = "[ Done ]";
-    var args = [];
-    let index = 0;
-    while (true) {
-        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции `" + name + "`. Нажмите `" + doneButton + "` чтобы закончить. Опционально."});
-        if (!argSelection || argSelection === doneButton) {
-            break;
-        }
-        args.push(argSelection);
-        index++;
-    }
-
-    var example = await window.showInputBox({value:docsExample, placeHolder:"Напишите пример, например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
+    
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
         "args" : args,
         "example" : example
     }
     setDocumentationFile(file, docs);
-    window.showInformationMessage("Документация для функции `" + name + "` из файла `" + file + "` успешно добавлена!");
+    window.showInformationMessage("Документация для функции '" + name + "' из файла '" + file + "' успешно добавлена!");
 }
 
 function getDocumentationFile(name : string) {
@@ -101,6 +63,65 @@ function getDocumentationFile(name : string) {
 
 function setDocumentationFile(name : string, data) {
     setUserDocumentation(name, data);
+}
+
+async function pickFile() {
+    var file = await window.showQuickPick(Array.from(files.keys()), {placeHolder:"Выберите файл"});
+    if (!file) {
+        window.showErrorMessage("Операция прервана. Не был выбран файл.")
+        throw new Error("File is not picked!");      
+    }
+    return file;
+}
+
+async function pickFunction(docs : Object, file : string) {
+    var name : any = await window.showQuickPick(files.get(file)().sort().map((value) => { return new functionPickItem(docs[value] ? "Документация уже написана" : "", value);}), {placeHolder:"Выберите функцию", title : file}); 
+    if (!name) {
+        window.showErrorMessage("Операция прервана. Не была выбрана функция для которой бы писалась документация.")
+        throw new Error("Function is not picked!"); 
+    }
+    return name.label;
+}
+
+async function checkDocs(docs : Object, name : string) {
+    if (!docs[name]) {
+        return;
+    }
+    let solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция '" + name + "'. Перезаписать её?"})
+    if (!solution || solution === "No") {
+        window.showErrorMessage("Операция прервана.")
+        throw new Error("Function is not picked!"); 
+    }
+}
+
+async function writeDocumentation(docs : Object, name : string) {
+    var descr = await window.showInputBox({value:docs[name] ? docs[name]["documentation"] : "", placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown"}); 
+    if (!descr || descr.trim() === "") {
+        window.showErrorMessage("Операция прервана. Описание не может быть пустым.")
+        throw new Error("Description is null!"); 
+    }
+    return descr;
+}
+
+async function pickArguments(name : string) {
+    const argsList = getUserArgsDocumentation();
+    const doneButton = "[ Done ]";
+    var args = [];
+    var index = 0;
+
+    while (true) {
+        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции '" + name + "'. Нажмите " + doneButton + " чтобы закончить. Опционально."});
+        if (!argSelection || argSelection === doneButton) {
+            break;
+        }
+        args.push(argSelection);
+        index++;
+    }
+    return args;
+}
+
+async function writeExample(docs : Object, name : string) {
+    await window.showInputBox({value:docs[name] ? docs[name]["example"] : "", placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
 }
 
 function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
