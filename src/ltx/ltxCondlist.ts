@@ -36,7 +36,7 @@ export class LtxCondlist {
         this.findElements(/(\+|\-)\w*\b(?<=\w)/g, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);
         this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.readonly, null);
         this.findElements(/\b(nil|true|false|complete|fail|reversed)\b/g, LtxSemanticType.keyword, LtxSemanticModification.readonly, null);
-        this.findElements(/(?<!\w)\d+/g, LtxSemanticType.number, null, null);
+        this.findElements(/(?<!\w)\d+(?!\w)/g, LtxSemanticType.number, null, null);
 
         for (let count = 0; count < sectionsArray.length; count++) {
             this.findElements(new RegExp("(?<![\\w\\\\\"])" + sectionsArray[count] + "(?![\\w\\@]+)(?=\\b)", "g"), LtxSemanticType.class, LtxSemanticModification.definition, null);
