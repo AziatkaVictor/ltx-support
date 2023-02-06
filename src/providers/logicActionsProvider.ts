@@ -1,10 +1,20 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, TextDocument, window } from "vscode";
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, TextDocument, window, QuickPickItem } from "vscode";
 import { getLtxDocument } from "../extension";
 import { getConditions, getFunctions } from "../lua/actionsParser";
 import { getUserArgsDocumentation, getUserDocumentation, setUserDocumentation } from "../settings";
 
 const docsPath = "../../data/documentation/";
 const files = new Map<string, Function>([["xr_effects", getFunctions],["xr_conditions", getConditions]]);
+
+class functionPickItem implements QuickPickItem {
+    label: string;
+    description: string;
+
+    constructor(description: string, name: string) {
+        this.label = name;
+        this.description = description;
+    }
+}
 
 export async function provideLogicActions(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
@@ -23,19 +33,23 @@ export async function addActionsDocumentnation() {
         window.showErrorMessage("Операция прервана. Не был выбран файл.")
         return;
     }
-    var name = await window.showQuickPick(files.get(file)().sort(), {placeHolder:"Выберите функцию", title : file}); 
+
+    var docs = getUserDocumentation(file);
+    if (!docs) {
+        docs = {};
+    }
+
+    var name : any = await window.showQuickPick(files.get(file)().sort().map((value) => { return new functionPickItem(docs[value] ? "Уже есть документация" : "", value);}), {placeHolder:"Выберите функцию", title : file}); 
     if (!name) {
         window.showErrorMessage("Операция прервана. Не была выбрана функция для которой бы писалась документация.")
         return;
     }
+    name = name.label;
 
-    var docs = getUserDocumentation(file);   
     var docsDescr = ""; 
     var docsExample = "";
-    if (!docs) {
-        docs = {};
-    }
-    else if (docs[name]) {
+
+    if (docs[name]) {
         let solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция `" + name + "`. Перезаписать её?"})
         if (!solution || solution === "No") {
             window.showErrorMessage("Операция прервана.")
