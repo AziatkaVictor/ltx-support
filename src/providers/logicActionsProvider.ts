@@ -32,10 +32,10 @@ export async function addActionsDocumentnation() {
         var file = await pickFile(); 
         var docs = getUserDocumentation(file);
         var name = await pickFunction(docs, file);
-        await checkDocs(docs, file);
-        var descr = await writeDocumentation(docs, file);
+        await checkDocs(docs, name);
+        var descr = await writeDocumentation(docs, name);
         var args = await pickArguments(name);
-        var example = await writeExample(docs, file);
+        var example = await writeExample(docs, name);
     } catch (error) {
         console.error(error);
         return;
@@ -90,7 +90,7 @@ async function checkDocs(docs : Object, name : string) {
     let solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция '" + name + "'. Перезаписать её?"})
     if (!solution || solution === "No") {
         window.showErrorMessage("Операция прервана.")
-        throw new Error("Function is not picked!"); 
+        throw new Error("Cancled!"); 
     }
 }
 
@@ -121,7 +121,7 @@ async function pickArguments(name : string) {
 }
 
 async function writeExample(docs : Object, name : string) {
-    await window.showInputBox({value:docs[name] ? docs[name]["example"] : "", placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
+    return await window.showInputBox({value:docs[name] ? docs[name]["example"] : "", placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
 }
 
 function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
