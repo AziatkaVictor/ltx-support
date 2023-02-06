@@ -29,19 +29,23 @@ export async function addActionsDocumentnation() {
         return;
     }
 
-    var docs = getUserDocumentation(file);    
+    var docs = getUserDocumentation(file);   
+    var docsDescr = ""; 
+    var docsExample = "";
     if (!docs) {
         docs = {};
     }
     else if (docs[name]) {
-        var solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция `" + name + "`. Перезаписать её?"})
+        let solution = await window.showQuickPick(["Yes", "No"], {title:"В пользовательской документации найдена функция `" + name + "`. Перезаписать её?"})
         if (!solution || solution === "No") {
             window.showErrorMessage("Операция прервана.")
             return;
         }
+        docsDescr = docs[name]["documentation"];
+        docsExample = docs[name]["example"];
     }
 
-    var descr = await window.showInputBox({placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown"}); 
+    var descr = await window.showInputBox({value:docsDescr, placeHolder:"Напишите описание", title:"Документация для функции '" + name + "'", prompt:"Поддерживатся Markdown"}); 
     if (!descr || descr.trim() === "") {
         window.showErrorMessage("Операция прервана. Описание не может быть пустым.")
         return;
@@ -60,7 +64,7 @@ export async function addActionsDocumentnation() {
         index++;
     }
 
-    var example = await window.showInputBox({placeHolder:"Напишите пример, например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
+    var example = await window.showInputBox({value:docsExample, placeHolder:"Напишите пример, например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
         "args" : args,
