@@ -155,15 +155,12 @@ export function getFunctionsDocumentation(functionName : string) {
         textLenght = textLenght > docs[functionName]['example'].length ? textLenght : docs[functionName]['example'].length;
     }
     while ((match = exp.exec(docs[functionName]['documentation'])) !== null) {
-        console.log(match.index);
-        console.log(textLenght + matchIndex);
-        console.log(match.index >= (textLenght + matchIndex));
-        
-        if (match.index >= (textLenght + matchIndex)) {            
+        if (Math.abs(match.index - (textLenght + matchIndex)) <= 5) {            
             tempDocs += docs[functionName]['documentation'].slice(matchIndex, match.index) + "  \n";
             matchIndex = match.index;
         }
     }
+    tempDocs += docs[functionName]['documentation'].slice(matchIndex, docs[functionName]['documentation'].length)
     text.appendMarkdown(!tempDocs ? docs[functionName]['documentation'] : tempDocs);
     if (docs[functionName]['args'] && docs[functionName]['args'].length !== 0) {
         text.appendMarkdown("  \nArgs: " + docs[functionName]['args'].map((value : string) => {return `\`${value}\``}).join(", "));
