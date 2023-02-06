@@ -10,7 +10,6 @@ export function provideHover(document: TextDocument, position: Position, token?:
     if (semantic.type === LtxSemanticType.function) {
         var Mark = getFunctionsDocumentation(semantic.text.slice(1, semantic.text.length));
         Mark.supportHtml = true;
-        Mark.isTrusted = true;
         return new Hover(Mark);
     }
 }
