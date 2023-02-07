@@ -16,7 +16,8 @@ export var currentFile: string;
 
 export enum LtxDocumentType {
     Logic,
-    Squad
+    Squad,
+    Tasks
 }
 
 /**
@@ -66,7 +67,13 @@ export class LtxDocument {
     
     getErrorsData() : LtxError[] {
         return this.errorsData;
-    }    
+    }   
+    
+    
+    getType() : LtxDocumentType {
+        return this.fileType;
+    }
+    
 
     async getSectionsByUri(uri : Uri) : Promise<string[]> {
         return this.findAllSectionsNames(getFileData(uri.fsPath))
@@ -245,8 +252,11 @@ export class LtxDocument {
     }
     
     private setDocumentType() {
-        if (this.filePath.indexOf("configs/scripts") !== 0) {
+        if (this.filePath.indexOf("configs/scripts") !== -1) {
             this.fileType = LtxDocumentType.Logic;
+        }
+        else if (this.filePath.match(/tm\_.+.ltx/)) {
+            this.fileType = LtxDocumentType.Tasks;
         }
     }
 
