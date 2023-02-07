@@ -136,7 +136,7 @@ function getDocsFilename(item : string) {
     return;
 }
 
-export function getFunctionsDocumentation(functionName : string) {
+export function getFunctionsDocumentation(functionName : string, hover : boolean = false) {
     var docs = getDocumentationFile(getDocsFilename(functionName));
     if (!docs) {
         return new MarkdownString();
@@ -146,25 +146,11 @@ export function getFunctionsDocumentation(functionName : string) {
     }
 
     var text = new MarkdownString();
-    var textLenght = 45;
-    var matchIndex = 0;
-    var tempDocs = "";
-    var exp = /\s/g;
-    var match;
-
-    if (docs[functionName]['example']) {
+    if (docs[functionName]['example'] && hover) {
         text.appendCodeblock(docs[functionName]['example'], "ltx");
         text.appendMarkdown("---\n")
-        textLenght = textLenght > docs[functionName]['example'].length ? textLenght : docs[functionName]['example'].length;
     }
-    while ((match = exp.exec(docs[functionName]['documentation'])) !== null) {
-        if (((textLenght + matchIndex) - match.index) <= 5) {            
-            tempDocs += docs[functionName]['documentation'].slice(matchIndex, match.index) + "  \n";
-            matchIndex = match.index;
-        }
-    }
-    tempDocs += docs[functionName]['documentation'].slice(matchIndex, docs[functionName]['documentation'].length)
-    text.appendMarkdown(!tempDocs ? docs[functionName]['documentation'] : tempDocs);
+    text.appendMarkdown(docs[functionName]['documentation']);
     if (docs[functionName]['args'] && docs[functionName]['args'].length !== 0) {
         text.appendMarkdown("  \nArgs: " + docs[functionName]['args'].map((value : string) => {return `\`${value}\``}).join(", "));
     }
