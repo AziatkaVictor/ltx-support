@@ -189,7 +189,7 @@ export class LtxDocument {
                 continue;
             }
             // Добавляем ошибки, если секция в этой строке уже была найдена
-            let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length - 1));
+            let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
             addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
         }
         
