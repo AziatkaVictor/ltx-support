@@ -8,6 +8,10 @@ export function getPathToMisc() : string | null {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToMisc");
 }
 
+export function getPathToLocalization() : string | null {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToLocalization");
+}
+
 export function getUserDocumentation(filename : string) : Object {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation") || {};
 }
@@ -42,4 +46,8 @@ export function getDefaultPathToModules() : string {
 
 export function getDefaultPathToScripts() : string {
     return "../../data/scripts/";
+}
+
+export function getDefaultPathToLocalization() : string {
+    return "../../data/localization/";
 }

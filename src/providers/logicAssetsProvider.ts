@@ -1,8 +1,11 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument, workspace } from "vscode";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { findFilesInWorkspace } from "../lua/fileReader";
-import { getPathToMisc } from "../settings";
+import { getDefaultPathToLocalization, getPathToLocalization, getPathToMisc } from "../settings";
+import { parseString } from 'xml2js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export async function provideLogicAssets(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
@@ -14,6 +17,7 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
     }
     if (data.isInsideArgumentsGroup(position) || (!data.isInsideConditionGroup(position) && !data.isInsideFunctionGroup(position))) {
         items = items.concat(await getKeywords(data));
+        items = items.concat(await getLocalization());
     }
     return items;
 }
@@ -55,4 +59,58 @@ async function getKeywords(document : LtxDocument): Promise<CompletionItem[]> {
         var item = new CompletionItem(value, CompletionItemKind.Keyword);
         return item;
     })
+}
+
+async function getLocalization(): Promise<CompletionItem[]> {
+    var result = (await getLocalizationArr()).map(value => {
+        let item = new CompletionItem(value.$.id, CompletionItemKind.Variable);
+        item.documentation = value.text[0];
+        item.detail = "Localization"
+        return item;
+    });
+
+    return result;
+}
+
+async function getLocalizationArr() {
+    var user = (await findFilesInWorkspace(getPathToLocalization() + '*.xml')).map(value => {return value.fsPath.split("\\")[value.fsPath.split("\\").length - 1]});
+    var storage = fs.readdirSync(path.resolve(__dirname, getDefaultPathToLocalization()));
+    var files = Array.from(new Set(storage.concat(user)));
+    var result = [];
+
+    for await (let fileName of files) {
+        if (fileName.indexOf("dialog") !== -1) {
+            continue;
+        }
+        let file = (workspace.workspaceFolders[0].uri.path + "/" + getPathToLocalization() + fileName).replace(/\//g, "\\");    
+        file = file.slice(1, file.length);
+       
+        if (fs.existsSync(file)) {
+            result = result.concat(parseXML(path.resolve(file)))
+        }
+        else {
+            // result = result.concat(parseXML(path.resolve(__dirname, getDefaultPathToLocalization(), fileName)))
+        }
+    }
+    console.log(result.length);    
+    return Array.from(new Set(result));
+}
+
+function parseXML(file: string): CompletionItem[]|null {
+    const Iconv = require('iconv').Iconv;
+    const iconv = new Iconv('cp1251', 'UTF-8');
+    let value = fs.readFileSync(file);
+    value = iconv.convert(value);
+    let text = String(value).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
+    let data;
+    parseString(text, function (err, result) {
+        if (err) {
+            console.log(file);
+            console.log('There was an error when parsing: ' + err);
+        }
+        else {
+            data = result;
+        }
+    });
+    return data.string_table.string ? data.string_table.string : null;
 }
