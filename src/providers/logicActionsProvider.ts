@@ -122,7 +122,7 @@ async function pickArguments(name : string) {
 }
 
 async function writeExample(docs : Object, name : string) {
-    return await window.showInputBox({value:docs[name] ? docs[name]["example"] : "", placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
+    return await window.showInputBox({value:docs[name] ? docs[name]["example"] : `=${name}`, placeHolder:"Например: =create_squad(esc_bandit_01_squad:esc_smart_bandit_base)", title:"Пример для функции '" + name + "'. Опционально."}); 
 }
 
 function getDocsFilename(item : string) {
