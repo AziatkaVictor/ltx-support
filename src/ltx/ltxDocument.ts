@@ -100,6 +100,18 @@ export class LtxDocument {
         return false;
     }
 
+    isInsideArgumentsGroup(position : Position) : boolean {
+        var line = this.getLine(position).rawData;
+        var exp = /\(.*?\)/g
+        var match;
+        while ((match = exp.exec(line)) !== null) {
+            if (match.index < position.character && (match.index + match[0].length) > position.character) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Получить данные строки по положению курсора в документе
      * @param position Курсор в текстовом документе 
