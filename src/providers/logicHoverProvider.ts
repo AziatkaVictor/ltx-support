@@ -8,7 +8,7 @@ export function provideHover(document: TextDocument, position: Position, token?:
     const semantic = fileLtx.getSemanticByPostition(position);
     
     if (semantic.type === LtxSemanticType.function) {
-        var Mark = getFunctionsDocumentation(semantic.text.slice(1, semantic.text.length));
+        var Mark = getFunctionsDocumentation(semantic.text.slice(1, semantic.text.length), true);
         Mark.supportHtml = true;
         return new Hover(Mark);
     }
