@@ -1,2 +1,147 @@
 {
+    
+    "remove_item": {
+        "documentation": "Удаляет предмет из рюкзака ГГ. Даже если у игрока этого предмета нет, сообщение об удалении предмета появиться.",
+        "args": [
+            "Item"
+        ],
+        "example": "=remove_item(item_name)"
+    },
+    "run_tutorial": {
+        "documentation": "Запускает туториал, который храниться в файле `game_tutorials.xml` по пути `configs/ui`.",
+        "args": [
+            "Tutorial"
+        ],
+        "example": "=run_tutorial(tutorial_name)"
+    },
+    "play_sound": {
+        "documentation": "Проигрывает звук, который зарегестрирован в `script_sounds.ltx` и файлах, которые импортируются туда. При окончании звука логика, из которой вызван звук, получает сигнал `sound_end`.",
+        "args": [
+            "Sound"
+        ],
+        "example": "=play_sound(sound_name)"
+    },
+    "stop_sound": {
+        "documentation": "Останавливает звук, который ранее был вызван через `play_sound`.",
+        "args": [
+            "Sound"
+        ],
+        "example": "=stop_sound(sound_name)"
+    },
+    "teleport_npc_by_story_id": {
+        "documentation": "Телепортирует НПС с определённым `story_id` на waypoint, с возможностью указать индекс для waypoint-ов состоящих из нескольких точек. Если у НПС нету `story_id`, то ничего не произойдет.",
+        "args": [
+            "StoryID",
+            "Waypoint",
+            "Number"
+        ],
+        "example": "=teleport_npc_by_story_id(npc_story_id:waypoint:0)"
+    },
+    "teleport_npc": {
+        "documentation": "Телепортирует НПС на waypoint, с возможностью указать индекс для waypoint-ов состоящих из нескольких точек. Данная функция, в отличии от `teleport_npc_by_story_id`, должна вызываться внутри логики НПС и иначе не будет работать.",
+        "args": [
+            "Waypoint",
+            "Number"
+        ],
+        "example": "=teleport_npc(waypoint:0)"
+    },
+    "create_squad": {
+        "documentation": "Создает сквад на определённом смарт-тиррейне.",
+        "args": [
+            "Squad",
+            "Smart"
+        ],
+        "example": "=create_squad(squad_name:smart_name)"
+    },
+    "give_task": {
+        "documentation": "Выдает задание игроку. Если у игрока уже есть этот квест, то ничего не произойдет.",
+        "args": [
+            "Item"
+        ],
+        "example": "=give_task(task_name)"
+    },
+    "turn_on": {
+        "documentation": "Включает источник света. Можно указывать сразу множество источников.",
+        "args": [
+            "StoryID"
+        ],
+        "example": "=turn_on(light_1:light_2)"
+    },
+    "stop_tutorial": {
+        "documentation": "Прерывает туториал по названию.",
+        "args": [
+            "Tutorial"
+        ],
+        "example": "=stop_tutorial(tutorial_name)"
+    },
+    "spawn_corpse": {
+        "documentation": "Спавнит труп НПС на waypoint-е. Можно указать индекс, если waypoint состоит из нескольких точек.",
+        "args": [
+            "Stalker",
+            "Waypoint",
+            "Number"
+        ],
+        "example": "=spawn_corpse(stalker_name:waypoint:0)"
+    },
+    "turn_off": {
+        "documentation": "Выключает источники света. Можно указать сразу множество источников.",
+        "args": [
+            "StoryID"
+        ],
+        "example": "=turn_off(light_1:light_2)"
+    },
+    "relocate_actor_inventory_to_box": {
+        "documentation": "Перемещает все предметы игрока в хранилище с указаным `StoryID`. Квестовые предметы не будут перемещены, ровно как и предметы из списка исключений, такие как: Биноколь, Нож и Фонарик.",
+        "args": [
+            "StoryID"
+        ],
+        "example": "=relocate_actor_inventory_to_box(storage_id)"
+    },
+    "hit_gg": {
+        "documentation": "Ударяет игрока. На время анимации получения удара у игрока отбирают управление и скрывают HUD.",
+        "args": [],
+        "example": "=hit_gg"
+    },
+    "spawn_object": {
+        "documentation": "Создает предмет на waypoint. Можно указать индекс, если путь состоит из нескольких точек и указать угол `Yaw`, то есть, поворот относительно вертикальной оси.",
+        "args": [
+            "Item",
+            "Waypoint",
+            "Number",
+            "Number"
+        ],
+        "example": "=spawn_object(item_name:waypoint:0:45)"
+    },
+    "forward_game_time": {
+        "documentation": "Добавляет к текущему времени указанные часы и минуты. Можно указать только часы, тогда минуты меняться не будут.",
+        "args": [
+            "Number",
+            "Number"
+        ],
+        "example": "=forward_game_time(2:30)"
+    },
+    "remove_squad": {
+        "documentation": "Удаляет сквад из игры на основе его `StoryID`. Если у сквада не указан `StoryID`, то ничего не произойдет.",
+        "args": [
+            "StoryID"
+        ],
+        "example": "=remove_squad(squad_id)"
+    },
+    "run_postprocess": {
+        "documentation": "Запускает работу постпроцесса, который зарегестрирован в файле `postprocess.ltx`, можно указать ему индекс, чтобы в последующем можно было удобно на основе индекса выключить постпроцесс.",
+        "args": [
+            "Postproccess",
+            "Number"
+        ],
+        "example": "=run_postprocess(pp_name:2222)"
+    },
+    "destroy_object": {
+        "documentation": "Уничтожает объект. Если вызывается внутри самого объекта, то аргументы указывать не нужно. Однако, если вызываеться снаружи, то есть несколько вариантов:  \n * `Story` - Необходимо 2 аргумента `story` и `actor or story_id`.  \n * `Path` - необходимо 2 аргумента `Path` и `waypoint_name`, так же можно указать `waypoint_index`, если Waypoint состоит из нескольких точек.  \n * `Job` - тогда нужно писать 3 аргумента `Job`, `job_section` и `smart_name`. \n\n **Важно**, первый аргумент - всегда ключевое слово и пишется так, как указано тут. Не смотря на то, что у функции и есть несколько вариантов использования, чаще всего, если почти не всегда, используеться вариант со `Story`.",
+        "args": [
+            "Text",
+            "Waypoint|StoryID|Job",
+            "Number|Smart"
+        ],
+        "example": "=destroy_object(story:story_id)"
+    }
 }

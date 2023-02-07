@@ -1,2 +1,39 @@
 {
+    "actor_has_item": {
+        "documentation": "Проверяет наличие предмета у игрока. Если у него есть предмет, возвращает `true`, иначе `false`.",
+        "args": [
+            "Item"
+        ],
+        "example": "=actor_has_item(item_name)"
+    },
+    "actor_has_item_count": {
+        "documentation": "Проверка наличие предмета у игрока в определённом количестве. Если у игрока есть предмет и его количество равно тому, которое указанно, возвращает `true`, иначе `false`.",
+        "args": [
+            "Item",
+            "Number"
+        ],
+        "example": "=actor_has_item_count(item_name:10)"
+    },
+    "squad_exist": {
+        "documentation": "Проверяет жив/существует ли отряд с указанным `story_id`.",
+        "args": [
+            "StoryID"
+        ],
+        "example": "=squad_exist(squad_story_id)"
+    },
+    "is_night": {
+        "documentation": "Если сейчас ночь, то возвращает `true`. По умолчанию считаеться, что ночь это время между 22 и 5 часами ночи включительно.",
+        "args": [],
+        "example": "=is_night"
+    },
+    "is_day": {
+        "documentation": "Если сейчас день, то возвращает `true`. По умолчанию считаеться, что день это время между 6 и 20 часами включительно.",
+        "args": [],
+        "example": "=is_day"
+    },
+    "black_screen": {
+        "documentation": "Возвращает `true`, если сейчас экран тёмный. Можно использовать в начале игры, когда логика начинает работать до того, как игрок начал играть.",
+        "args": [],
+        "example": "=black_screen"
+    }
 }
