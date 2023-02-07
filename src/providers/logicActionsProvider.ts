@@ -158,7 +158,7 @@ export function getFunctionsDocumentation(functionName : string) {
         textLenght = textLenght > docs[functionName]['example'].length ? textLenght : docs[functionName]['example'].length;
     }
     while ((match = exp.exec(docs[functionName]['documentation'])) !== null) {
-        if (Math.abs(match.index - (textLenght + matchIndex)) <= 5) {            
+        if (((textLenght + matchIndex) - match.index) <= 5) {            
             tempDocs += docs[functionName]['documentation'].slice(matchIndex, match.index) + "  \n";
             matchIndex = match.index;
         }
