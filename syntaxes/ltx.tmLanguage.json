@@ -24,6 +24,12 @@
 			"include": "#sections"
 		},
 		{
+			"include": "#classInheritance"
+		},
+		{
+			"include": "#arguments"
+		},
+		{
 			"include": "#string"
 		}
 	],
@@ -75,7 +81,7 @@
 			"patterns": [
 				{
 					"name": "variable.other.constant.property",
-					"match": "^(\\s*?)?[\\w\\$]+?(?=(\\s*?)?\\=)"
+					"match": "^(\\s*?)?[\\w\\$]+?(?=(\\s*?)?(\\=|\\n))"
 				}
 			]
 		},
@@ -90,8 +96,8 @@
 		"string": {
 			"patterns": [
 				{
-					"name": "string",
-					"match": "[\\w\\*\\.\\@\\$\\\\]+"
+					"name": "variable.other",
+					"match": "[\\w\\#\"\\*\\.\\@\\$\\\\]+"
 				}
 			]
 		},
@@ -100,6 +106,22 @@
 				{
 					"name": "keyword.control",
 					"match": "\\b(nil|true|false|complete|fail|reversed)\\b"
+				}
+			]
+		},
+		"arguments": {
+			"patterns": [
+				{
+					"name": "variable",
+					"match": "(?<=(\\(|:))\\w+(?=(:|\\)))"
+				}
+			]
+		},
+		"classInheritance": {
+			"patterns": [
+				{
+					"name": "support.class",
+					"match": "(?<=\\]\\:)\\w+"
 				}
 			]
 		}
