@@ -108,16 +108,14 @@ async function writeDocumentation(docs : Object, name : string) {
 
 async function pickArguments(name : string) {
     const argsList = getUserArgsDocumentation();
-    const doneButton = "[ Done ]";
     var args = [];
     var index = 0;
-
     while (true) {
-        let argSelection = await window.showQuickPick(argsList.sort().concat(doneButton), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции '" + name + "'. Нажмите " + doneButton + " чтобы закончить. Опционально."});
-        if (!argSelection || argSelection === doneButton) {
+        let argSelection = await window.showQuickPick(argsList.sort(), {title:"Выбирите аргумент на позицию №" + (index + 1) + " для функции '" + name + "'. Опционально.", canPickMany:true});
+        if (!argSelection || argSelection.length === 0) {
             break;
         }
-        args.push(argSelection);
+        args.push(argSelection.join("|"));
         index++;
     }
     return args;

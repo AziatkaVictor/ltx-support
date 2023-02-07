@@ -100,7 +100,7 @@
 						"items": {
 							"type": "string"
 						},
-						"default": ["StoryID", "Sound", "Stalker", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial"],
+						"default": ["StoryID", "Sound", "Stalker", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial", "Postproccess", "Job", "Boolean"],
 						"description": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
 					}
 				}
