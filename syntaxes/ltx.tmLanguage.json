@@ -96,7 +96,7 @@
 		"string": {
 			"patterns": [
 				{
-					"name": "variable.other",
+					"name": "variable.other.constant.property",
 					"match": "[\\w\\#\"\\*\\.\\@\\$\\\\]+"
 				}
 			]
