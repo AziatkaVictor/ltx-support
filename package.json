@@ -11,9 +11,6 @@
 	"categories": [
 		"Programming Languages"
 	],
-	"activationEvents": [
-		"onLanguage:ltx"
-	],
 	"main": "./out/extension",
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
