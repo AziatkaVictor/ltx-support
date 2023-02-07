@@ -18,7 +18,10 @@ class functionPickItem implements QuickPickItem {
 
 export async function provideLogicActions(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
-    
+    if (data.isInsideArgumentsGroup(position)) {
+        return;
+    }
+
     if (data.isInsideFunctionGroup(position) && context.triggerCharacter !== "!") {
         return getLogicCompletionItems(getFunctions(), "xr_effects");
     }

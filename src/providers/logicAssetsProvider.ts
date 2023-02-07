@@ -7,7 +7,8 @@ import { getPathToMisc } from "../settings";
 export async function provideLogicAssets(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
     var items = [];
-    if (data.isInsideConditionGroup(position) || data.isInsideFunctionGroup(position)) {
+    
+    if (data.isInsideArgumentsGroup(position)) {
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
     }
@@ -20,7 +21,9 @@ async function getSquads(document: TextDocument) : Promise<CompletionItem[]> {
     for await (const file of files) {
         var items = [];
         for await (const section of await LtxDocument.prototype.getSectionsByUri(file)) {
-            items.push(new CompletionItem(section, CompletionItemKind.User));
+            var item = new CompletionItem(section, CompletionItemKind.User);
+            item.detail = "Squad"
+            items.push(item);
         }
     }
     return items;
@@ -32,7 +35,9 @@ async function getTasks(document: TextDocument) : Promise<CompletionItem[]> {
     for await (const file of files) {
         let ltxData =  await LtxDocument.prototype.getSectionsByUri(file);
         for await (const section of ltxData) {
-            items.push(new CompletionItem(section, CompletionItemKind.Event));
+            var item = new CompletionItem(section, CompletionItemKind.Event);
+            item.detail = "Task"
+            items.push(item);
         }
     }
     return items;
