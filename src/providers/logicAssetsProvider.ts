@@ -1,6 +1,6 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
 import { getLtxDocument } from "../extension";
-import { LtxDocument } from "../ltx/ltxDocument";
+import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { findFilesInWorkspace } from "../lua/fileReader";
 import { getPathToMisc } from "../settings";
 
@@ -11,6 +11,9 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
     if (data.isInsideArgumentsGroup(position)) {
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
+    }
+    if (data.isInsideArgumentsGroup(position) || (!data.isInsideConditionGroup(position) && !data.isInsideFunctionGroup(position))) {
+        items = items.concat(await getKeywords(data));
     }
     return items;
 }
@@ -41,4 +44,15 @@ async function getTasks(document: TextDocument) : Promise<CompletionItem[]> {
         }
     }
     return items;
+}
+
+async function getKeywords(document : LtxDocument): Promise<CompletionItem[]> {
+    var items = ["nil","true","false"];
+    if (document.getType() === LtxDocumentType.Tasks) {
+        items.push("complete", "fail", "reversed");
+    }
+    return items.map((value) => {
+        var item = new CompletionItem(value, CompletionItemKind.Keyword);
+        return item;
+    })
 }
