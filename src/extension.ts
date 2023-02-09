@@ -9,6 +9,7 @@ import { provideLogicInfo } from './providers/logicInfoProvider';
 import { provideLogicParams } from './providers/logicParamsProvider';
 import { provideLogicSections } from './providers/logicSectionsProvider';
 import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
+import { provideSymbols } from './providers/logicSymbolsProvider';
 import { isDiagnosticEnabled } from './settings';
 
 let diagnosticCollection: DiagnosticCollection;
@@ -36,6 +37,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideLogicParams}));
     
     context.subscriptions.push(languages.registerFoldingRangeProvider("ltx", {provideFoldingRanges : provideFolding}));
+    context.subscriptions.push(languages.registerDocumentSymbolProvider("ltx", {provideDocumentSymbols : provideSymbols}));
     
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
     context.subscriptions.push(languages.registerHoverProvider("ltx", {provideHover : provideHover}));
