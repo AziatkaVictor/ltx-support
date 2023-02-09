@@ -5,6 +5,13 @@ export function provideSymbols(document: TextDocument, token: CancellationToken)
     var data = getLtxDocument(document);
     var lines = []
     var sections = data.getSections().map(section => {
+        if (!section.name) {
+            return;
+        }
+        if (!section.lines) {
+            return new SymbolInformation(section.name, SymbolKind.Class, null, new Location(document.uri, new Position(section.startLine, 0)));
+        }
+
         Array.from(section.lines.values()).map(line => {
             if (!line.propertyName) {
                 return;
