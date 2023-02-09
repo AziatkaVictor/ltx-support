@@ -110,7 +110,18 @@
 						"items": {
 							"type": "string"
 						},
-						"description": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`. На данный момент не работает. `WiP`"
+						"default" : ["st_generate_fnames.xml", "st_generate_snames.xml", "ui_st_mm.xml", "ui_st_keybinding.xml", "ui_st_credits.xml", "ui_st_other.xml"],
+						"description": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`."
+					},
+					"ltx-support.completion.ignoreQuest": {
+						"type": "boolean",
+						"default": true,
+						"description": "Игнорировать файлы локализации, если в названии есть `st_quests_*`."
+					},
+					"ltx-support.completion.ignoreDialogs": {
+						"type": "boolean",
+						"default": true,
+						"description": "Игнорировать файлы локализации, если в названии есть `st_dialogs_*`."
 					}
 				}
 			},

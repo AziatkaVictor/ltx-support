@@ -12,6 +12,18 @@ export function getPathToLocalization() : string | null {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToLocalization");
 }
 
+export function getIgnoredLocalization() : string[] {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreLocalizationFile");
+}
+
+export function isIgnoreQuests() : boolean {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreQuest");
+}
+
+export function isIgnoreDialogs() : boolean {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreDialogs");
+}
+
 export function getUserDocumentation(filename : string) : Object {
     return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation") || {};
 }

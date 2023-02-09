@@ -2,7 +2,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { findFilesInWorkspace } from "../lua/fileReader";
-import { getDefaultPathToLocalization, getPathToLocalization, getPathToMisc } from "../settings";
+import { getDefaultPathToLocalization, getIgnoredLocalization, getPathToLocalization, getPathToMisc, isIgnoreDialogs, isIgnoreQuests } from "../settings";
 import { parseString } from 'xml2js';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -79,7 +79,7 @@ async function getLocalizationArr() {
     var result = [];
 
     for await (let fileName of files) {
-        if (fileName.indexOf("dialog") !== -1) {
+        if ((isIgnoreDialogs() && fileName.indexOf("st_dialog") !== -1) || (isIgnoreQuests() && fileName.indexOf("st_quest") !== -1) || getIgnoredLocalization().indexOf(fileName) !== -1) {
             continue;
         }
         let file = (workspace.workspaceFolders[0].uri.path + "/" + getPathToLocalization() + fileName).replace(/\//g, "\\");    
@@ -91,8 +91,7 @@ async function getLocalizationArr() {
         else {
             // result = result.concat(parseXML(path.resolve(__dirname, getDefaultPathToLocalization(), fileName)))
         }
-    }
-    console.log(result.length);    
+    }   
     return Array.from(new Set(result));
 }
 
