@@ -127,6 +127,10 @@ export class LtxDocument {
         return false;
     }
 
+    inInsideCondlist(position : Position) : boolean {
+        return this.getLine(position).inInsideCondlist(position);
+    }
+
     /**
      * Получить данные строки по положению курсора в документе
      * @param position Курсор в текстовом документе 

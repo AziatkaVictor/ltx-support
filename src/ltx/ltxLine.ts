@@ -3,7 +3,6 @@ import { isIgnoreParamsDiagnostic } from "../settings"
 import { LtxCondlist } from "./ltxCondlist"
 import { addError } from "./ltxError"
 import { LtxSectionProperty } from "./ltxSectionProperty"
-import { LtxSectionType } from "./ltxSectionType"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
 
 

@@ -15,7 +15,7 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
     }
-    if (data.isInsideArgumentsGroup(position) || (!data.isInsideConditionGroup(position) && !data.isInsideFunctionGroup(position))) {
+    if (data.isInsideArgumentsGroup(position) || (!data.isInsideConditionGroup(position) && !data.isInsideFunctionGroup(position) && data.inInsideCondlist(position))) {
         items = items.concat(await getKeywords(data));
         items = items.concat(await getLocalization());
     }
