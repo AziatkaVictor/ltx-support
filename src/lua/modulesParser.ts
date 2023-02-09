@@ -54,7 +54,7 @@ function findModulesFileNames(filePath : string) {
 }
 
 function findSectionParamsInFile(filePath : string) : string[] | null {
-    return findElements(filePath, /(utils\.(cfg_get_.+))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
+    return findElements(filePath, /(utils\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
         return match[4];
     })
 }
