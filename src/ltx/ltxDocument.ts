@@ -39,6 +39,14 @@ export class LtxDocument {
         return this.sections;
     }
 
+    getLines(): LtxLine[] {
+        var lines = [];
+        this.sections.map(section => {
+            lines = lines.concat(Array.from(section.lines.values()))
+        });
+        return lines;
+    }
+
     getInfos(): string[] {
         let items = []
         for (const item of this.semanticData) {
