@@ -4,7 +4,7 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -54,7 +54,7 @@
 				"path": "./syntaxes/snippets.json"
 			}
 		],
-		"commands":[
+		"commands": [
 			{
 				"command": "ltx-support.addDocumentation",
 				"title": "ltx-support: Add Documentation"
@@ -85,11 +85,11 @@
 				"title": "Documentation",
 				"properties": {
 					"ltx-support.documentation.xr_effectsDocumentation": {
-						"type":"object",
+						"type": "object",
 						"description": "Документация для `xr_effects.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
 					},
 					"ltx-support.documentation.xr_conditionsDocumentation": {
-						"type":"object",
+						"type": "object",
 						"description": "Документация для `xr_conditions.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
 					},
 					"ltx-support.documentation.argsTypeForFunctionsDocumentation": {
@@ -97,7 +97,21 @@
 						"items": {
 							"type": "string"
 						},
-						"default": ["StoryID", "Sound", "Stalker", "Item", "Waypoint", "Smart", "Number", "Squad", "Text", "Tutorial", "Postproccess", "Job", "Boolean"],
+						"default": [
+							"StoryID",
+							"Sound",
+							"Stalker",
+							"Item",
+							"Waypoint",
+							"Smart",
+							"Number",
+							"Squad",
+							"Text",
+							"Tutorial",
+							"Postproccess",
+							"Job",
+							"Boolean"
+						],
 						"description": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
 					}
 				}
@@ -110,7 +124,14 @@
 						"items": {
 							"type": "string"
 						},
-						"default" : ["st_generate_fnames.xml", "st_generate_snames.xml", "ui_st_mm.xml", "ui_st_keybinding.xml", "ui_st_credits.xml", "ui_st_other.xml"],
+						"default": [
+							"st_generate_fnames.xml",
+							"st_generate_snames.xml",
+							"ui_st_mm.xml",
+							"ui_st_keybinding.xml",
+							"ui_st_credits.xml",
+							"ui_st_other.xml"
+						],
 						"description": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`."
 					},
 					"ltx-support.completion.ignoreQuest": {
