@@ -213,9 +213,9 @@ export class LtxDocument {
      * @param text Текст, в котором необходимо найти секции
      * @returns Возвращаем массив с названием всех секций
      */
-    private findAllSectionsNames(text : string) : string[] {
-        let re = /(?<=\[)[\w@]+(?=\])/g;
-        let match;
+    private findAllSectionsNames(text : string, parent? : string[]) : string[] {
+        var re : RegExp = !parent ? /(?<=\[)[\w@]+(?=\])/g : new RegExp("(?<=\[)[\w@]+(?=\]\:(" + parent.join("|") + "))", "g");
+        var match;
         sectionsArray = [];
         while ((match = re.exec(text)) !== null) {
             sectionsArray.push(match[0]);
