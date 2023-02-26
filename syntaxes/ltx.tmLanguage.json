@@ -6,9 +6,6 @@
 			"include": "#comments"
 		},
 		{
-			"include": "#info"
-		},
-		{
 			"include": "#keyword"
 		},
 		{
@@ -31,6 +28,9 @@
 		},
 		{
 			"include": "#string"
+		},
+		{
+			"include": "#info"
 		}
 	],
 	"repository": {
@@ -73,7 +73,7 @@
 			"patterns": [
 				{
 					"name": "constant.numeric",
-					"match": "(?<!\\w)\\d+(?!\\w)"
+					"match": "(?<!\\w)(\\-)?\\d+(\\.\\d+)?(?!\\w)"
 				}
 			]
 		},
