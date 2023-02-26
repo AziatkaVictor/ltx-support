@@ -46,6 +46,7 @@ export function activate(context: ExtensionContext) {
     
     context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addActionsDocumentnation));
     context.subscriptions.push(commands.registerCommand("ltx-support.Start", startGame));
+    context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
 
     window.showInformationMessage("LTX Support запущено! Возникли сложности или вы просто хотите больше знать о том, как работает логика сталкера? Загляните на [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki)!", "Спасибо!");
 }

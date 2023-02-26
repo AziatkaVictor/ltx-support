@@ -71,12 +71,16 @@
 			{
 				"command": "ltx-support.addDocumentation",
 				"title": "Add Documentation",
-				"category": "ltx-support",
-				"enablement": "editorLangId == 'ltx'"
+				"category": "ltx-support"
 			},
 			{
 				"command": "ltx-support.Start",
 				"title": "Start Game",
+				"category": "ltx-support"
+			},
+			{
+				"command": "ltx-support.updateScripts",
+				"title": "Update Scripts",
 				"category": "ltx-support"
 			}
 		],
