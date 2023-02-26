@@ -57,7 +57,7 @@
 			"patterns": [
 				{
 					"name": "variable",
-					"match": "(\\-|\\+)\\w+"
+					"match": "(\\-|\\+)(?!\\d)\\w+"
 				}
 			]
 		},
