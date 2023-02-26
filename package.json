@@ -58,7 +58,7 @@
 		"keybindings":[
 			{
 				"command": "ltx-support.Start",
-				"key": "f5"
+				"key": "f9"
 			}
 		],
 		"snippets": [
@@ -87,17 +87,17 @@
 					"ltx-support.directories.pathToScripts": {
 						"type": "string",
 						"default": "scripts\\",
-						"description": "Путь к папке, где хранятся функции."
+						"markdownDescription": "Путь к папке, где хранятся функции."
 					},
 					"ltx-support.directories.pathToLocalization": {
 						"type": "string",
 						"default": "configs\\text\\rus\\",
-						"description": "Путь к папке, где хранится локализация. На данный момент не работает. `WiP`"
+						"markdownDescription": "Путь к папке, где хранится локализация. На данный момент не работает. `WiP`"
 					},
 					"ltx-support.directories.pathToMisc": {
 						"type": "string",
 						"default": "configs\\misc\\",
-						"description": "Путь к папке, где хранится файлы с квестами, сквадами и прочим."
+						"markdownDescription": "Путь к папке, где хранится файлы с квестами, сквадами и прочим."
 					}
 				}
 			},
@@ -106,11 +106,11 @@
 				"properties": {
 					"ltx-support.documentation.xr_effectsDocumentation": {
 						"type": "object",
-						"description": "Документация для `xr_effects.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
+						"markdownDescription": "Документация для `xr_effects.sripts`, которая создана через комманду `#ltx-support.addDocumentation#`."
 					},
 					"ltx-support.documentation.xr_conditionsDocumentation": {
 						"type": "object",
-						"description": "Документация для `xr_conditions.sripts`, которая создана через комманду `ltx-support: Add Documentation`."
+						"markdownDescription": "Документация для `xr_conditions.sripts`, которая создана через комманду `#ltx-support.addDocumentation#`."
 					},
 					"ltx-support.documentation.argsTypeForFunctionsDocumentation": {
 						"type": "array",
@@ -132,7 +132,7 @@
 							"Job",
 							"Boolean"
 						],
-						"description": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
+						"markdownDescription": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
 					}
 				}
 			},
@@ -152,17 +152,17 @@
 							"ui_st_credits.xml",
 							"ui_st_other.xml"
 						],
-						"description": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`."
+						"markdownDescription": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`."
 					},
 					"ltx-support.completion.ignoreQuest": {
 						"type": "boolean",
 						"default": true,
-						"description": "Игнорировать файлы локализации, если в названии есть `st_quests_*`."
+						"markdownDescription": "Игнорировать файлы локализации, если в названии есть `st_quests_*`."
 					},
 					"ltx-support.completion.ignoreDialogs": {
 						"type": "boolean",
 						"default": true,
-						"description": "Игнорировать файлы локализации, если в названии есть `st_dialogs_*`."
+						"markdownDescription": "Игнорировать файлы локализации, если в названии есть `st_dialogs_*`."
 					}
 				}
 			},
@@ -172,34 +172,34 @@
 					"ltx-support.diagnostics.enableDiagnostic": {
 						"type": "boolean",
 						"default": false,
-						"description": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. `WiP`"
+						"markdownDescription": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. `WiP`"
 					},
 					"ltx-support.diagnostics.ignoreParamsDiagnostic": {
 						"type": "boolean",
 						"default": false,
-						"description": "Игнорировать проверку параметров секции. На данный момент не работает. `WiP`"
+						"markdownDescription": "Игнорировать проверку параметров секции. На данный момент не работает. `WiP`"
 					}
 				}
 			},
 			{
 				"title": "Game",
 				"properties": {
-					"ltx-support.Game.useWorkspaceFolder": {
+					"ltx-support.game.useWorkspaceFolder": {
 						"type": "boolean",
 						"default": true,
-						"description": "Запускать игру относительно рабочей папки"
+						"markdownDescription": "Запускать игру относительно рабочей папки"
 					},
-					"ltx-support.Game.additiveCommands": {
+					"ltx-support.game.additiveCommands": {
 						"type": "string",
 						"default": "cd ..",
-						"description": "Дополнительная команда, которая вызывается при включенном `ltx-support.Game.useWorkspaceFolder` перед стартом игры. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра."
+						"markdownDescription": "Дополнительная команда, которая вызывается при включенном `#ltx-support.game.useWorkspaceFolder#` перед стартом игры. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра."
 					},
-					"ltx-support.Game.path": {
+					"ltx-support.game.path": {
 						"type": "string",
 						"default": "",
-						"description": "Путь к папке, относительно которой будет вызываться комманда. Игнорируеться при включунном `ltx-support.Game.useWorkspaceFolder`."
+						"markdownDescription": "Путь к папке, относительно которой будет вызываться комманда. Игнорируется при включенном `#ltx-support.game.useWorkspaceFolder#`."
 					},
-					"ltx-support.Game.commands": {
+					"ltx-support.game.commands": {
 						"type": "array",
 						"items": {
 							"type": "array",
@@ -208,10 +208,9 @@
 							}
 						},
 						"default": [
-							["Запуск CoP", "start bin/xrEngine"],
-							["Запуск SoC", "start bin/xr_3da"]
+							["Запуск CoP", "start bin/xrEngine"]
 						],
-						"description": "Варианты запуска. Аргументы: название, комманда. Подробнее "
+						"markdownDescription": "Варианты запуска. Аргументы: `название`, `комманда`. [Подробнее на Wiki...](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)"
 					}
 				}
 			}
