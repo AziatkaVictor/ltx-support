@@ -51,6 +51,13 @@
 				"path": "./syntaxes/ltx.tmLanguage.json"
 			}
 		],
+		"keybindings":[
+			{
+				"command": "ltx-support.Start",
+				"key": "f5",
+				"when": "editorLangId == 'ltx'"
+			}
+		],
 		"snippets": [
 			{
 				"language": "ltx",
@@ -60,7 +67,15 @@
 		"commands": [
 			{
 				"command": "ltx-support.addDocumentation",
-				"title": "ltx-support: Add Documentation"
+				"title": "Add Documentation",
+				"category": "ltx-support",
+				"enablement": "editorLangId == 'ltx'"
+			},
+			{
+				"command": "ltx-support.Start",
+				"title": "Start Game",
+				"category": "ltx-support",
+				"enablement": "editorLangId == 'ltx'"
 			}
 		],
 		"configuration": [
@@ -161,6 +176,40 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Игнорировать проверку параметров секции. На данный момент не работает. `WiP`"
+					}
+				}
+			},
+			{
+				"title": "Game",
+				"properties": {
+					"ltx-support.Game.useWorkspaceFolder": {
+						"type": "boolean",
+						"default": true,
+						"description": "Запускать игру относительно рабочей папки"
+					},
+					"ltx-support.Game.additiveCommands": {
+						"type": "string",
+						"default": "cd ..",
+						"description": "Дополнительная команда, которая вызывается при включенном `ltx-support.Game.useWorkspaceFolder` перед стартом игры. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра."
+					},
+					"ltx-support.Game.path": {
+						"type": "string",
+						"default": "",
+						"description": "Путь к папке, относительно которой будет вызываться комманда. Игнорируеться при включунном `ltx-support.Game.useWorkspaceFolder`."
+					},
+					"ltx-support.Game.commands": {
+						"type": "array",
+						"items": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"default": [
+							["Запуск CoP", "start bin/xrEngine"],
+							["Запуск SoC", "start bin/xr_3da"]
+						],
+						"description": "Варианты запуска. Аргументы: название, комманда. Подробнее "
 					}
 				}
 			}

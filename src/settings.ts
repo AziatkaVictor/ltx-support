@@ -44,6 +44,22 @@ export function isDiagnosticEnabled() : boolean {
     return false; //workspace.getConfiguration("", workspace.workspaceFile).get("Diagnostics.EnableDiagnostic");
 }
 
+export function isUseWorkspaceFolder() : boolean {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.useWorkspaceFolder");
+}
+
+export function getAdditiveCommands() : string | null {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.additiveCommands");
+}
+
+export function getGamePath() : string | null {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.path");
+}
+
+export function getGameCommands() : [] {
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.commands");
+}
+
 export function getDefaultPathToConditions() : string {
     return "../../data/scripts/xr_conditions.script";
 }
