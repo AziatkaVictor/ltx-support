@@ -35,12 +35,16 @@
 			{
 				"id": "ltx",
 				"aliases": [
-					"LTX",
+					"Stalker Logic",
 					"ltx"
 				],
 				"extensions": [
 					".ltx"
 				],
+				"icon":  {
+					"light": "./data/ltx-light.png",
+					"dark": "./data/ltx-dark.png"
+				},
 				"configuration": "./syntaxes/language-configuration.json"
 			}
 		],
