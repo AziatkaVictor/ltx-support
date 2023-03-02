@@ -9,7 +9,6 @@ import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
-import { isIgnoreParamsDiagnostic } from "../settings";
 import { getFileData } from "../lua/fileReader";
 export var sectionsArray: string[];
 export var currentFile: string;
@@ -73,42 +72,31 @@ export class LtxDocument {
         }
     }
     
+    // TODO: Заменить на Validate
     getErrorsData() : LtxError[] {
         return this.errorsData;
     }   
     
-    
     getType() : LtxDocumentType {
         return this.fileType;
     }
-    
 
     async getSectionsByUri(uri : Uri) : Promise<string[]> {
         return this.findAllSectionsNames(getFileData(uri.fsPath))
     }
 
-    isInsideFunctionGroup(position : Position) : boolean {
-        var condlists = this.getLine(position).condlists;
-        for (let index = 0; index < condlists.length; index++) {
-            const element = condlists[index];
-            if (!element.functionRange) {
-                continue;
-            }
-            if (element.functionRange.contains(position)) {
+    isInsideFunction(position : Position) : boolean {
+        for (const condlist of this.getLine(position).condlists) {
+            if (condlist.isInsideFunction(position)) {
                 return true;
             }
         }
         return false;
     }
 
-    isInsideConditionGroup(position : Position) : boolean {
-        var condlists = this.getLine(position).condlists;
-        for (let index = 0; index < condlists.length; index++) {
-            const element = condlists[index];
-            if (!element.conditionRange) {
-                continue;
-            }
-            if (element.conditionRange.contains(position)) {
+    isInsideCondition(position : Position) : boolean {
+        for (const condlist of this.getLine(position).condlists) {
+            if (condlist.isInsideCondition(position)) {
                 return true;
             }
         }
@@ -137,12 +125,10 @@ export class LtxDocument {
      * @returns Возвращает данные строки, в которой находиться курсор
      */
     getLine(position : Position) : LtxLine {
-        // Проверяем наличие курсора в текстовом документе
         if (!position) {
             return null;
         }
 
-        // Проверка, на отсутствие секции по положению курсора
         if (!this.getSectionByPosition(position)) {
             if (!this.rawData.get(position.line)) {
                 return null;
@@ -150,7 +136,6 @@ export class LtxDocument {
             return this.rawData.get(position.line);
         }
 
-        // Проверяем, можем ли мы найти секцию, внутри которой находиться курсор
         let sectionContent = this.getSectionByPosition(position).lines;
         if (sectionContent) {
             return sectionContent.get(position.line);
@@ -158,20 +143,12 @@ export class LtxDocument {
     }
 
     getSectionByPosition(selection: Position): LtxSection | null {
-        try {
-            let temp;
-            this.sections.forEach(section => {
-                if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
-                    temp = section;
-                    return;
-                }
-            });
-            return temp;
-        }
-        catch (error) {
-            console.log(error);
-            return;
-        }
+        for (const section of this.sections) {
+            if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
+                return section;
+            }
+        } 
+        return;
     }
 
     /**
@@ -200,7 +177,6 @@ export class LtxDocument {
                 result = match;
                 continue;
             }
-            // Добавляем ошибки, если секция в этой строке уже была найдена
             let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
             addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
         }
@@ -252,12 +228,10 @@ export class LtxDocument {
             let line = contentArray[lineIndex].replace(/;.*/, '');
             this.parseLine(line, lineIndex, args);
         }
-        // Закрываем последнюю секцию
         if (this.tempSection) {
             this.closeSection(this.tempSection);
         }
 
-        // Асинхронно анализируем строки
         for await (const section of this.sections) {
             section.parseLines();
         }    
@@ -288,7 +262,6 @@ export class LtxDocument {
         currentFile = document.uri.fsPath;
         this.setDocumentType();
 
-        // Массив с ошибками
         globalErrorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
 
@@ -302,19 +275,6 @@ export class LtxDocument {
         }
         
         this.parsingSections(content, args);
-
-        // FIXME Неверный цикл
-        if (isIgnoreParamsDiagnostic() === false) {
-            let start = 0;
-            let end = this.sections.length -1;
-            while (start < end) { 
-                if (this.sections[start].name === this.sections[end].name) {
-                    addError(this.sections[end].linkRange, "Повторение имени секции.", this.sections[end].name)
-                }
-                if (start % 2 === 0) start += 1;
-                else end -= 1;
-            }
-        }
   
         this.semanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = globalErrorsData.get(currentFile);

@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { GlobPattern, TextDocument, Uri, workspace } from 'vscode';
 
-export function getFileData(filePath : string) {
-    if (fs.existsSync(filePath)) {
-        return fs.readFileSync(filePath, "utf8");
+export function getFileData(path : string) {
+    if (fs.existsSync(path)) {
+        return fs.readFileSync(path, "utf8");
     }
     return;
 }
@@ -33,7 +33,7 @@ export function getClearLuaFile(filePath : string) {
     return removeLuaComments(file);
 }
 
-export function findElements(filePath : string, re : RegExp, callback : (match) => string, removeSame : boolean = true) {
+export function findLuaElements(filePath : string, re : RegExp, callback : (match) => string, removeSame : boolean = true) {
     var text = getClearLuaFile(filePath);
     var match;
     var data = [];

@@ -13,24 +13,32 @@ export class LtxCondlist {
 
     private tempData;
     
-    isInside(position : Position) {
+    isInside(position : Position) : boolean {
         return this.range.contains(position);
     }
 
-    constructor(lineNumber: number, index: number, data: string) {
-        this.tempData = data;
-        this.range = new Range(new Position(lineNumber, index), new Position(lineNumber, index + data.length))
-        this.lineIndex = lineNumber;
-        this.positionIndex = index;
+    isInsideCondition(position : Position) : boolean {
+        return this.conditionRange ? this.conditionRange.contains(position) : false;
+    }
 
-        this.condition = /\{.*?\}/.exec(this.tempData);
-        this.function = /\%.*?\%/.exec(this.tempData);
+    isInsideFunction(position : Position) : boolean {
+        return this.functionRange ? this.functionRange.contains(position) : false;
+    }
+
+    constructor(lineIndex: number, PosIndex: number, content: string) {
+        this.tempData = content;
+        this.range = new Range(new Position(lineIndex, PosIndex), new Position(lineIndex, PosIndex + content.length))
+        this.lineIndex = lineIndex;
+        this.positionIndex = PosIndex;
+
+        this.condition = /\{.*?\}/.exec(content);
+        this.function = /\%.*?\%/.exec(content);
 
         if (this.condition) {
-            this.conditionRange = new Range(new Position(lineNumber, index + this.condition.index), new Position(lineNumber, index + this.condition[0].length + this.condition.index - 1));
+            this.conditionRange = new Range(new Position(lineIndex, PosIndex + this.condition.index), new Position(lineIndex, PosIndex + this.condition[0].length + this.condition.index - 1));
         }
         if (this.function) {
-            this.functionRange = new Range(new Position(lineNumber, index + this.function.index), new Position(lineNumber, index + this.function[0].length + this.function.index - 1));
+            this.functionRange = new Range(new Position(lineIndex, PosIndex + this.function.index), new Position(lineIndex, PosIndex + this.function[0].length + this.function.index - 1));
         }
 
         this.findElements(/(\-|\+)(?!\d)\w*\b(?<=\w)/g, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);

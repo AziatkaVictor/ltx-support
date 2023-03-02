@@ -1,5 +1,5 @@
 import { getDefaultPathToScripts, getPathToScripts } from "../settings";
-import { analyzeFile, findElements} from "./fileReader";
+import { analyzeFile, findLuaElements} from "./fileReader";
 
 var modulesData : string[];
 var sectionsData : Map<string, string[]> = new Map<string, string[]>();
@@ -45,7 +45,7 @@ function getSectionsData() {
 }
 
 function findModulesFileNames(filePath : string) {
-    return findElements(filePath, /(?<=load_scheme\().+(?=\))/g, (match) => {
+    return findLuaElements(filePath, /(?<=load_scheme\().+(?=\))/g, (match) => {
         let data = match[0].split(",");
         let fileNameItem = data[0].trim();
         let sectionNameItem = data[1].trim();
@@ -54,13 +54,13 @@ function findModulesFileNames(filePath : string) {
 }
 
 function findSectionParamsInFile(filePath : string) : string[] | null {
-    return findElements(filePath, /(utils\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
+    return findLuaElements(filePath, /(utils\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
         return match[4];
     })
 }
 
 function findBasedConditions(filePath : string) {
-    return findElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
+    return findLuaElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
         var item = match[0].split(",")[1].trim();
         return item.slice(1, item.length - 1);
     })

@@ -1,5 +1,5 @@
 import { getDefaultPathToScripts, getPathToScripts } from "../settings";
-import { analyzeFile, findElements} from "./fileReader";
+import { analyzeFile, findLuaElements} from "./fileReader";
 
 var functionsData : string[];
 var conditionsData : string[];
@@ -38,5 +38,5 @@ function updateConditions() {
 }
 
 function findFunctions(filePath: string) {
-    return findElements(filePath, /(?<=^function\s).+?(?=\(.*?\))/gm, (match) => {return match[0]});
+    return findLuaElements(filePath, /(?<=^function\s).+?(?=\(.*?\))/gm, (match) => {return match[0]});
 }
