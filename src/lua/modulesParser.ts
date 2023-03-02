@@ -4,20 +4,36 @@ import { analyzeFile, findLuaElements} from "./fileReader";
 var modulesData : string[];
 var sectionsData : Map<string, string[]> = new Map<string, string[]>();
 var notExistedFiles : string [] = [];
-var basedConditions = [];
+var basedConditions : string[] = [];
 
-export function getParams(sectionName : string) {
+export function getParameterType(paramName, sectionName) : string {
+    for (const param of getParamsData(sectionName)) {
+        if (param.indexOf(paramName) !== -1) {
+            return param.split(":")[0];
+        }
+    }
+}
+
+function getParamsData(sectionName : string) {
     if (sectionsData.size === 0) {
         getSectionsData()
     }
-    
     if (notExistedFiles.length === 0) {
         console.log(notExistedFiles);
     }
+
     return sectionsData.get(sectionName).concat(basedConditions);
 }
 
-export function getModules() {
+export function getParams(sectionName : string) : string[] {
+    return getParamsData(sectionName).map((value) => {return value.split(":")[1]});
+}
+
+/**
+ * Получить список модулей в форме `Cекции`:`Cкрипт`. Необходимо скорее для парсинга файлов, чем для обычного использования.
+ * @returns
+ */
+export function getModules() : string[] {
     if (!modulesData) {
         updateModules();
     }
@@ -55,14 +71,16 @@ function findModulesFileNames(filePath : string) {
 
 function findSectionParamsInFile(filePath : string) : string[] | null {
     return findLuaElements(filePath, /(utils\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
-        return match[4];
+        return match[2].trim() + ":" + match[4];
     })
 }
 
 function findBasedConditions(filePath : string) {
     return findLuaElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
+        
+        var type = match[0].split(",")[0].trim();
         var item = match[0].split(",")[1].trim();
-        return item.slice(1, item.length - 1);
+        return type + ":" + item.slice(1, item.length - 1);
     })
 }
 
