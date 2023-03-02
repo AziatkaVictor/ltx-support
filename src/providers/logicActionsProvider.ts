@@ -22,10 +22,10 @@ export async function provideLogicActions(document: TextDocument, position: Posi
         return;
     }
 
-    if (data.isInsideFunctionGroup(position) && context.triggerCharacter !== "!") {
+    if (data.isInsideFunction(position) && context.triggerCharacter !== "!") {
         return getLogicCompletionItems(getFunctions(), "xr_effects");
     }
-    else if (data.isInsideConditionGroup(position)) {
+    else if (data.isInsideCondition(position)) {
         return getLogicCompletionItems(getConditions(), "xr_conditions");
     }
 }

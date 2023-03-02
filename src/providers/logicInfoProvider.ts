@@ -4,7 +4,7 @@ import { LtxDocument } from "../ltx/ltxDocument";
 
 export async function provideLogicInfo(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
-    if (data.isInsideConditionGroup(position) || data.isInsideFunctionGroup(position)) {
+    if (data.isInsideCondition(position) || data.isInsideFunction(position)) {
         return await getInfos(data);
     }
 }

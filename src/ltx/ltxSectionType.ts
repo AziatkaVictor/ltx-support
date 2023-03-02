@@ -1,10 +1,7 @@
 import { getModules, getParams } from "../lua/modulesParser";
-import { LtxSectionProperty } from "./ltxSectionProperty";
-
 
 export class LtxSectionType {
     readonly name: string
-    readonly params: Map<string, LtxSectionProperty>
     readonly isValid: boolean
 
     getParams() {

@@ -8,7 +8,7 @@ export async function provideLogicSections(document: TextDocument, position: Pos
     if (isInsideSectionDefinition(document.lineAt(position.line).text, position)) {
         return getSectionsDefinitionTypes();
     }
-    if (data.getLine(position).inInsideCondlist(position) && !data.isInsideConditionGroup(position) && !data.isInsideFunctionGroup(position)) {
+    if (data.getLine(position).inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position)) {
         return await getSections(data, position);
     }
 }

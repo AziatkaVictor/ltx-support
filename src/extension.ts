@@ -1,4 +1,3 @@
-import { readdirSync } from 'fs';
 import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, QuickPickItem, TextDocument, Uri, window, workspace } from 'vscode';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './lua/actionsParser';
@@ -30,7 +29,6 @@ export function activate(context: ExtensionContext) {
     workspace.onDidOpenTextDocument(createFileData);
     window.onDidChangeActiveTextEditor(createFileData);
     workspace.onDidChangeConfiguration(updateData);
-
 
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideLogicActions}, '=', "!"));
     context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideLogicInfo}, '-', '+'));
