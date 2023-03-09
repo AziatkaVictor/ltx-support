@@ -1,4 +1,5 @@
-import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, QuickPickItem, TextDocument, Uri, window, workspace } from 'vscode';
+import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, Uri, window, workspace } from 'vscode';
+import { startGame } from './commands';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './lua/actionsParser';
 import { addActionsDocumentnation, provideLogicActions } from './providers/logicActionsProvider';
@@ -10,7 +11,7 @@ import { provideLogicParams } from './providers/logicParamsProvider';
 import { provideLogicSections } from './providers/logicSectionsProvider';
 import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
 import { provideSymbols } from './providers/logicSymbolsProvider';
-import { isUseWorkspaceFolder, isDiagnosticEnabled, getAdditiveCommands, getGameCommands, getGamePath } from './settings';
+import { isDiagnosticEnabled} from './settings';
 
 let diagnosticCollection: DiagnosticCollection;
 export var documents: Map<TextDocument, LtxDocument> = new Map<TextDocument, LtxDocument>();
@@ -47,36 +48,6 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
 
     window.showInformationMessage("LTX Support запущено! Возникли сложности или вы просто хотите больше знать о том, как работает логика сталкера? Загляните на [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki)!", "Спасибо!");
-}
-
-async function startGame() {
-    class gameStartChoise implements QuickPickItem {
-        constructor(public label : string, public detail : string) {
-        }
-    }
-
-    var options = getGameCommands();
-    if (!options) {
-        return;
-    }
-
-    var choise = await window.showQuickPick(options.map((value) => {return new gameStartChoise(value[0], value[1])}));
-    if (!choise) {
-        return;
-    }
-
-    var terminal = window.activeTerminal ? window.activeTerminal : window.createTerminal();
-    terminal.show();
-
-    if (isUseWorkspaceFolder()) {
-        terminal.sendText("cd '" + workspace.workspaceFolders[0].uri.fsPath + "'");   
-        terminal.sendText(getAdditiveCommands());
-    }
-    else {
-        terminal.sendText("cd '" + getGamePath() + "'");
-    }
-
-    terminal.sendText(choise.detail);
 }
 
 function updateData(event: ConfigurationChangeEvent) {
