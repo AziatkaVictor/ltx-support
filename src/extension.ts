@@ -1,8 +1,8 @@
 import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, Uri, window, workspace } from 'vscode';
-import { startGame } from './commands';
+import { addDocumentation, startGame } from './commands';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './lua/actionsParser';
-import { addActionsDocumentnation, provideLogicActions } from './providers/logicActionsProvider';
+import { provideLogicActions } from './providers/logicActionsProvider';
 import { provideLogicAssets } from './providers/logicAssetsProvider';
 import { provideFolding } from './providers/logicFoldingProvider';
 import { provideHover } from './providers/logicHoverProvider';
@@ -43,7 +43,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
     context.subscriptions.push(languages.registerHoverProvider("ltx", {provideHover : provideHover}));
     
-    context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addActionsDocumentnation));
+    context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addDocumentation));
     context.subscriptions.push(commands.registerCommand("ltx-support.Start", startGame));
     context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
 
