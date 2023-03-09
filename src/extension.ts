@@ -55,7 +55,12 @@ async function startGame() {
         }
     }
 
-    var choise = await window.showQuickPick(getGameCommands().map((value) => {return new gameStartChoise(value[0], value[1])}));
+    var options = getGameCommands();
+    if (!options) {
+        return;
+    }
+
+    var choise = await window.showQuickPick(options.map((value) => {return new gameStartChoise(value[0], value[1])}));
     if (!choise) {
         return;
     }

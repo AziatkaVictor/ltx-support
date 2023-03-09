@@ -45,19 +45,19 @@ export function isDiagnosticEnabled() : boolean {
 }
 
 export function isUseWorkspaceFolder() : boolean {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.useWorkspaceFolder");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.useWorkspaceFolder");
 }
 
 export function getAdditiveCommands() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.additiveCommands");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.additiveCommands");
 }
 
 export function getGamePath() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.path");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.path");
 }
 
 export function getGameCommands() : [] {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.Game.commands");
+    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.commands");
 }
 
 export function getDefaultPathToConditions() : string {
