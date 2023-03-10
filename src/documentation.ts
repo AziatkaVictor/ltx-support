@@ -96,6 +96,7 @@ export async function addFunctionDocumentnation() {
         return;
     }
     
+    docs = getUserDocumentation(file);
     docs[name] = {
         "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
         "args" : args,
