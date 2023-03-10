@@ -116,6 +116,10 @@
 						"type": "object",
 						"markdownDescription": "Документация для `xr_conditions.sripts`, которая создана через комманду `#ltx-support.addDocumentation#`."
 					},
+					"ltx-support.documentation.paramsDocumentation": {
+						"type": "object",
+						"markdownDescription": "Документация для параметров секций, которая создана через комманду `#ltx-support.addDocumentation#`."
+					},
 					"ltx-support.documentation.argsTypeForFunctionsDocumentation": {
 						"type": "array",
 						"items": {
@@ -135,7 +139,9 @@
 							"Postproccess",
 							"Job",
 							"Task",
-							"Boolean"
+							"Boolean",
+							"Weather",
+							"Section"
 						],
 						"markdownDescription": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами."
 					}
