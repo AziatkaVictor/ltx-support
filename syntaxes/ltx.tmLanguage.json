@@ -56,22 +56,6 @@
 				}
 			]
 		},
-		"info": {
-			"patterns": [
-				{
-					"name": "variable",
-					"match": "(\\-|\\+)(?!\\d)\\w+"
-				}
-			]
-		},
-		"signal": {
-			"patterns": [
-				{
-					"name": "string",
-					"match": "(?<=(\\=|\\|)).+?(?=\\|)"
-				}
-			]
-		},
 		"function": {
 			"patterns": [
 				{
@@ -133,6 +117,22 @@
 				{
 					"name": "support.class",
 					"match": "(?<=\\]\\:)\\w+"
+				}
+			]
+		},
+		"info": {
+			"patterns": [
+				{
+					"name": "variable",
+					"match": "(\\-|\\+)(?!\\d)\\w+"
+				}
+			]
+		},
+		"signal": {
+			"patterns": [
+				{
+					"name": "string",
+					"match": "(?<=(\\=|\\|))\\s*\\w+?\\s*(?=\\|)"
 				}
 			]
 		}
