@@ -1,4 +1,5 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
+import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument } from "../ltx/ltxDocument";
 
@@ -10,5 +11,10 @@ export async function provideLogicParams(document: TextDocument, position: Posit
 }
 
 async function getParams(data: LtxDocument, position : Position) {
-    return Array.from(new Set(data.getSectionByPosition(position).type.getParams())).map((item) => {return new CompletionItem(item, CompletionItemKind.Enum);})
+    return Array.from(new Set(data.getSectionByPosition(position).type.getParams())).map((value) => {
+        var item = new CompletionItem(value, CompletionItemKind.Enum);
+        var Mark = getDocumentation(value, DocumentationKind.Property);
+        item.documentation = Mark;
+        return item;
+    })
 }
