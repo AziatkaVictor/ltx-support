@@ -43,6 +43,7 @@ export function getDocumentation(name : string, kind : DocumentationKind, hover 
     switch (kind) {
         case DocumentationKind.Functions: return getConditionFunctionDocumentation(name, hover);
         case DocumentationKind.Conditions: return getConditionFunctionDocumentation(name, hover);
+        case DocumentationKind.Property: return getParamsDocumentation(name, hover);
     }
 }
 
@@ -51,17 +52,16 @@ export function getDocumentation(name : string, kind : DocumentationKind, hover 
  */
 function getConditionFunctionDocumentation(name : string, hover : boolean = false) : MarkdownString {
     var docs = getDocumentationData(getDocByFunction(name) as DocumentationKind);
-   
-    if (!docs) {
-        return new MarkdownString();
-    }
-    if (!docs[name]) {
-        return new MarkdownString();
-    }
-
     var text = new MarkdownString();
     text.isTrusted = true;
     text.supportHtml = true;
+   
+    if (!docs) {
+        return text;
+    }
+    if (!docs[name]) {
+        return text;
+    }
 
     if (docs[name]['example'] && hover) {
         text.appendCodeblock(docs[name]['example'], "ltx");
@@ -74,10 +74,22 @@ function getConditionFunctionDocumentation(name : string, hover : boolean = fals
     return text;
 }
 
-function getParamsDocumentation(name : string) {
+function getParamsDocumentation(name : string, hover : boolean = false) {
     var text = new MarkdownString();
-    var docs = getDocumentationData(DocumentationKind.Functions);
+    var docs = getDocumentationData(DocumentationKind.Property);
 
+    if (!docs) {
+        return text;
+    }
+    if (!docs[name]) {
+        return text;
+    }
+
+    if (docs[name]['example'] && hover) {
+        text.appendCodeblock(docs[name]['example'], "ltx");
+        text.appendMarkdown("---\n")
+    }
+    text.appendMarkdown(docs[name]['documentation']);
     return text;
 }
 

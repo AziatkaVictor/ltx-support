@@ -18,7 +18,7 @@ function getParamsData(sectionName : string) {
     if (sectionsData.size === 0) {
         getSectionsData()
     }
-    if (notExistedFiles.length === 0) {
+    if (notExistedFiles.length !== 0) {
         console.log(notExistedFiles);
     }
 
@@ -27,6 +27,19 @@ function getParamsData(sectionName : string) {
 
 export function getParams(sectionName : string) : string[] {
     return getParamsData(sectionName).map((value) => {return value.split(":")[1]});
+}
+
+export function getAllParams() {
+    var arr : string[] = [];
+
+    if (sectionsData.size === 0) {
+        getSectionsData()
+    }
+
+    for (var section of sectionsData.values()) {
+        arr = arr.concat(section.map((value) => {return value.split(":")[1]}))
+    }
+    return Array.from(new Set(arr.concat(basedConditions.map((value) => {return value.split(":")[1]})))).sort()
 }
 
 /**
