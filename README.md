@@ -38,21 +38,8 @@
 3. После установки всех необходимых библиотек, необходимо нажать `Launch` во вкладке `Run and Debug` или на горячую клавишу `F5`.
 4. Готово. Должно открыться новое окно VS Code, в котором будет 2 тестовых файла.
 
-# Как это работает? 
-
-Первым делом плагин ищет объявление секции, после которого каждая строка, которая не объявляет секцию, будет считаться за строку с параметром. Рассмотрим алгоритм на такой строке:
-
-```ltx
-on_game_timer = 2500 | {=precondition() -info1} %=action() +info2% section@link
-```
-
-Текст делиться на 3 части:
-
-* Имя параметра `on_game_timer`
-* Сигнал `2500`
-* Condlist `{=precondition() -info1} %=action() +info2% section@link`
-
 # Ссылки
 
 * [Профиль на AP-PRO.RU](https://ap-pro.ru/profile/6-aziatkavictor/)
 * [Тема на форуме](https://ap-pro.ru/forums/topic/3561-vscode-podderzhka-sintaksisa-cop/)
+* [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki)
