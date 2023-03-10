@@ -31,6 +31,9 @@
 		},
 		{
 			"include": "#info"
+		},
+		{
+			"include": "#signal"
 		}
 	],
 	"repository": {
@@ -58,6 +61,14 @@
 				{
 					"name": "variable",
 					"match": "(\\-|\\+)(?!\\d)\\w+"
+				}
+			]
+		},
+		"signal": {
+			"patterns": [
+				{
+					"name": "string",
+					"match": "(?<=(\\=|\\|)).+?(?=\\|)"
 				}
 			]
 		},
