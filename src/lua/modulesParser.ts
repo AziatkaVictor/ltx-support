@@ -83,7 +83,7 @@ function findModulesFileNames(filePath : string) {
 }
 
 function findSectionParamsInFile(filePath : string) : string[] | null {
-    return findLuaElements(filePath, /(utils\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
+    return findLuaElements(filePath, /(\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
         return match[2].trim() + ":" + match[4];
     })
 }
