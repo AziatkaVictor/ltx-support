@@ -21,7 +21,7 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
     return items.map((element : string) => {
         var item = new CompletionItem(element, CompletionItemKind.Function)
         item.detail = filename + "." + element;   
-        var Mark = getDocumentation(element, DocumentationKind.Functions);
+        var Mark = getDocumentation(element, filename as DocumentationKind);
         item.documentation = Mark;
         return item;
     });
