@@ -1,10 +1,20 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
 import { getLtxDocument } from "../extension";
-import { LtxDocument } from "../ltx/ltxDocument";
+import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { getModules } from "../lua/modulesParser";
 
 export async function provideLogicSections(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
+
+    if (data.getType() === LtxDocumentType.Trade) {
+        if (data.getLine(position).inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position)) {
+            return await getSections(data, position);
+        }
+    }
+    if (data.getType() !== LtxDocumentType.Logic) {
+        return;
+    }
+
     if (isInsideSectionDefinition(document.lineAt(position.line).text, position)) {
         return getSectionsDefinitionTypes();
     }

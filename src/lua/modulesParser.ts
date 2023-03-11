@@ -2,9 +2,9 @@ import { getDefaultPathToScripts, getPathToScripts } from "../settings";
 import { analyzeFile, findLuaElements} from "./fileReader";
 
 var modulesData : string[];
-var sectionsData : Map<string, string[]> = new Map<string, string[]>();
-var notExistedFiles : string [] = [];
+var notExistedFiles : string[] = [];
 var basedConditions : string[] = [];
+var sectionsData : Map<string, string[]> = new Map<string, string[]>();
 
 export function getParameterType(paramName, sectionName) : string {
     for (const param of getParamsData(sectionName)) {
@@ -50,7 +50,15 @@ export function getModules() : string[] {
     if (!modulesData) {
         updateModules();
     }
-    return modulesData.concat("logic:xr_logic.script");
+    return modulesData.concat(["logic:xr_logic.script", "smart_terrain:smart_terrain.script", "smart_control:smart_terrain_control.script", "anomal_zone:bind_anomaly_zone.script"]);
+}
+
+/**
+ * Получить список параметров, на основе названия файла. Нужно для файлов конфигурации.
+ * @param filename Название файла
+ */
+export function getParamsByFile(filename : string) {
+    return analyzeFile(filename, getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile)
 }
 
 function updateModules() {
@@ -83,14 +91,13 @@ function findModulesFileNames(filePath : string) {
 }
 
 function findSectionParamsInFile(filePath : string) : string[] | null {
-    return findLuaElements(filePath, /(\.(cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
+    return findLuaElements(filePath, /((cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
         return match[2].trim() + ":" + match[4];
     })
 }
 
 function findBasedConditions(filePath : string) {
     return findLuaElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
-        
         var type = match[0].split(",")[0].trim();
         var item = match[0].split(",")[1].trim();
         return type + ":" + item.slice(1, item.length - 1);

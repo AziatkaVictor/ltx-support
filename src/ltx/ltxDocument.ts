@@ -14,9 +14,11 @@ export var sectionsArray: string[];
 export var currentFile: string;
 
 export enum LtxDocumentType {
-    Logic,
-    Squad,
-    Tasks
+    Logic = "xr_logic.script",
+    Squad = "sim_squad_scripted.script",
+    Tasks = "task_objects.script",
+    Sound = "sound_theme.script",
+    Trade = "trade_manager.script"
 }
 
 /**
@@ -238,12 +240,22 @@ export class LtxDocument {
     }
     
     private setDocumentType() {
-        if (this.filePath.indexOf("configs/scripts") !== -1) {
-            this.fileType = LtxDocumentType.Logic;
-        }
-        else if (this.filePath.match(/tm\_.+.ltx/)) {
+        if (this.filePath.match(/tm\_.+.ltx/)) {
             this.fileType = LtxDocumentType.Tasks;
         }
+        else if (this.filePath.match(/squad_descr(\_.+)?.ltx/)) {
+            this.fileType = LtxDocumentType.Squad;
+        }
+        else if (this.filePath.match(/script_sound(\_.+)?.ltx/)) {
+            this.fileType = LtxDocumentType.Sound;
+        }
+        else if (this.filePath.includes("misc\\trade")) {
+            this.fileType = LtxDocumentType.Trade;
+        }
+        else {   
+            this.fileType = LtxDocumentType.Logic;
+        }
+
     }
 
     /**
@@ -260,7 +272,6 @@ export class LtxDocument {
 
         this.filePath = document.uri.fsPath;
         currentFile = document.uri.fsPath;
-        this.setDocumentType();
 
         globalErrorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
@@ -275,6 +286,7 @@ export class LtxDocument {
         }
         
         this.parsingSections(content, args);
+        this.setDocumentType();
   
         this.semanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = globalErrorsData.get(currentFile);
