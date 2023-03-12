@@ -124,27 +124,30 @@ export class LtxDocument {
     /**
      * Получить данные строки по положению курсора в документе
      * @param position Курсор в текстовом документе 
-     * @returns Возвращает данные строки, в которой находиться курсор
      */
     getLine(position : Position) : LtxLine {
         if (!position) {
             return null;
         }
 
-        if (!this.getSectionByPosition(position)) {
+        if (!this.getSection(position)) {
             if (!this.rawData.get(position.line)) {
                 return null;
             }
             return this.rawData.get(position.line);
         }
 
-        let sectionContent = this.getSectionByPosition(position).lines;
+        let sectionContent = this.getSection(position).lines;
         if (sectionContent) {
             return sectionContent.get(position.line);
         }
     }
 
-    getSectionByPosition(selection: Position): LtxSection | null {
+    /**
+     * Получить данные секции по положению курсора в документе
+     * @param position Курсор в текстовом документе 
+     */
+    getSection(selection: Position): LtxSection | null {
         for (const section of this.sections) {
             if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
                 return section;

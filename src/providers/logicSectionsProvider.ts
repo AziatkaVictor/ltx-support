@@ -25,7 +25,7 @@ export async function provideLogicSections(document: TextDocument, position: Pos
 
 async function getSections(data: LtxDocument, position : Position) : Promise<CompletionItem[]> {
     var items = [];
-    var currentSection = data.getSectionByPosition(position).name;
+    var currentSection = data.getSection(position).name;
     for await (const section of Array.from(new Set(data.getSectionsName()))) {
         if (section !== currentSection) {
             items.push(new CompletionItem(section, CompletionItemKind.Class));

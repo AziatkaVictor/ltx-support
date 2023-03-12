@@ -8,13 +8,13 @@ const ignoreSections = ["hit", "death", "meet", "gather_items"];
 
 export async function provideLogicParams(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     const data = getLtxDocument(document);
-    if (data.getSectionByPosition(position) && !data.getLine(position).inInsideCondlist(position)) {
+    if (data.getSection(position) && !data.getLine(position).inInsideCondlist(position)) {
         return await getParams(data, position);
     }
 }
 
 async function getParams(data: LtxDocument, position : Position) {
-    const currentSection = data.getSectionByPosition(position);
+    const currentSection = data.getSection(position);
     var items = data.getType() !== LtxDocumentType.Logic ? getParamsByFile(data.getType()).map((value) => {return value.split(":")[1]}) : currentSection.type.getParams();
    
     if (getSectionType(currentSection.type.name) == "stype_stalker" && !ignoreSections.includes(currentSection.type.name)) {
