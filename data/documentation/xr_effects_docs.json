@@ -143,5 +143,13 @@
             "Number|Smart"
         ],
         "example": "=destroy_object(story:story_id)"
+    },
+    "set_weather": {
+        "documentation": "Сменяет погоду на уровне. Если указать `true` во втром аргументе, то погода смениться моментально, иначе погода смениться со временем.",
+        "args": [
+            "Weather",
+            "Boolean"
+        ],
+        "example": "=set_weather(weather_name:true)"
     }
 }
