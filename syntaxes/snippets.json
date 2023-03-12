@@ -118,5 +118,14 @@
 			"global_cameffect = true",
 			"on_signal = cameff_end | ${4:nil}"
 		]
+	},
+	"Button" : {
+		"prefix" : "Button",
+		"body" : [
+			"[ph_button${1:@on}]",
+			"anim = ${2:idle}",
+			"on_press = ${3}",
+			"tooltip = {4:st_tooltip}"
+		]
 	}
 }
