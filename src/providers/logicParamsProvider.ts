@@ -2,17 +2,28 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getParamsByFile } from "../lua/modulesParser";
+import { getParamsByFile, getSectionType } from "../lua/modulesParser";
+
+const ignoreSections = ["hit", "death", "meet", "gather_items"];
 
 export async function provideLogicParams(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
-    var data = getLtxDocument(document);
+    const data = getLtxDocument(document);
     if (data.getSectionByPosition(position) && !data.getLine(position).inInsideCondlist(position)) {
         return await getParams(data, position);
     }
 }
 
 async function getParams(data: LtxDocument, position : Position) {
-    var items = data.getType() !== LtxDocumentType.Logic ? getParamsByFile(data.getType()).map((value) => {return value.split(":")[1]}) : data.getSectionByPosition(position).type.getParams();
+    const currentSection = data.getSectionByPosition(position);
+    var items = data.getType() !== LtxDocumentType.Logic ? getParamsByFile(data.getType()).map((value) => {return value.split(":")[1]}) : currentSection.type.getParams();
+   
+    if (getSectionType(currentSection.type.name) == "stype_stalker" && !ignoreSections.includes(currentSection.type.name)) {
+        items = items.concat((getParamsByFile("stalker_generic.script").concat(getParamsByFile("xr_logic.script"))).map((value) => {return value.split(":")[1]}))
+    }  
+    if (currentSection.type.name === "logic") {
+        items = items.concat(getParamsByFile("gulag_general.script").map((value) => {return value.split(":")[1]}));
+    }
+
     return Array.from(new Set(items)).map((value) => {
         var item = new CompletionItem(value, CompletionItemKind.Enum);
         var Mark = getDocumentation(value, DocumentationKind.Property);

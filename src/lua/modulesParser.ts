@@ -14,6 +14,14 @@ export function getParameterType(paramName, sectionName) : string {
     }
 }
 
+export function getSectionType(sectionName) : string {
+    for (const sectionModule of modulesData) {
+        if (sectionModule.indexOf(sectionName) !== -1) {
+            return sectionModule.split(":")[2];
+        }
+    }
+}
+
 function getParamsData(sectionName : string) {
     if (sectionsData.size === 0) {
         getSectionsData()
@@ -86,7 +94,8 @@ function findModulesFileNames(filePath : string) {
         let data = match[0].split(",");
         let fileNameItem = data[0].trim();
         let sectionNameItem = data[1].trim();
-        return sectionNameItem.slice(1, sectionNameItem.length - 1) + ":" + fileNameItem.slice(1, fileNameItem.length - 1) + ".script";
+        let sectionType = data[2].trim();
+        return sectionNameItem.slice(1, sectionNameItem.length - 1) + ":" + fileNameItem.slice(1, fileNameItem.length - 1) + ".script:" + sectionType;
     })
 }
 
