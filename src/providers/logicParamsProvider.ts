@@ -1,10 +1,19 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, SnippetString, TextDocument } from "vscode";
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
+const paramSnippets = {
+    "cfg_get_number_and_condlist" : "{value} = ${1:100} | ${0}",
+    "cfg_get_string_and_condlist" : "{value} = ${1:text} | ${0}",
+    "cfg_get_npc_and_zone" : "{value} = ${1:npc} | ${2:zone} | ${0}",
+    "cfg_get_condlist" : "{value} = ${0}",
+    "cfg_get_string" : "{value} = ${1:idle}",
+    "cfg_get_number" : "{value} = ${1:200}",
+    "cfg_get_bool" : "{value} = ${1:true}"
+}
 
 export async function provideLogicParams(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     const data = getLtxDocument(document);
@@ -31,6 +40,7 @@ async function getParams(data: LtxDocument, position: Position) {
         var Mark = getDocumentation(name, DocumentationKind.Property);
         item.documentation = Mark;
         item.detail = type;
+        item.insertText = new SnippetString(paramSnippets[type].replace("{value}", name));
         return item;
     })
 }

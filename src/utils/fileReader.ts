@@ -62,7 +62,10 @@ export function findLuaElements(path: string, re: RegExp, callback: (match) => s
     var match;
     var data = [];
     while ((match = re.exec(text)) !== null) {
-        data.push(callback(match));
+        var item = callback(match);
+        if (item) {
+            data.push(item);
+        }
     }
     if (removeSame) {
         return Array.from(new Set(data));

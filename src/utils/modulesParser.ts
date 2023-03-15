@@ -7,6 +7,7 @@ var modulesData: string[];
 var basedConditions: string[] = [];
 // `Секция` => `Тип`:`параметр`
 var sectionsData: Map<string, string[]> = new Map<string, string[]>();
+const ignoredParams = ["cfg_get_string:active"]
 
 export function getParamsData(): string[][] {
     if (sectionsData.size === 0) {
@@ -91,8 +92,11 @@ function findModulesFileNames(filePath: string) {
 }
 
 function findSectionParamsInFile(filePath: string): string[] | null {
-    return findLuaElements(filePath, /((cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
-        return match[2].trim() + ":" + match[4];
+    return findLuaElements(filePath, /(cfg_get_.+?)(\(.+?\,\t*.+?\t*((?<=\")\w+(?=\")).+?\))/g, (match) => {
+        var result = match[1].trim() + ":" + match[3];
+        if (!ignoredParams.includes(result)) {
+            return result;
+        }
     })
 }
 
