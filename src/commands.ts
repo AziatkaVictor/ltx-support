@@ -1,6 +1,6 @@
 import { QuickPickItem, window, workspace } from "vscode";
 import { DocumentationKind, functionsFiles, getDocumentationData } from "./documentation";
-import { getAllParams } from "./lua/modulesParser";
+import { getAllParams } from "./utils/modulesParser";
 import { getGameCommands, isUseWorkspaceFolder, getAdditiveCommands, getGamePath, getUserArgsDocumentation, getUserDocumentation, setUserDocumentation } from "./settings";
 
 const TYPES = new Map<string, Function>([

@@ -1,5 +1,5 @@
 import { MarkdownString } from "vscode";
-import { getFunctions, getConditions } from "./lua/actionsParser";
+import { getFunctions, getConditions } from "./utils/actionsParser";
 import { getUserDocumentation } from "./settings";
 
 const docsPath = "../data/documentation/";

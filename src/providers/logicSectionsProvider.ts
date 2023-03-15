@@ -1,7 +1,7 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument } from "vscode";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getModules } from "../lua/modulesParser";
+import { getModules } from "../utils/modulesParser";
 
 export async function provideLogicSections(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);

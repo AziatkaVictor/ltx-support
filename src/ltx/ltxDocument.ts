@@ -9,7 +9,7 @@ import { addError, globalErrorsData, LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
-import { getFileData } from "../lua/fileReader";
+import { getFileData } from "../utils/fileReader";
 export var sectionsArray: string[];
 export var currentFile: string;
 

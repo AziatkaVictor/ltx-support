@@ -1,11 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, TextDocument, workspace } from "vscode";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { findFilesInWorkspace } from "../lua/fileReader";
 import { getDefaultPathToLocalization, getIgnoredLocalization, getPathToLocalization, getPathToMisc, isIgnoreDialogs, isIgnoreQuests } from "../settings";
-import { parseString } from 'xml2js';
-import * as fs from 'fs';
-import * as path from 'path';
+import { getXmlData } from "../utils/fileReader";
 
 export async function provideLogicAssets(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);
@@ -24,7 +23,7 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
 
 async function getSquads(document: TextDocument) : Promise<CompletionItem[]> {
     var items = [];
-    var files = await findFilesInWorkspace('{' + getPathToMisc() + 'squad_descr_*.ltx,' + getPathToMisc() + 'squad_descr.ltx}', document);
+    var files = await workspace.findFiles('{' + getPathToMisc() + 'squad_descr_*.ltx,' + getPathToMisc() + 'squad_descr.ltx}', document.uri.fsPath);
     for await (const file of files) {
         var items = [];
         for await (const section of await LtxDocument.prototype.getSectionsByUri(file)) {
@@ -38,7 +37,7 @@ async function getSquads(document: TextDocument) : Promise<CompletionItem[]> {
 
 async function getTasks(document: TextDocument) : Promise<CompletionItem[]> {
     var items = [];
-    var files = await findFilesInWorkspace('{' + getPathToMisc() + 'tm_*.ltx}', document);
+    var files = await workspace.findFiles('{' + getPathToMisc() + 'tm_*.ltx}', document.uri.fsPath);
     for await (const file of files) {
         let ltxData =  await LtxDocument.prototype.getSectionsByUri(file);
         for await (const section of ltxData) {
@@ -62,7 +61,7 @@ async function getKeywords(document : LtxDocument): Promise<CompletionItem[]> {
 }
 
 async function getLocalization(): Promise<CompletionItem[]> {
-    var result = (await getLocalizationArr()).map(value => {
+    var result = (await getLocalizationData()).map(value => {
         let item = new CompletionItem(value.$.id, CompletionItemKind.Variable);
         item.documentation = value.text[0];
         item.detail = "Localization"
@@ -72,8 +71,8 @@ async function getLocalization(): Promise<CompletionItem[]> {
     return result;
 }
 
-async function getLocalizationArr() {
-    var user = (await findFilesInWorkspace(getPathToLocalization() + '*.xml')).map(value => {return value.fsPath.split("\\")[value.fsPath.split("\\").length - 1]});
+async function getLocalizationData() {
+    var user = (await workspace.findFiles(getPathToLocalization() + '*.xml')).map(value => {return value.fsPath.split("\\")[value.fsPath.split("\\").length - 1]});
     var storage = fs.readdirSync(path.resolve(__dirname, getDefaultPathToLocalization()));
     var files = Array.from(new Set(storage.concat(user)));
     var result = [];
@@ -86,30 +85,11 @@ async function getLocalizationArr() {
         file = file.slice(1, file.length);
        
         if (fs.existsSync(file)) {
-            result = result.concat(parseXML(path.resolve(file)))
+            result = result.concat(getXmlData(path.resolve(file)))
         }
         else {
             // result = result.concat(parseXML(path.resolve(__dirname, getDefaultPathToLocalization(), fileName)))
         }
     }   
     return Array.from(new Set(result));
-}
-
-function parseXML(file: string): CompletionItem[]|null {
-    const Iconv = require('iconv').Iconv;
-    const iconv = new Iconv('cp1251', 'UTF-8');
-    let value = fs.readFileSync(file);
-    value = iconv.convert(value);
-    let text = String(value).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
-    let data;
-    parseString(text, function (err, result) {
-        if (err) {
-            console.log(file);
-            console.log('There was an error when parsing: ' + err);
-        }
-        else {
-            data = result;
-        }
-    });
-    return data.string_table.string ? data.string_table.string : null;
 }

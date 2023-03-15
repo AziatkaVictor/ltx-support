@@ -1,4 +1,4 @@
-import { getModules, getParams } from "../lua/modulesParser";
+import { getModules, getParams } from "../utils/modulesParser";
 
 export class LtxSectionType {
     readonly name: string

@@ -1,7 +1,7 @@
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, TextDocument, window, QuickPickItem } from "vscode";
 import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
-import { getConditions, getFunctions } from "../lua/actionsParser";
+import { getConditions, getFunctions } from "../utils/actionsParser";
 
 export async function provideLogicActions(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     var data = getLtxDocument(document);

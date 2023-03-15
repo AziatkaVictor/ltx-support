@@ -1,7 +1,7 @@
 import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, Uri, window, workspace } from 'vscode';
 import { addDocumentation, startGame } from './commands';
 import { LtxDocument } from "./ltx/ltxDocument";
-import { updateScripts } from './lua/actionsParser';
+import { updateScripts } from './utils/actionsParser';
 import { provideLogicActions } from './providers/logicActionsProvider';
 import { provideLogicAssets } from './providers/logicAssetsProvider';
 import { provideFolding } from './providers/logicFoldingProvider';

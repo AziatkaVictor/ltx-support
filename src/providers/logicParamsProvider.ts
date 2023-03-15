@@ -2,7 +2,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getParamsByFile, getSectionType } from "../lua/modulesParser";
+import { getParamsByFile, getSectionType } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 
