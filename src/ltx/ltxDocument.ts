@@ -10,6 +10,7 @@ import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
 import { getFileData } from "../utils/fileReader";
+import { getParamsByFile } from "../utils/modulesParser";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -23,7 +24,7 @@ export enum LtxDocumentType {
 
 /**
  * Главный класс, который отвечает за парсинг *.ltx файлов, сохранения структуры в переменные и массивы. 
- */ 
+ */
 export class LtxDocument {
     readonly filePath: string
     private sections: LtxSection[] = []
@@ -66,28 +67,28 @@ export class LtxDocument {
         return this.semanticData;
     }
 
-    getSemanticByPostition(position : Position): LtxSemantic {
+    getSemanticByPostition(position: Position): LtxSemantic {
         for (let semanticItem of this.semanticData) {
             if (semanticItem.range.contains(position)) {
                 return semanticItem;
             }
         }
     }
-    
+
     // TODO: Заменить на Validate
-    getErrorsData() : LtxError[] {
+    getErrorsData(): LtxError[] {
         return this.errorsData;
-    }   
-    
-    getType() : LtxDocumentType {
+    }
+
+    getType(): LtxDocumentType {
         return this.fileType;
     }
 
-    async getSectionsByUri(uri : Uri) : Promise<string[]> {
+    async getSectionsByUri(uri: Uri): Promise<string[]> {
         return this.findAllSectionsNames(getFileData(uri.fsPath))
     }
 
-    isInsideFunction(position : Position) : boolean {
+    isInsideFunction(position: Position): boolean {
         for (const condlist of this.getLine(position).condlists) {
             if (condlist.isInsideFunction(position)) {
                 return true;
@@ -96,7 +97,7 @@ export class LtxDocument {
         return false;
     }
 
-    isInsideCondition(position : Position) : boolean {
+    isInsideCondition(position: Position): boolean {
         for (const condlist of this.getLine(position).condlists) {
             if (condlist.isInsideCondition(position)) {
                 return true;
@@ -105,7 +106,7 @@ export class LtxDocument {
         return false;
     }
 
-    isInsideArgumentsGroup(position : Position) : boolean {
+    isInsideArgumentsGroup(position: Position): boolean {
         var line = this.getLine(position).rawData;
         var exp = /\(.*?\)/g
         var match;
@@ -117,7 +118,7 @@ export class LtxDocument {
         return false;
     }
 
-    inInsideCondlist(position : Position) : boolean {
+    inInsideCondlist(position: Position): boolean {
         return this.getLine(position).inInsideCondlist(position);
     }
 
@@ -125,7 +126,7 @@ export class LtxDocument {
      * Получить данные строки по положению курсора в документе
      * @param position Курсор в текстовом документе 
      */
-    getLine(position : Position) : LtxLine {
+    getLine(position: Position): LtxLine {
         if (!position) {
             return null;
         }
@@ -152,7 +153,7 @@ export class LtxDocument {
             if ((section.startLine <= selection.line) && (selection.line <= section.endLine)) {
                 return section;
             }
-        } 
+        }
         return;
     }
 
@@ -172,10 +173,10 @@ export class LtxDocument {
      * @param lineIndex Номер строки
      * @returns Возвращаем первую секцию, которую мы нашли
      */
-    private findSection(text : string, lineIndex : number) {
+    private findSection(text: string, lineIndex: number) {
         var re = /\[[\w@]*\]/g;
-        var match : RegExpExecArray;
-        var result : RegExpExecArray;
+        var match: RegExpExecArray;
+        var result: RegExpExecArray;
 
         while ((match = re.exec(text)) !== null) {
             if (!result) {
@@ -185,7 +186,7 @@ export class LtxDocument {
             let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
             addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
         }
-        
+
         return result;
     }
 
@@ -194,8 +195,8 @@ export class LtxDocument {
      * @param text Текст, в котором необходимо найти секции
      * @returns Возвращаем массив с названием всех секций
      */
-    private findAllSectionsNames(text : string, parent? : string[]) : string[] {
-        var re : RegExp = !parent ? /(?<=\[)[\w@]+(?=\])/g : new RegExp("(?<=\[)[\w@]+(?=\]\:(" + parent.join("|") + "))", "g");
+    private findAllSectionsNames(text: string, parent?: string[]): string[] {
+        var re: RegExp = !parent ? /(?<=\[)[\w@]+(?=\])/g : new RegExp("(?<=\[)[\w@]+(?=\]\:(" + parent.join("|") + "))", "g");
         var match;
         sectionsArray = [];
         while ((match = re.exec(text)) !== null) {
@@ -220,13 +221,13 @@ export class LtxDocument {
         else if (this.tempSection) {
             if (args.indexOf('fast') === -1 || line.indexOf("[") === -1 || line.indexOf("]") === -1) {
                 this.tempSection.addTempLine(lineIndex, line);
-            }  
+            }
             return;
         }
-        this.rawData.set(lineIndex, new LtxLine(lineIndex, line));
+        this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
     }
 
-    private async parsingSections(content : string, args : string[]) {
+    private async parsingSections(content: string, args: string[]) {
         let contentArray = content.split("\n");
 
         for (let lineIndex = 0; lineIndex < contentArray.length; lineIndex++) {
@@ -239,9 +240,9 @@ export class LtxDocument {
 
         for await (const section of this.sections) {
             section.parseLines();
-        }    
+        }
     }
-    
+
     private setDocumentType() {
         if (this.filePath.match(/tm\_.+.ltx/)) {
             this.fileType = LtxDocumentType.Tasks;
@@ -255,17 +256,21 @@ export class LtxDocument {
         else if (this.filePath.includes("misc\\trade")) {
             this.fileType = LtxDocumentType.Trade;
         }
-        else {   
+        else {
             this.fileType = LtxDocumentType.Logic;
         }
 
     }
 
+    getTypeParams() {
+        return getParamsByFile(this.getType());
+    }
+
     /**
      * @param document Документ, который необходимо запарсить.
      * @param args[] Массив текстовых параметров, которые отвечают за поведение конструктора (например `fast` отключает все лишнее, чтобы ускорить процесс парсинга, нужен для предложения переменных в автодополнении) 
-     */ 
-    constructor(document: TextDocument, args : string[] = []) {
+     */
+    constructor(document: TextDocument, args: string[] = []) {
         if (args.indexOf('fast') !== -1) {
             console.time('LtxDocument (Fast): '.concat(document.fileName));
         }
@@ -287,10 +292,10 @@ export class LtxDocument {
             console.timeEnd('LtxDocument (Fast): '.concat(document.fileName))
             return;
         }
-        
+
         this.parsingSections(content, args);
         this.setDocumentType();
-  
+
         this.semanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = globalErrorsData.get(currentFile);
         console.timeEnd('LtxDocument: '.concat(document.fileName));

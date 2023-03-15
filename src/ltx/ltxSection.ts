@@ -1,14 +1,14 @@
 import { DiagnosticSeverity, Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
+import { getSectionData, getBasedConditions } from "../utils/modulesParser";
 import { LtxDocumentType } from "./ltxDocument";
 import { addError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
-import { LtxSectionType } from "./ltxSectionType";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 
 export class LtxSection {
     readonly name: string
-    readonly type: LtxSectionType
+    private type: string
     readonly startLine: number
     readonly linkRange?: Range
     endLine?: number
@@ -16,26 +16,26 @@ export class LtxSection {
     lines: Map<number, LtxLine>
     private tempLines: Map<number, string> = new Map<number, string>()
 
-    validate() { 
-        if (this.tempLines.size === 0) {            
+    validate() {
+        if (this.tempLines.size === 0) {
             addError(this.linkRange, "Рекомендуется, если хотите закончить логику, использовать nil.", this.name, DiagnosticSeverity.Warning, "ReplaceToNil");
         }
     }
 
     close() {
-        if (this.tempLines.size !== 0 ) {
+        if (this.tempLines.size !== 0) {
             this.endLine = Math.max(...Array.from(this.tempLines.keys()));
         }
         else {
             this.endLine = this.startLine;
         }
-        
+
         if (isDiagnosticEnabled()) {
             this.validate();
         }
     }
 
-    addTempLine(index : number, line : string) {
+    addTempLine(index: number, line: string) {
         this.tempLines.set(index, line);
     }
 
@@ -45,25 +45,33 @@ export class LtxSection {
         }
         let data = new Map<number, LtxLine>();
         for await (const [key, value] of this.tempLines) {
-            data.set(key, new LtxLine(key, value));
-        } 
-        this.lines = data; 
+            data.set(key, new LtxLine(key, value, this));
+        }
+        this.lines = data;
     }
 
-    getSectionTypeName() {
-        return this.type.name;
+    getTypeName() {
+        return this.type;
     }
 
-    constructor(name: string, startLine: number, startCharacter: number, filetype : LtxDocumentType) {
-        this.name = name.slice(1, name.length - 1).trim();
-        if (this.name !== "") {
-            this.type = new LtxSectionType((/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0]);
+    getParams() {
+        return getSectionData().get(this.type).concat(getBasedConditions());
+    }
 
-            if (!this.type.isValid && filetype === LtxDocumentType.Logic) {
-                addError(this.linkRange, "Неизвестный тип секции", this.name, DiagnosticSeverity.Warning);
+    getModuleType() {
+        for (const sectionModule of getSectionData().keys()) {
+            if (sectionModule.indexOf(this.type) !== -1) {
+                return sectionModule.split(":")[2];
             }
         }
-        
+    }
+
+    constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType) {
+        this.name = name.slice(1, name.length - 1).trim();
+        if (this.name !== "") {
+            this.type = (/^\w*[^\@.*]/.exec(name.slice(1, name.length - 1)))[0];
+        }
+
         this.linkRange = new Range(new Position(startLine, startCharacter + 1), new Position(startLine, startCharacter + name.length - 1));
         this.startLine = startLine;
         addSemantic(new LtxSemantic(LtxSemanticType.struct, LtxSemanticModification.declaration, this.linkRange, LtxSemanticDescription.signal, this.name))

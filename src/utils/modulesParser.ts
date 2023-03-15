@@ -1,71 +1,62 @@
 import { getDefaultPathToScripts, getPathToScripts } from "../settings";
-import { analyzeFile, findLuaElements} from "./fileReader";
+import { analyzeFile, findLuaElements } from "./fileReader";
 
-var modulesData : string[];
-var notExistedFiles : string[] = [];
-var basedConditions : string[] = [];
-var sectionsData : Map<string, string[]> = new Map<string, string[]>();
+// `Cекции`:`Cкрипт`
+var modulesData: string[];
+// `Тип`:`параметр`
+var basedConditions: string[] = [];
+// `Секция` => `Тип`:`параметр`
+var sectionsData: Map<string, string[]> = new Map<string, string[]>();
 
-export function getParameterType(paramName, sectionName) : string {
-    for (const param of getParamsData(sectionName)) {
-        if (param.indexOf(paramName) !== -1) {
-            return param.split(":")[0];
-        }
-    }
-}
-
-export function getSectionType(sectionName) : string {
-    for (const sectionModule of modulesData) {
-        if (sectionModule.indexOf(sectionName) !== -1) {
-            return sectionModule.split(":")[2];
-        }
-    }
-}
-
-function getParamsData(sectionName : string) {
+export function getParamsData(): string[][] {
     if (sectionsData.size === 0) {
-        getSectionsData()
+        updateSectionsData();
     }
-    if (notExistedFiles.length !== 0) {
-        console.log(notExistedFiles);
-    }
-
-    return sectionsData.get(sectionName).concat(basedConditions);
+    return Array.from(sectionsData.values());
 }
 
-export function getParams(sectionName : string) : string[] {
-    return getParamsData(sectionName).map((value) => {return value.split(":")[1]});
-}
-
-export function getAllParams() {
-    var arr : string[] = [];
-
+export function getSectionData(): Map<string, string[]> {
     if (sectionsData.size === 0) {
-        getSectionsData()
+        updateSectionsData();
     }
+    return sectionsData;
+}
 
-    for (var section of sectionsData.values()) {
-        arr = arr.concat(section.map((value) => {return value.split(":")[1]}))
+export function getBasedConditions() {
+    if (!basedConditions) {
+        updateSectionsData();
     }
-    return Array.from(new Set(arr.concat(basedConditions.map((value) => {return value.split(":")[1]})))).sort()
+    return basedConditions;
 }
 
 /**
  * Получить список модулей в форме `Cекции`:`Cкрипт`. Необходимо скорее для парсинга файлов, чем для обычного использования.
- * @returns
  */
-export function getModules() : string[] {
+export function getModules(): string[] {
     if (!modulesData) {
         updateModules();
     }
     return modulesData.concat(["logic:xr_logic.script", "smart_terrain:smart_terrain.script", "smart_control:smart_terrain_control.script", "anomal_zone:bind_anomaly_zone.script"]);
 }
 
+export function getAllParams() {
+    var arr: string[] = [];
+
+    if (sectionsData.size === 0) {
+        updateSectionsData()
+    }
+
+    for (var section of sectionsData.values()) {
+        arr = arr.concat(section.map((value) => { return value.split(":")[1] }))
+    }
+    return Array.from(new Set(arr.concat(basedConditions.map((value) => { return value.split(":")[1] })))).sort()
+}
+
 /**
  * Получить список параметров, на основе названия файла. Нужно для файлов конфигурации.
  * @param filename Название файла
  */
-export function getParamsByFile(filename : string) {
+export function getParamsByFile(filename: string) {
     return analyzeFile(filename, getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile)
 }
 
@@ -73,7 +64,7 @@ function updateModules() {
     modulesData = Array.from(new Set(analyzeFile("modules.script", getPathToScripts(), getDefaultPathToScripts(), findModulesFileNames)));
 }
 
-function getSectionsData() { 
+function updateSectionsData() {
     let modules = getModules();
     // Получаем список параметров для каждого типа секций логики
     for (let index = 0; index < modules.length; index++) {
@@ -82,14 +73,14 @@ function getSectionsData() {
         if (!fileData) {
             continue;
         }
-        sectionsData.set(data[0], fileData);        
+        sectionsData.set(data[0], fileData);
     }
 
     // Получаем базовые параметры секций, которые если у любого типа (например on_info)
     basedConditions = analyzeFile("xr_logic.script", getPathToScripts(), getDefaultPathToScripts(), findBasedConditions)
 }
 
-function findModulesFileNames(filePath : string) {
+function findModulesFileNames(filePath: string) {
     return findLuaElements(filePath, /(?<=load_scheme\().+(?=\))/g, (match) => {
         let data = match[0].split(",");
         let fileNameItem = data[0].trim();
@@ -99,13 +90,13 @@ function findModulesFileNames(filePath : string) {
     })
 }
 
-function findSectionParamsInFile(filePath : string) : string[] | null {
+function findSectionParamsInFile(filePath: string): string[] | null {
     return findLuaElements(filePath, /((cfg_get_.+?))(\(.+?((?<=\")\w+(?=\")).+?\))/g, (match) => {
         return match[2].trim() + ":" + match[4];
     })
 }
 
-function findBasedConditions(filePath : string) {
+function findBasedConditions(filePath: string) {
     return findLuaElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
         var type = match[0].split(",")[0].trim();
         var item = match[0].split(",")[1].trim();

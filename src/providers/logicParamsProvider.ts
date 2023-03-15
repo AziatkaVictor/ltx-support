@@ -2,7 +2,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getParamsByFile, getSectionType } from "../utils/modulesParser";
+import { getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 
@@ -13,21 +13,24 @@ export async function provideLogicParams(document: TextDocument, position: Posit
     }
 }
 
-async function getParams(data: LtxDocument, position : Position) {
+async function getParams(data: LtxDocument, position: Position) {
     const currentSection = data.getSection(position);
-    var items = data.getType() !== LtxDocumentType.Logic ? getParamsByFile(data.getType()).map((value) => {return value.split(":")[1]}) : currentSection.type.getParams();
-   
-    if (getSectionType(currentSection.type.name) == "stype_stalker" && !ignoreSections.includes(currentSection.type.name)) {
-        items = items.concat((getParamsByFile("stalker_generic.script").concat(getParamsByFile("xr_logic.script"))).map((value) => {return value.split(":")[1]}))
-    }  
-    if (currentSection.type.name === "logic") {
-        items = items.concat(getParamsByFile("gulag_general.script").map((value) => {return value.split(":")[1]}));
+    var items = data.getType() !== LtxDocumentType.Logic ? data.getTypeParams() : currentSection.getParams();
+
+    if (currentSection.getModuleType() === "stype_stalker" && !ignoreSections.includes(currentSection.getTypeName())) {
+        items = items.concat((getParamsByFile("stalker_generic.script").concat(getParamsByFile("xr_logic.script"))));
+    }
+    if (currentSection.getTypeName() === "logic") {
+        items = items.concat(getParamsByFile("gulag_general.script"));
     }
 
     return Array.from(new Set(items)).map((value) => {
-        var item = new CompletionItem(value, CompletionItemKind.Enum);
-        var Mark = getDocumentation(value, DocumentationKind.Property);
+        var name = value.split(":")[1];
+        var type = value.split(":")[0];
+        var item = new CompletionItem(name, CompletionItemKind.Enum);
+        var Mark = getDocumentation(name, DocumentationKind.Property);
         item.documentation = Mark;
-        return item; 
+        item.detail = type;
+        return item;
     })
 }

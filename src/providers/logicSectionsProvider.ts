@@ -18,9 +18,9 @@ export async function provideLogicSections(document: TextDocument, position: Pos
     if (isInsideSectionDefinition(document.lineAt(position.line).text, position)) {
         return getSectionsDefinitionTypes();
     }
-    if (data.getLine(position).inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position)) {
+    if (data.inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position) && data.getLine(position).getType().includes("condlist")) {
         return await getSections(data, position);
-    }
+    }   
 }
 
 async function getSections(data: LtxDocument, position : Position) : Promise<CompletionItem[]> {

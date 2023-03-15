@@ -15,8 +15,12 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
         items = items.concat(await getTasks(document));
     }
     if (data.isInsideArgumentsGroup(position) || (!data.isInsideCondition(position) && !data.isInsideFunction(position) && data.inInsideCondlist(position))) {
-        items = items.concat(await getKeywords(data));
-        items = items.concat(await getLocalization());
+        if (data.getLine(position).getType() === "cfg_get_bool" || null) {
+            items = items.concat(await getKeywords(data));            
+        }
+        if (data.getLine(position).getType() === "cfg_get_string" || null) {
+            items = items.concat(await getLocalization());            
+        }
     }
     return items;
 }
