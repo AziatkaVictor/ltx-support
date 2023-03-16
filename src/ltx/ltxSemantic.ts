@@ -47,7 +47,8 @@ export enum LtxSemanticType {
     number = "number",
     string = "string",
     struct = "struct",
-    property = "property"
+    property = "property",
+    constant = "constant"
 }
 
 export enum LtxSemanticModification {

@@ -1,7 +1,7 @@
 import { CancellationToken, CompletionContext, SemanticTokens, SemanticTokensBuilder, SemanticTokensLegend, TextDocument } from "vscode";
 import { getLtxDocument } from "../extension";
 
-const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string'];
+const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string', "constant"];
 const tokenModifiers = ['declaration', 'definition', 'documentation', 'readonly'];
 export const legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 

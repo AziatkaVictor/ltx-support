@@ -22,6 +22,9 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
             items = items.concat(await getLocalization());            
         }
     }
+    if (data.isInsideSignal(position)) {
+        items = items.concat(await getSignals());
+    }
     return items;
 }
 
@@ -65,14 +68,12 @@ async function getKeywords(document : LtxDocument): Promise<CompletionItem[]> {
 }
 
 async function getLocalization(): Promise<CompletionItem[]> {
-    var result = (await getLocalizationData()).map(value => {
+    return (await getLocalizationData()).map(value => {
         let item = new CompletionItem(value.$.id, CompletionItemKind.Variable);
         item.documentation = value.text[0];
         item.detail = "Localization"
         return item;
     });
-
-    return result;
 }
 
 async function getLocalizationData() {
@@ -96,4 +97,12 @@ async function getLocalizationData() {
         }
     }   
     return Array.from(new Set(result));
+}
+
+async function getSignals() {
+    return ["test1", "test2"].map(value => {
+        let item = new CompletionItem(value, CompletionItemKind.Constant);
+        item.detail = "Signal"
+        return item;
+    });
 }

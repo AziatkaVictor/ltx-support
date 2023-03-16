@@ -131,7 +131,7 @@
 		"signal": {
 			"patterns": [
 				{
-					"name": "string",
+					"name": "constant",
 					"match": "(?<=(\\=|\\|))\\s*[a-zA-Z_]+?\\s*(?=\\|)"
 				}
 			]
