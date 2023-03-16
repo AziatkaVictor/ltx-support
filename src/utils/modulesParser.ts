@@ -42,11 +42,9 @@ export function getModules(): string[] {
 
 export function getAllParams() {
     var arr: string[] = [];
-
     if (sectionsData.size === 0) {
         updateSectionsData()
     }
-
     for (var section of sectionsData.values()) {
         arr = arr.concat(section.map((value) => { return value.split(":")[1] }))
     }
@@ -58,11 +56,11 @@ export function getAllParams() {
  * @param filename Название файла
  */
 export function getParamsByFile(filename: string) {
-    return analyzeFile(filename, getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile)
+    return analyzeFile(filename, getPathToScripts(), getDefaultPathToScripts(), findSectionParams)
 }
 
 function updateModules() {
-    modulesData = Array.from(new Set(analyzeFile("modules.script", getPathToScripts(), getDefaultPathToScripts(), findModulesFileNames)));
+    modulesData = Array.from(new Set(analyzeFile("modules.script", getPathToScripts(), getDefaultPathToScripts(), findModules)));
 }
 
 function updateSectionsData() {
@@ -70,10 +68,7 @@ function updateSectionsData() {
     // Получаем список параметров для каждого типа секций логики
     for (let index = 0; index < modules.length; index++) {
         const data = modules[index].split(':');
-        var fileData = analyzeFile(data[1], getPathToScripts(), getDefaultPathToScripts(), findSectionParamsInFile);
-        if (!fileData) {
-            continue;
-        }
+        var fileData = analyzeFile(data[1], getPathToScripts(), getDefaultPathToScripts(), findSectionParams);
         sectionsData.set(data[0], fileData);
     }
 
@@ -81,7 +76,7 @@ function updateSectionsData() {
     basedConditions = analyzeFile("xr_logic.script", getPathToScripts(), getDefaultPathToScripts(), findBasedConditions)
 }
 
-function findModulesFileNames(filePath: string) {
+function findModules(filePath: string): string[] {
     return findLuaElements(filePath, /(?<=load_scheme\().+(?=\))/g, (match) => {
         let data = match[0].split(",");
         let fileNameItem = data[0].trim();
@@ -91,7 +86,7 @@ function findModulesFileNames(filePath: string) {
     })
 }
 
-function findSectionParamsInFile(filePath: string): string[] | null {
+function findSectionParams(filePath: string): string[] {
     return findLuaElements(filePath, /(cfg_get_.+?)(\(.+?\,\t*.+?\t*((?<=\")\w+(?=\")).+?\))/g, (match) => {
         var result = match[1].trim() + ":" + match[3];
         if (!ignoredParams.includes(result)) {
@@ -100,7 +95,7 @@ function findSectionParamsInFile(filePath: string): string[] | null {
     })
 }
 
-function findBasedConditions(filePath: string) {
+function findBasedConditions(filePath: string): string[] {
     return findLuaElements(filePath, /(?<!function\sadd_conditions\()(?<=(add_conditions\()).+?(?=\))/g, (match) => {
         var type = match[0].split(",")[0].trim();
         var item = match[0].split(",")[1].trim();

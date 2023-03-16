@@ -1,5 +1,5 @@
-import { CancellationToken, CompletionContext, Position, ProviderResult, SemanticTokens, SemanticTokensBuilder, SemanticTokensLegend, TextDocument } from "vscode";
-import { documents, getLtxDocument } from "../extension";
+import { CancellationToken, CompletionContext, SemanticTokens, SemanticTokensBuilder, SemanticTokensLegend, TextDocument } from "vscode";
+import { getLtxDocument } from "../extension";
 
 const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string'];
 const tokenModifiers = ['declaration', 'definition', 'documentation', 'readonly'];
