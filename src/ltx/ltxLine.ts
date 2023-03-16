@@ -32,6 +32,10 @@ export class LtxLine {
         return false;
     }
 
+    isType(name: string): boolean {
+        return this.getType().includes(name);
+    }
+
     getType(): string | null {
         for (const param of getSectionData().get(this.owner.getTypeName())) {
             if (param.indexOf(this.propertyName) !== -1) {

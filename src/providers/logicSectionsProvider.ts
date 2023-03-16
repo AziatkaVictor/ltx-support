@@ -7,7 +7,7 @@ export async function provideLogicSections(document: TextDocument, position: Pos
     var data = getLtxDocument(document);
 
     if (data.getType() === LtxDocumentType.Trade) {
-        if (data.getLine(position).inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position)) {
+        if (data.canAddSectionLink(position)) {
             return await getSections(data, position);
         }
     }
@@ -18,7 +18,7 @@ export async function provideLogicSections(document: TextDocument, position: Pos
     if (isInsideSectionDefinition(document.lineAt(position.line).text, position)) {
         return getSectionsDefinitionTypes();
     }
-    if (data.inInsideCondlist(position) && !data.isInsideCondition(position) && !data.isInsideFunction(position) && data.getLine(position).getType().includes("condlist")) {
+    if (data.canAddSectionLink(position)) {
         return await getSections(data, position);
     }   
 }
@@ -39,7 +39,6 @@ function isInsideSectionDefinition(text : string, position : Position) : boolean
         return true;
     }
     return false;
-
 }
 
 async function getSectionsDefinitionTypes(): Promise<CompletionItem[]> {

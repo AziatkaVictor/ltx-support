@@ -126,6 +126,14 @@ export class LtxDocument {
         return this.getLine(position).isInsideSignal(position);
     }
 
+    isInsideCondlistGroups(position: Position): boolean {
+        return this.isInsideCondition(position) || this.isInsideFunction(position);
+    }
+
+    canAddSectionLink(position : Position): boolean {
+        return this.inInsideCondlist(position) && !this.isInsideCondlistGroups(position) && (this.getLine(position).isType("condlist") || this.getLine(position).isType("npc_and_zone"))
+    }
+
     /**
      * Получить данные строки по положению курсора в документе
      * @param position Курсор в текстовом документе 
