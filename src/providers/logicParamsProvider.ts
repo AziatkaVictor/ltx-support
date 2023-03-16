@@ -4,7 +4,7 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getPathToLocalization, getDefaultPathToLocalization, getPathToScripts, getDefaultPathToScripts } from "../settings";
+import { getPathToScripts, getDefaultPathToScripts } from "../settings";
 import { analyzeFile, findLuaElements } from '../utils/fileReader';
 import { getParamsByFile } from "../utils/modulesParser";
 

@@ -130,7 +130,7 @@ export class LtxDocument {
         return this.isInsideCondition(position) || this.isInsideFunction(position);
     }
 
-    canAddSectionLink(position : Position): boolean {
+    canAddSectionLink(position: Position): boolean {
         return this.inInsideCondlist(position) && !this.isInsideCondlistGroups(position) && (this.getLine(position).isType("condlist") || this.getLine(position).isType("npc_and_zone"))
     }
 

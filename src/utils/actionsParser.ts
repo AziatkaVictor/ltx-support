@@ -1,5 +1,5 @@
 import { getDefaultPathToScripts, getPathToScripts } from "../settings";
-import { analyzeFile, findLuaElements} from "./fileReader";
+import { analyzeFile, findLuaElements } from "./fileReader";
 
 var functionsData : string[];
 var conditionsData : string[];
