@@ -22,9 +22,6 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
             items = items.concat(await getLocalization());            
         }
     }
-    if (data.isInsideSignal(position)) {
-        items = items.concat(await getSignals());
-    }
     return items;
 }
 
@@ -97,12 +94,4 @@ async function getLocalizationData() {
         }
     }   
     return Array.from(new Set(result));
-}
-
-async function getSignals() {
-    return ["test1", "test2"].map(value => {
-        let item = new CompletionItem(value, CompletionItemKind.Constant);
-        item.detail = "Signal"
-        return item;
-    });
 }

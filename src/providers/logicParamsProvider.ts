@@ -20,6 +20,9 @@ export async function provideLogicParams(document: TextDocument, position: Posit
     if (data.getSection(position) && !data.inInsideCondlist(position) && !data.isInsideSignal(position)) {
         return await getParams(data, position);
     }
+    if (data.isInsideSignal(position)) {
+        return await getSignals();
+    }
 }
 
 async function getParams(data: LtxDocument, position: Position) {
@@ -43,4 +46,12 @@ async function getParams(data: LtxDocument, position: Position) {
         item.insertText = new SnippetString(paramSnippets[type].replace("{value}", name));
         return item;
     })
+}
+
+async function getSignals() {
+    return ["test1", "test2"].map(value => {
+        let item = new CompletionItem(value, CompletionItemKind.Constant);
+        item.detail = "Signal"
+        return item;
+    });
 }
