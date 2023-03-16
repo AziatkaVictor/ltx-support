@@ -17,7 +17,7 @@ const paramSnippets = {
 
 export async function provideLogicParams(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     const data = getLtxDocument(document);
-    if (data.getSection(position) && !data.getLine(position).inInsideCondlist(position)) {
+    if (data.getSection(position) && !data.inInsideCondlist(position) && !data.isInsideSignal(position)) {
         return await getParams(data, position);
     }
 }
