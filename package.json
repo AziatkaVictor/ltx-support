@@ -161,6 +161,7 @@
 							"ui_st_mm.xml",
 							"ui_st_mp.xml",
 							"st_items_weapons_upgrades.xml",
+							"ui_st_inventory.xml",
 							"ui_st_loadscreen.xml",
 							"ui_st_keybinding.xml",
 							"ui_st_credits.xml",
