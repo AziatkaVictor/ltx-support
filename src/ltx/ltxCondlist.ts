@@ -14,15 +14,15 @@ export class LtxCondlist {
     private tempData;
     
     isInside(position : Position) : boolean {
-        return this.range.contains(position);
+        return this.range.start.isBefore(position) && this.range.end.isAfterOrEqual(position);
     }
 
     isInsideCondition(position : Position) : boolean {
-        return this.conditionRange ? this.conditionRange.contains(position) : false;
+        return this.conditionRange ? this.conditionRange.start.isBefore(position) && this.conditionRange.end.isAfterOrEqual(position) : false;
     }
 
     isInsideFunction(position : Position) : boolean {
-        return this.functionRange ? this.functionRange.contains(position) : false;
+        return this.functionRange ? this.functionRange.start.isBefore(position) && this.functionRange.end.isAfterOrEqual(position) : false;
     }
 
     constructor(lineIndex: number, PosIndex: number, content: string) {

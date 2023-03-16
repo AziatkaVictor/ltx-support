@@ -25,7 +25,7 @@ export class LtxLine {
 
     isInsideSignal(position : Position): boolean {
         for (const signal of this.signals.keys()) {
-            if (signal.contains(position)) {
+            if (signal.start.isBefore(position) && signal.end.isAfterOrEqual(position)) {
                 return true;
             }
         }
