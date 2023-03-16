@@ -6,23 +6,41 @@ import { getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const paramSnippets = {
-    "cfg_get_number_and_condlist" : "{value} = ${1:100} | ${0}",
-    "cfg_get_string_and_condlist" : "{value} = ${1:text} | ${0}",
-    "cfg_get_npc_and_zone" : "{value} = ${1:npc} | ${2:zone} | ${0}",
-    "cfg_get_condlist" : "{value} = ${0}",
-    "cfg_get_string" : "{value} = ${1:idle}",
-    "cfg_get_number" : "{value} = ${1:200}",
-    "cfg_get_bool" : "{value} = ${1:true}"
+    "cfg_get_number_and_condlist": "{value} = ${1:100} | ${0}",
+    "cfg_get_string_and_condlist": "{value} = ${1:text} | ${0}",
+    "cfg_get_npc_and_zone": "{value} = ${1:npc} | ${2:zone} | ${0}",
+    "cfg_get_condlist": "{value} = ${0}",
+    "cfg_get_string": "{value} = ${1:idle}",
+    "cfg_get_number": "{value} = ${1:200}",
+    "cfg_get_bool": "{value} = ${1:true}"
 }
 
 export async function provideLogicParams(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[] | undefined> {
     const data = getLtxDocument(document);
-    if (data.getSection(position) && !data.inInsideCondlist(position) && !data.isInsideSignal(position)) {
+    if (!data.getSection(position)) {
+        return;
+    }
+    if (canAddParam(document, position)) {
         return await getParams(data, position);
     }
     if (data.isInsideSignal(position)) {
         return await getSignals();
     }
+}
+
+function canAddParam(document: TextDocument, position: Position): boolean {
+    var re = /^(\s*?)?[\w\$]*?(\s*?)?(?=(\=|$|;))/gm;
+    var text = document.lineAt(position.line).text;
+    if (!text) {
+        return true;
+    }
+    var match = re.exec(text);
+    if (!match) {
+        return false;
+    }
+    var resultEnd = match.index <= position.character && (match.index + match[0].length) >= position.character;
+    console.log(resultEnd);
+    return resultEnd;
 }
 
 async function getParams(data: LtxDocument, position: Position) {
