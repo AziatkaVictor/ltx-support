@@ -13,8 +13,10 @@ export async function provideLogicAssets(document: TextDocument, position: Posit
     if (data.isInsideArgumentsGroup(position)) {
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
+        items = items.concat(await getKeywords(data));  
+        items = items.concat(await getLocalization());   
     }
-    if (data.isInsideArgumentsGroup(position) || (!data.isInsideCondition(position) && !data.isInsideFunction(position) && data.inInsideCondlist(position))) {
+    if (!data.isInsideCondlistGroups(position) && data.inInsideCondlist(position)) {
         if (data.getLine(position).getType() === "cfg_get_bool" || null) {
             items = items.concat(await getKeywords(data));            
         }
@@ -80,17 +82,23 @@ async function getLocalizationData() {
     var result = [];
 
     for await (let fileName of files) {
-        if ((isIgnoreDialogs() && fileName.indexOf("st_dialog") !== -1) || (isIgnoreQuests() && fileName.indexOf("st_quest") !== -1) || getIgnoredLocalization().indexOf(fileName) !== -1) {
+        if (getIgnoredLocalization().indexOf(fileName) !== -1) {
+            continue;
+        }
+        if ((isIgnoreDialogs() && fileName.indexOf("st_dialog") !== -1) || (isIgnoreQuests() && fileName.indexOf("st_quest") !== -1)) {
             continue;
         }
         let file = (workspace.workspaceFolders[0].uri.path + "/" + getPathToLocalization() + fileName).replace(/\//g, "\\");    
+        let temp;
         file = file.slice(1, file.length);
        
         if (fs.existsSync(file)) {
-            result = result.concat(getXmlData(path.resolve(file)))
+            temp = getXmlData(path.resolve(file));
         }
-        else {
-            // result = result.concat(parseXML(path.resolve(__dirname, getDefaultPathToLocalization(), fileName)))
+        temp = getXmlData(path.resolve(__dirname, getDefaultPathToLocalization(), fileName));
+        
+        if (temp) {
+            result = result.concat(temp);
         }
     }   
     return Array.from(new Set(result));

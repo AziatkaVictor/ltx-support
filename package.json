@@ -159,8 +159,12 @@
 							"st_generate_fnames.xml",
 							"st_generate_snames.xml",
 							"ui_st_mm.xml",
+							"ui_st_mp.xml",
+							"st_items_weapons_upgrades.xml",
+							"ui_st_loadscreen.xml",
 							"ui_st_keybinding.xml",
 							"ui_st_credits.xml",
+							"st_mp_mapdesc.xml",
 							"ui_st_other.xml"
 						],
 						"markdownDescription": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`."
