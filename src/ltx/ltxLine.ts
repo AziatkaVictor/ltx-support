@@ -73,13 +73,13 @@ export class LtxLine {
                 let tempRange = new Range(new Position(index, match.index), new Position(index, match.index + match[0].length))
 
                 if (match[0].trim().toLowerCase().indexOf("true") !== -1 || match[0].trim().toLowerCase().indexOf("false") !== -1) {
-                    addSemantic(new LtxSemantic(LtxSemanticType.keyword, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    addSemantic(new LtxSemantic(LtxSemanticType.keyword, null, tempRange, LtxSemanticDescription.signal, match[0]));
                 }
-                else if (!isNaN(+(match[0].trim()))) {
-                    addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                else if (isNaN(match[0].trim())) {
+                    addSemantic(new LtxSemantic(LtxSemanticType.variable, null, tempRange, LtxSemanticDescription.signal, match[0]));
                 }
                 else {
-                    addSemantic(new LtxSemantic(LtxSemanticType.constant, null, tempRange, LtxSemanticDescription.signal, match[0]))
+                    addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]));                                    
                 }
                 this.signals.set(tempRange, match[0]);
 
