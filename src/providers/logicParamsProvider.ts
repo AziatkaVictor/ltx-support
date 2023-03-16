@@ -65,7 +65,9 @@ async function getParams(data: LtxDocument, position: Position) {
         var Mark = getDocumentation(name, DocumentationKind.Property);
         item.documentation = Mark;
         item.detail = type;
-        item.insertText = new SnippetString(paramSnippets[type].replace("{value}", name));
+        if (data.getLine(position).condlists.length === 0) {
+            item.insertText = new SnippetString(paramSnippets[type].replace("{value}", name));
+        }
         return item;
     })
 }
