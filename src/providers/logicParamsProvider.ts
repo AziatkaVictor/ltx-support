@@ -1,7 +1,11 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, SnippetString, TextDocument } from "vscode";
+import * as fs from 'fs';
+import * as path from 'path';
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, SnippetString, TextDocument, workspace } from "vscode";
 import { getDocumentation, DocumentationKind } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
+import { getPathToLocalization, getDefaultPathToLocalization, getPathToScripts, getDefaultPathToScripts } from "../settings";
+import { analyzeFile, findLuaElements } from '../utils/fileReader';
 import { getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
@@ -67,9 +71,24 @@ async function getParams(data: LtxDocument, position: Position) {
 }
 
 async function getSignals() {
-    return ["test1", "test2"].map(value => {
+    var user = (await workspace.findFiles(getPathToScripts() + '*.script')).map(value => {return value.fsPath.split("\\")[value.fsPath.split("\\").length - 1]});
+    var storage = fs.readdirSync(path.resolve(__dirname, getDefaultPathToScripts()));
+    var files = Array.from(new Set(storage.concat(user)));
+    var data = [];
+
+    for (const file of files) {
+        data = data.concat(analyzeFile(file, getPathToScripts(), getDefaultPathToScripts(), findSignals));
+    }
+
+    return Array.from(new Set(data)).map(value => {
         let item = new CompletionItem(value, CompletionItemKind.Constant);
         item.detail = "Signal"
         return item;
     });
+}
+
+function findSignals(filePath: string): string[] {
+    return findLuaElements(filePath, /(?<=signals\[\")\w+(?=\"\])/g, (match) => {
+        return match[0];
+    })
 }
