@@ -4,7 +4,7 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -12,13 +12,14 @@
 		"Programming Languages"
 	],
 	"activationEvents": [
-		"onLanguage:ltx"	
+		"onLanguage:ltx"
 	],
 	"main": "./out/extension",
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -b",
 		"patch": "npm version patch --no-git-tag-version",
+		"minor": "npm version minor --no-git-tag-version",
 		"pack": "vsce package",
 		"watch": "tsc -b -w"
 	},
@@ -41,7 +42,7 @@
 				"extensions": [
 					".ltx"
 				],
-				"icon":  {
+				"icon": {
 					"light": "./data/ltx-light.png",
 					"dark": "./data/ltx-dark.png"
 				},
@@ -55,7 +56,7 @@
 				"path": "./syntaxes/ltx.tmLanguage.json"
 			}
 		],
-		"keybindings":[
+		"keybindings": [
 			{
 				"command": "ltx-support.Start",
 				"key": "f9"
@@ -224,7 +225,10 @@
 							}
 						},
 						"default": [
-							["Запуск CoP", "start bin/xrEngine"]
+							[
+								"Запуск CoP",
+								"start bin/xrEngine"
+							]
 						],
 						"markdownDescription": "Варианты запуска. Аргументы: `название`, `комманда`. [Подробнее на Wiki...](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)"
 					}

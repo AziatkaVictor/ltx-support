@@ -14,6 +14,7 @@
     * Localization
     * Squads
     * Tasks
+    * Signals
 * Hover *(Информация при наведении)*
 * Syntax Highlighting *(Подсветка кода на основе синтаксиса)*
 * Semantic Highlighting *(Подсветка кода на основе контекста)*
