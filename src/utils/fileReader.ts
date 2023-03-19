@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { workspace } from 'vscode';
 import { parseString } from 'xml2js';
-import { Iconv } from "iconv";
 
 /**
  * Чтение файла, в обход VSCode API, чтобы не генерировать автодополнение текста в памяти.
@@ -37,8 +36,9 @@ export function analyzeFile(name: string, firstPath: string, secondPath: string,
  * Получить информацию из `*.xml` файла. Поддерживает `cp1251` кодировку
  */
 export function getXmlData(file: string): string[] {
-    const iconv = new Iconv('cp1251', 'UTF-8');
-    var text = String(iconv.convert(fs.readFileSync(file))).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
+    const Iconv = require('iconv').Iconv;
+    const convertor = new Iconv('cp1251', 'UTF-8');
+    var text = String(convertor.convert(fs.readFileSync(file))).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
     var data;
 
     parseString(text, function (err, result) {

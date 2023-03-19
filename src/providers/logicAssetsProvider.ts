@@ -95,7 +95,9 @@ async function getLocalizationData() {
         if (fs.existsSync(file)) {
             temp = getXmlData(path.resolve(file));
         }
-        temp = getXmlData(path.resolve(__dirname, getDefaultPathToLocalization(), fileName));
+        else {
+            temp = getXmlData(path.resolve(__dirname, getDefaultPathToLocalization(), fileName));
+        }
         
         if (temp) {
             result = result.concat(temp);
