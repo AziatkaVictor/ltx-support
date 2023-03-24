@@ -1,13 +1,13 @@
 import { getDefaultPathToScripts, getPathToScripts } from "../settings";
 import { analyzeFile, findLuaElements } from "./fileReader";
 
-// `Cекции`:`Cкрипт`
+// `Cекции`:`Cкрипт`:`Тип`
 var modulesData: string[];
 // `Тип`:`параметр`
 var basedConditions: string[] = [];
 // `Секция` => `Тип`:`параметр`
 var sectionsData: Map<string, string[]> = new Map<string, string[]>();
-const ignoredParams = ["cfg_get_string:active"]
+const ignoredParams = ["cfg_get_string:active", "cfg_get_string:in", "cfg_get_string:out"]
 
 export function getParamsData(): string[][] {
     if (sectionsData.size === 0) {

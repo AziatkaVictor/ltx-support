@@ -1,6 +1,6 @@
 import { DiagnosticSeverity, Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
-import { getSectionData, getBasedConditions } from "../utils/modulesParser";
+import { getSectionData, getBasedConditions, getModules } from "../utils/modulesParser";
 import { LtxDocumentType } from "./ltxDocument";
 import { addError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
@@ -59,7 +59,7 @@ export class LtxSection {
     }
 
     getModuleType() {
-        for (const sectionModule of getSectionData().keys()) {
+        for (const sectionModule of getModules()) {
             if (sectionModule.indexOf(this.type) !== -1) {
                 return sectionModule.split(":")[2];
             }

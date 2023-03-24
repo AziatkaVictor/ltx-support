@@ -52,7 +52,8 @@ async function getParams(data: LtxDocument, position: Position) {
     var items = data.getType() !== LtxDocumentType.Logic ? data.getTypeParams() : currentSection.getParams();
 
     if (currentSection.getModuleType() === "stype_stalker" && !ignoreSections.includes(currentSection.getTypeName())) {
-        items = items.concat((getParamsByFile("stalker_generic.script").concat(getParamsByFile("xr_logic.script"))));
+        items = items.concat(getParamsByFile("stalker_generic.script"));
+        items = items.concat(getParamsByFile("xr_logic.script"));
     }
     if (currentSection.getTypeName() === "logic") {
         items = items.concat(getParamsByFile("gulag_general.script"));
