@@ -27,7 +27,7 @@ export function isIgnoreDialogs() : boolean {
 }
 
 export function getUserDocumentation(filename : string) : Object {
-    return settings.get("ltx-support.documentation." + filename + "Documentation") || {};
+    return settings.get("ltx-support.documentation." + filename + "Documentation");
 }
 
 export function GetUpdateDocumentation() : boolean {

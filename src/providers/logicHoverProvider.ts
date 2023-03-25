@@ -14,7 +14,12 @@ export function provideHover(document: TextDocument, position: Position, token?:
     var Mark = new MarkdownString();        
     Mark.supportHtml = true;
     if (semantic.type === LtxSemanticType.function) {
-        Mark = getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Functions, true);
+        if (fileLtx.isInsideCondition(position)) {
+            Mark = getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Conditions, true);
+        }
+        else if (fileLtx.isInsideFunction(position)) {
+            Mark = getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Functions, true);
+        }
     }
     else if (semantic.type === LtxSemanticType.property) {
         Mark = getDocumentation(semantic.text.replace(/[0-9]/g, ''), DocumentationKind.Property, true);

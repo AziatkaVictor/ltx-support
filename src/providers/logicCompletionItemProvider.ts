@@ -98,7 +98,6 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
         item.detail = filename + "." + element;   
         var Mark = getDocumentation(element, filename as DocumentationKind);
         item.documentation = Mark;
-        item.filterText = "=" + element;
         return item;
     });
 }

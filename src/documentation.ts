@@ -21,7 +21,6 @@ export enum DocumentationKind {
 /**
  * Возвращает всю документацию, на основе типа и названия
  * @param kind Тип документации
- * @param args Первое это название для файла, остальное по необходимости.
  * @returns 
  */
 export function getDocumentationData(kind : DocumentationKind): Object|null {
@@ -44,8 +43,8 @@ export function getDocumentationData(kind : DocumentationKind): Object|null {
  */
 export function getDocumentation(name : string, kind : DocumentationKind, hover : boolean = false) : MarkdownString {
     switch (kind) {
-        case DocumentationKind.Functions: return getConditionFunctionDocumentation(name, hover);
-        case DocumentationKind.Conditions: return getConditionFunctionDocumentation(name, hover);
+        case DocumentationKind.Functions: return getConditionFunctionDocumentation(name, hover, DocumentationKind.Functions);
+        case DocumentationKind.Conditions: return getConditionFunctionDocumentation(name, hover, DocumentationKind.Conditions);
         case DocumentationKind.Property: return getParamsDocumentation(name, hover);
     }
 }
@@ -53,8 +52,8 @@ export function getDocumentation(name : string, kind : DocumentationKind, hover 
 /**
  * Генерирует текст документации для {@link DocumentationKind.Functions} и {@link DocumentationKind.Conditions}
  */
-function getConditionFunctionDocumentation(name : string, hover : boolean = false) : MarkdownString {
-    var docs = getDocumentationData(getDocByFunction(name) as DocumentationKind);
+function getConditionFunctionDocumentation(name : string, hover : boolean = false, file? : string) : MarkdownString {
+    var docs = getDocumentationData((file ? file : getDocByFunction(name)) as DocumentationKind);
     var text = new MarkdownString();
     text.isTrusted = true;
     text.supportHtml = true;
