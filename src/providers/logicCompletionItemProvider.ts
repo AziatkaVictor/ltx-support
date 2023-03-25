@@ -31,7 +31,7 @@ export async function provideCompletion(document: TextDocument, position: Positi
         }
     }
     else if (data.getType() === LtxDocumentType.Logic) {
-        if (isInsideSectionDefinition(document.lineAt(position.line).text, position)) {
+        if (isInsideSectionDefinition(document.lineAt(position.line).text, position) && isChar(context, ["["])) {
             items = items.concat(await getSectionsDefinitionTypes());
         }
         else if (data.canAddSectionLink(position)) {
@@ -50,37 +50,46 @@ export async function provideCompletion(document: TextDocument, position: Positi
     }
 
     // Assets
-    if (data.isInsideArgumentsGroup(position)) {
+    if (data.isInsideArgumentsGroup(position) && isChar(context, ["(", ":"])) {
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
         items = items.concat(await getKeywords(data));  
         items = items.concat(await getLocalization());   
     }
-    else if (!data.isInsideCondlistGroups(position) && data.inInsideCondlist(position)) {
-        if (data.getLine(position).getType() === "cfg_get_bool" || null) {
-            items = items.concat(await getKeywords(data));            
-        }
-        if (data.getLine(position).getType() === "cfg_get_string" || null) {
-            items = items.concat(await getLocalization());            
-        }
-    }
-
-    // Functions
-    if (!data.isInsideArgumentsGroup(position)) {
-        if (data.isInsideFunction(position)) {
+    else {  
+        // Functions
+        if (data.isInsideFunction(position) && isChar(context, ["="])) {
             items = items.concat(getLogicCompletionItems(getFunctions(), "xr_effects"));
         }
-        else if (data.isInsideCondition(position)) {
+        else if (data.isInsideCondition(position) && isChar(context, ["=", "!"])) {
             items = items.concat(getLogicCompletionItems(getConditions(), "xr_conditions"));
         }
-    }
-    
-    // Info
-    if (data.isInsideCondlistGroups(position) && !data.isInsideArgumentsGroup(position)) {
-        items = items.concat(await getInfos(data));
+
+        // Info
+        if (data.isInsideCondlistGroups(position) && isChar(context, ["+", "-"])) {
+            items = items.concat(await getInfos(data));
+        }
+
+        // Keywords and Localization
+        if (!data.isInsideCondlistGroups(position) && data.inInsideCondlist(position)) {
+            if (data.getLine(position).getType() === "cfg_get_bool" || null) {
+                items = items.concat(await getKeywords(data));            
+            }
+            if (data.getLine(position).getType() === "cfg_get_string" || null) {
+                items = items.concat(await getLocalization());            
+            }
+        }
     }
 
     return items;
+}
+
+
+function isChar(context: CompletionContext, chars: string[]) {
+    if (context.triggerCharacter) {
+        return chars.includes(context.triggerCharacter);
+    }
+    return true;
 }
 
 function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
@@ -89,7 +98,7 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
         item.detail = filename + "." + element;   
         var Mark = getDocumentation(element, filename as DocumentationKind);
         item.documentation = Mark;
-        item.insertText = new SnippetString("=" + element)
+        item.filterText = "=" + element;
         return item;
     });
 }
@@ -253,6 +262,9 @@ async function getSections(data: LtxDocument, position : Position) : Promise<Com
 }
 
 function isInsideSectionDefinition(text : string, position : Position) : boolean {
+    if (text === "") {
+        return false;
+    }
     if (text.indexOf("[") < position.character && text.indexOf("]") > position.character - 1) {
         return true;
     }

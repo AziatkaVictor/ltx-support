@@ -131,15 +131,19 @@ export class LtxDocument {
     }
 
     inInsideCondlist(position: Position): boolean {
-        var line = this.getLine(position);
-        if (line) {
-            return line.inInsideCondlist(position);
+        const line = this.getLine(position);
+        if (!line) {
+            return false;
         }
-        return false;
+        return line.inInsideCondlist(position);
     }
 
     isInsideSignal(position: Position): boolean {
-        return this.getLine(position).isInsideSignal(position);
+        const line = this.getLine(position);
+        if (!line) {
+            return false;
+        }
+        return line.isInsideSignal(position);
     }
 
     isInsideCondlistGroups(position: Position): boolean {

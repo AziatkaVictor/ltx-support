@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(createFileData);
     workspace.onDidChangeConfiguration(updateData);
 
-    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideCompletion}));    
+    context.subscriptions.push(languages.registerCompletionItemProvider("ltx", {provideCompletionItems : provideCompletion}, "[", "!", "=", "+", "-", ":", "("));    
     context.subscriptions.push(languages.registerFoldingRangeProvider("ltx", {provideFoldingRanges : provideFolding}));
     context.subscriptions.push(languages.registerDocumentSymbolProvider("ltx", {provideDocumentSymbols : provideSymbols}));    
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
