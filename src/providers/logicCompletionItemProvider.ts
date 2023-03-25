@@ -24,6 +24,7 @@ export async function provideCompletion(document: TextDocument, position: Positi
     var data = getLtxDocument(document);
     var items = [];
 
+    // Sections
     if (data.getType() === LtxDocumentType.Trade) {
         if (data.canAddSectionLink(position)) {
             items = items.concat(await getSections(data, position));
@@ -88,6 +89,7 @@ function getLogicCompletionItems(items : string[], filename : string) : Completi
         item.detail = filename + "." + element;   
         var Mark = getDocumentation(element, filename as DocumentationKind);
         item.documentation = Mark;
+        item.insertText = new SnippetString("=" + element)
         return item;
     });
 }
