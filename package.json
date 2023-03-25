@@ -4,7 +4,7 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -28,11 +28,12 @@
 		"@types/node": "^8.0.0",
 		"@types/vscode": "^1.63.0",
 		"tslint": "^5.11.0",
-		"typescript": "^3.1.3"
+		"typescript": "^4.7"
 	},
 	"dependencies": {
-		"xml2js": "^0.4.23",
-		"iconv": "^3.0.1"
+		"axios": "^1.3.4",
+		"iconv": "^3.0.1",
+		"xml2js": "^0.4.23"
 	},
 	"contributes": {
 		"languages": [
@@ -86,6 +87,11 @@
 				"command": "ltx-support.updateScripts",
 				"title": "Update Scripts",
 				"category": "ltx-support"
+			},
+			{
+				"command": "ltx-support.updateDocumentation",
+				"title": "Update Documentation",
+				"category": "ltx-support"
 			}
 		],
 		"configuration": [
@@ -112,6 +118,11 @@
 			{
 				"title": "Documentation",
 				"properties": {
+					"ltx-support.documentation.updateDocumentation": {
+						"type": "boolean",
+						"default": true,
+						"markdownDescription": "Обновлять документацию при каждом запуске расширения? Для работы необходимо подключение к интернету. При необходимости можно обновить документацию через специальную команду `#ltx-support.updateDocumentation#`."
+					},
 					"ltx-support.documentation.xr_effectsDocumentation": {
 						"type": "object",
 						"markdownDescription": "Документация для `xr_effects.sripts`, которая создана через комманду `#ltx-support.addDocumentation#`."

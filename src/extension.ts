@@ -6,8 +6,9 @@ import { provideFolding } from './providers/logicFoldingProvider';
 import { provideHover } from './providers/logicHoverProvider';
 import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
 import { provideSymbols } from './providers/logicSymbolsProvider';
-import { isDiagnosticEnabled} from './settings';
+import { GetUpdateDocumentation as getUpdateDocumentation, isDiagnosticEnabled} from './settings';
 import { provideCompletion } from './providers/logicCompletionItemProvider';
+import { updateDocumentation } from './documentation';
 
 let diagnosticCollection: DiagnosticCollection;
 export var documents: Map<TextDocument, LtxDocument> = new Map<TextDocument, LtxDocument>();
@@ -36,6 +37,11 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addDocumentation));
     context.subscriptions.push(commands.registerCommand("ltx-support.Start", startGame));
     context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
+    context.subscriptions.push(commands.registerCommand("ltx-support.updateDocumentation", updateDocumentation));
+
+    if (getUpdateDocumentation()) {
+        updateDocumentation();
+    }
 
     window.showInformationMessage("LTX Support запущено! Возникли сложности или хочешь знать как работает логика сталкера? Загляни на [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki)!", "Спасибо!");
 }

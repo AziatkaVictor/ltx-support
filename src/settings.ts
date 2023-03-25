@@ -1,63 +1,69 @@
 import { workspace } from "vscode";
 
+const settings = workspace.getConfiguration("", workspace.workspaceFile);
+
 export function getPathToScripts() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToScripts");
+    return settings.get("ltx-support.directories.pathToScripts");
 }
 
 export function getPathToMisc() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToMisc");
+    return settings.get("ltx-support.directories.pathToMisc");
 }
 
 export function getPathToLocalization() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.directories.pathToLocalization");
+    return settings.get("ltx-support.directories.pathToLocalization");
 }
 
 export function getIgnoredLocalization() : string[] {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreLocalizationFile");
+    return settings.get("ltx-support.completion.ignoreLocalizationFile");
 }
 
 export function isIgnoreQuests() : boolean {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreQuest");
+    return settings.get("ltx-support.completion.ignoreQuest");
 }
 
 export function isIgnoreDialogs() : boolean {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.completion.ignoreDialogs");
+    return settings.get("ltx-support.completion.ignoreDialogs");
 }
 
 export function getUserDocumentation(filename : string) : Object {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation." + filename + "Documentation") || {};
+    return settings.get("ltx-support.documentation." + filename + "Documentation") || {};
+}
+
+export function GetUpdateDocumentation() : boolean {
+    return settings.get("ltx-support.documentation.updateDocumentation");
 }
 
 export function getUserArgsDocumentation() : string[] {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.documentation.argsTypeForFunctionsDocumentation");
+    return settings.get("ltx-support.documentation.argsTypeForFunctionsDocumentation");
 }
 
 export async function setUserDocumentation(filename : string, value) {
-    await workspace.getConfiguration("", workspace.workspaceFile).update("ltx-support.documentation." + filename + "Documentation", value);
+    await settings.update("ltx-support.documentation." + filename + "Documentation", value);
 }
 
 export function isIgnoreParamsDiagnostic() : boolean {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.diagnostics.ignoreParamsDiagnostic");
+    return settings.get("ltx-support.diagnostics.ignoreParamsDiagnostic");
 }
 
 export function isDiagnosticEnabled() : boolean {
-    return false; //workspace.getConfiguration("", workspace.workspaceFile).get("Diagnostics.EnableDiagnostic");
+    return false; //settings.get("Diagnostics.EnableDiagnostic");
 }
 
 export function isUseWorkspaceFolder() : boolean {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.useWorkspaceFolder");
+    return settings.get("ltx-support.game.useWorkspaceFolder");
 }
 
 export function getAdditiveCommands() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.additiveCommands");
+    return settings.get("ltx-support.game.additiveCommands");
 }
 
 export function getGamePath() : string | null {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.path");
+    return settings.get("ltx-support.game.path");
 }
 
 export function getGameCommands() : [] {
-    return workspace.getConfiguration("", workspace.workspaceFile).get("ltx-support.game.commands");
+    return settings.get("ltx-support.game.commands");
 }
 
 export function getDefaultPathToConditions() : string {
@@ -78,4 +84,8 @@ export function getDefaultPathToScripts() : string {
 
 export function getDefaultPathToLocalization() : string {
     return "../../data/localization/";
+}
+
+export function getDefaultPathToGit() : string {
+    return "https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/documentation/";
 }
