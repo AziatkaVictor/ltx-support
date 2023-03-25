@@ -22,12 +22,12 @@ export class LtxSection {
         }
     }
 
-    close() {
-        if (this.tempLines.size !== 0) {
-            this.endLine = Math.max(...Array.from(this.tempLines.keys()));
+    close(line? : number) {
+        if (!line) {
+            this.endLine = this.tempLines.size !== 0 ? Math.max(...Array.from(this.tempLines.keys())) : this.startLine;
         }
         else {
-            this.endLine = this.startLine;
+            this.endLine = line;
         }
 
         if (isDiagnosticEnabled()) {

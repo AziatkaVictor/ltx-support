@@ -89,7 +89,11 @@ export class LtxDocument {
     }
 
     isInsideFunction(position: Position): boolean {
-        for (const condlist of this.getLine(position).condlists) {
+        const line = this.getLine(position);
+        if (!line) {
+            return false;
+        }
+        for (const condlist of line.condlists) {
             if (condlist.isInsideFunction(position)) {
                 return true;
             }
@@ -98,7 +102,11 @@ export class LtxDocument {
     }
 
     isInsideCondition(position: Position): boolean {
-        for (const condlist of this.getLine(position).condlists) {
+        const line = this.getLine(position);
+        if (!line) {
+            return false;
+        }
+        for (const condlist of line.condlists) {
             if (condlist.isInsideCondition(position)) {
                 return true;
             }
@@ -107,10 +115,14 @@ export class LtxDocument {
     }
 
     isInsideArgumentsGroup(position: Position): boolean {
-        var line = this.getLine(position).rawData;
-        var exp = /\(.*?\)/g
+        const line = this.getLine(position);
+        if (!line) {
+            return false;
+        }
+
+        const exp = /\(.*?\)/g
         var match;
-        while ((match = exp.exec(line)) !== null) {
+        while ((match = exp.exec(line.rawData)) !== null) {
             if (match.index < position.character && (match.index + match[0].length) > position.character) {
                 return true;
             }
@@ -119,7 +131,11 @@ export class LtxDocument {
     }
 
     inInsideCondlist(position: Position): boolean {
-        return this.getLine(position).inInsideCondlist(position);
+        var line = this.getLine(position);
+        if (line) {
+            return line.inInsideCondlist(position);
+        }
+        return false;
     }
 
     isInsideSignal(position: Position): boolean {
@@ -174,8 +190,8 @@ export class LtxDocument {
      * @param section Ссылка на секцию, которую нужно закрыть
      * @param index Номер строки
      */
-    private closeSection(section: LtxSection) {
-        section.close();
+    private closeSection(section: LtxSection, line? : number) {
+        section.close(line);
         this.sections.push(section);
     }
 
@@ -247,7 +263,7 @@ export class LtxDocument {
             this.parseLine(line, lineIndex, args);
         }
         if (this.tempSection) {
-            this.closeSection(this.tempSection);
+            this.closeSection(this.tempSection, contentArray.length - 1);
         }
 
         for await (const section of this.sections) {
