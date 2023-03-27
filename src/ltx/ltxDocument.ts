@@ -206,7 +206,7 @@ export class LtxDocument {
      * @returns Возвращаем первую секцию, которую мы нашли
      */
     private findSection(text: string, lineIndex: number) {
-        var re = /\[[\w@]*\]/g;
+        var re = /\[.*\]/g;
         var match: RegExpExecArray;
         var result: RegExpExecArray;
 
@@ -228,7 +228,7 @@ export class LtxDocument {
      * @returns Возвращаем массив с названием всех секций
      */
     private findAllSectionsNames(text: string, parent?: string[]): string[] {
-        var re: RegExp = !parent ? /(?<=\[)[\w@]+(?=\])/g : new RegExp("(?<=\[)[\w@]+(?=\]\:(" + parent.join("|") + "))", "g");
+        var re: RegExp = !parent ? /(?<=\[).+(?=\])/g : new RegExp("(?<=\[).+(?=\]\:(" + parent.join("|") + "))", "g");
         var match;
         sectionsArray = [];
         while ((match = re.exec(text)) !== null) {

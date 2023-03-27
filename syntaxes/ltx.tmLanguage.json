@@ -6,6 +6,9 @@
 			"include": "#comments"
 		},
 		{
+			"include": "#sections"
+		},
+		{
 			"include": "#keyword"
 		},
 		{
@@ -16,9 +19,6 @@
 		},
 		{
 			"include": "#property"
-		},
-		{
-			"include": "#sections"
 		},
 		{
 			"include": "#classInheritance"
@@ -84,7 +84,7 @@
 			"patterns": [
 				{
 					"name": "support.class",
-					"match": "(\\[[\\w@]+\\]|\\w+@+\\w+)"
+					"match": "\\[.+\\]"
 				}
 			]
 		},
