@@ -4,6 +4,7 @@ import { getDefaultPathToGit, getUserDocumentation } from "./settings";
 import axios from 'axios';
 import * as path from 'path';
 import * as fs from 'fs';
+import { findLocalization } from "./utils/fileReader";
 
 const docsPath = "../data/documentation/";
 export const functionsFiles = new Map<string, Function>([["xr_effects", getFunctions], ["xr_conditions", getConditions]]);
@@ -15,7 +16,8 @@ export enum DocumentationKind {
     Functions = "xr_effects",
     Conditions = "xr_conditions",
     Property = "params",
-    SectionsType = "sections"
+    SectionsType = "sections",
+    Variable = "varible"
 }
 
 /**
@@ -41,12 +43,24 @@ export function getDocumentationData(kind : DocumentationKind): Object|null {
  * @param hover Используеться для Hover? По умолчанию False.
  * @returns 
  */
-export function getDocumentation(name : string, kind : DocumentationKind, hover : boolean = false) : MarkdownString {
+export async function getDocumentation(name : string, kind : DocumentationKind, hover : boolean = false): Promise<MarkdownString> {
     switch (kind) {
         case DocumentationKind.Functions: return getConditionFunctionDocumentation(name, hover, DocumentationKind.Functions);
         case DocumentationKind.Conditions: return getConditionFunctionDocumentation(name, hover, DocumentationKind.Conditions);
         case DocumentationKind.Property: return getParamsDocumentation(name, hover);
+        case DocumentationKind.Variable: return getVaribleDocumentation(name);
     }
+}
+
+async function getVaribleDocumentation(name: string) {
+    const item = await findLocalization(name);
+    if (!item) {
+        return new MarkdownString();
+    }
+    var text = new MarkdownString("`Локализация:`\n\n" + item.text[0]);
+    text.isTrusted = true;
+    text.supportHtml = true;
+    return text;
 }
 
 /**

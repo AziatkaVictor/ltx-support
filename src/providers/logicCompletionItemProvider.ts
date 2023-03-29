@@ -6,7 +6,7 @@ import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { getDefaultPathToLocalization, getDefaultPathToScripts, getIgnoredLocalization, getPathToLocalization, getPathToMisc, getPathToScripts, isIgnoreDialogs, isIgnoreQuests } from "../settings";
 import { getConditions, getFunctions } from "../utils/actionsParser";
-import { analyzeFile, findLuaElements, getXmlData } from "../utils/fileReader";
+import { analyzeFile, findLuaElements, getLocalizationData, getXmlData } from "../utils/fileReader";
 import { getModules, getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
@@ -22,7 +22,7 @@ const paramSnippets = {
 
 export async function provideCompletion(document: TextDocument, position: Position, token?: CancellationToken, context?: CompletionContext): Promise<CompletionItem[]> {
     var data = getLtxDocument(document);
-    var items = [];
+    var items : CompletionItem[] = [];
 
     // Sections
     if (data.getType() === LtxDocumentType.Trade) {
@@ -59,10 +59,10 @@ export async function provideCompletion(document: TextDocument, position: Positi
     else {  
         // Functions
         if (data.isInsideFunction(position) && isChar(context, ["="])) {
-            items = items.concat(getLogicCompletionItems(getFunctions(), "xr_effects"));
+            items = items.concat(await getLogicCompletionItems(getFunctions(), "xr_effects"));
         }
         else if (data.isInsideCondition(position) && isChar(context, ["=", "!"])) {
-            items = items.concat(getLogicCompletionItems(getConditions(), "xr_conditions"));
+            items = items.concat(await getLogicCompletionItems(getConditions(), "xr_conditions"));
         }
 
         // Info
@@ -92,14 +92,14 @@ function isChar(context: CompletionContext, chars: string[]) {
     return true;
 }
 
-function getLogicCompletionItems(items : string[], filename : string) : CompletionItem[] {
-    return items.map((element : string) => {
+async function getLogicCompletionItems(items : string[], filename : string) {
+    return await Promise.all(items.map(async (element : string) => {
         var item = new CompletionItem(element, CompletionItemKind.Function)
         item.detail = filename + "." + element;   
-        var Mark = getDocumentation(element, filename as DocumentationKind);
+        var Mark = await getDocumentation(element, filename as DocumentationKind);
         item.documentation = Mark;
         return item;
-    });
+    }));
 }
 
 async function getSquads(document: TextDocument) : Promise<CompletionItem[]> {
@@ -150,37 +150,6 @@ async function getLocalization(): Promise<CompletionItem[]> {
     });
 }
 
-async function getLocalizationData() {
-    var user = (await workspace.findFiles(getPathToLocalization() + '*.xml')).map(value => {return value.fsPath.split("\\")[value.fsPath.split("\\").length - 1]});
-    var storage = fs.readdirSync(path.resolve(__dirname, getDefaultPathToLocalization()));
-    var files = Array.from(new Set(storage.concat(user)));
-    var result = [];
-
-    for await (let fileName of files) {
-        if (getIgnoredLocalization().indexOf(fileName) !== -1) {
-            continue;
-        }
-        if ((isIgnoreDialogs() && fileName.indexOf("st_dialog") !== -1) || (isIgnoreQuests() && fileName.indexOf("st_quest") !== -1)) {
-            continue;
-        }
-        let file = (workspace.workspaceFolders[0].uri.path + "/" + getPathToLocalization() + fileName).replace(/\//g, "\\");    
-        let temp;
-        file = file.slice(1, file.length);
-       
-        if (fs.existsSync(file)) {
-            temp = getXmlData(path.resolve(file));
-        }
-        else {
-            temp = getXmlData(path.resolve(__dirname, getDefaultPathToLocalization(), fileName));
-        }
-        
-        if (temp) {
-            result = result.concat(temp);
-        }
-    }   
-    return Array.from(new Set(result));
-}
-
 async function getInfos(data: LtxDocument) : Promise<CompletionItem[]> {
     return Array.from(new Set(data.getInfos())).map((item) => {return new CompletionItem(item, CompletionItemKind.Constant);})
 }
@@ -212,18 +181,18 @@ async function getParams(data: LtxDocument, position: Position) {
         items = items.concat(getParamsByFile("gulag_general.script"));
     }
 
-    return Array.from(new Set(items)).map((value) => {
+    return await Promise.all(Array.from(new Set(items)).map(async (value) => {
         var name = value.split(":")[1];
         var type = value.split(":")[0];
         var item = new CompletionItem(name, CompletionItemKind.Enum);
-        var Mark = getDocumentation(name, DocumentationKind.Property);
+        var Mark = await getDocumentation(name, DocumentationKind.Property);
         item.documentation = Mark;
         item.detail = type;
         if (!data.getLine(position) || data.getLine(position).condlists.length === 0) {
             item.insertText = new SnippetString(paramSnippets[type].replace("{value}", name));
         }
         return item;
-    })
+    }));
 }
 
 async function getSignals() {

@@ -3,26 +3,26 @@ import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxSemanticType } from "../ltx/ltxSemantic";
 
-export function provideHover(document: TextDocument, position: Position, token?: CancellationToken): ProviderResult<Hover> {
+export async function provideHover(document: TextDocument, position: Position, token?: CancellationToken) {
     const fileLtx = getLtxDocument(document);
     const semantic = fileLtx.getSemanticByPostition(position);
 
-    if (!semantic) {
-        return;
-    }
-
     var Mark = new MarkdownString();        
     Mark.supportHtml = true;
+    if (!semantic) {
+        Mark = await getDocumentation(document.getText(document.getWordRangeAtPosition(position)), DocumentationKind.Variable, true);
+        return new Hover(Mark);
+    }
     if (semantic.type === LtxSemanticType.function) {
         if (fileLtx.isInsideCondition(position)) {
-            Mark = getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Conditions, true);
+            Mark = await getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Conditions, true);
         }
         else if (fileLtx.isInsideFunction(position)) {
-            Mark = getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Functions, true);
+            Mark = await getDocumentation(semantic.text.slice(1, semantic.text.length), DocumentationKind.Functions, true);
         }
     }
     else if (semantic.type === LtxSemanticType.property) {
-        Mark = getDocumentation(semantic.text.replace(/[0-9]/g, ''), DocumentationKind.Property, true);
-    }        
+        Mark = await getDocumentation(semantic.text.replace(/[0-9]/g, ''), DocumentationKind.Property, true);
+    }       
     return new Hover(Mark);
 }
