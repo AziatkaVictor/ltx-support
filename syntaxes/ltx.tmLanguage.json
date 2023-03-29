@@ -84,7 +84,7 @@
 			"patterns": [
 				{
 					"name": "support.class",
-					"match": "\\[.+\\]"
+					"match": "(\\[.+\\]|\\w+@+\\w+)"
 				}
 			]
 		},
