@@ -1,11 +1,12 @@
 import { QuickPickItem, window, workspace } from "vscode";
 import { DocumentationKind, functionsFiles, getDocumentationData } from "./documentation";
-import { getAllParams } from "./utils/modulesParser";
+import { getAllParams, getModules } from "./utils/modulesParser";
 import { getGameCommands, isUseWorkspaceFolder, getAdditiveCommands, getGamePath, getUserArgsDocumentation, getUserDocumentation, setUserDocumentation } from "./settings";
 
 const TYPES = new Map<string, Function>([
     ["Functions", addFunctionDocumentnation],
-    ["Properties", addParamsDocumentnation]
+    ["Properties", addParamsDocumentnation],
+    ["Sections", addSectionsDocumentnation]
 ]);
 
 class selectionItem implements QuickPickItem {
@@ -110,6 +111,27 @@ async function addParamsDocumentnation() {
         "example" : example
     }
     setUserDocumentation(DocumentationKind.Property, docs);
+    window.showInformationMessage("Документация для  '" + name + "' успешно добавлена!");
+}
+
+async function addSectionsDocumentnation() {
+    try {
+        var docs = getDocumentationData(DocumentationKind.SectionsType);
+        var name = await pickOption(docs, getModules().map((value: string) => {return value.split(":")[0]}).sort());
+        await checkDocs(docs, name, "В пользовательской документации найдена секция '" + name + "'. Перезаписать её?");
+        var descr = await writeDocumentation(docs, name);
+        var example = await writeExample(docs, name, `[${name}]\nparam = nil`);
+    } catch (error) {
+        console.error(error);
+        return;
+    }
+
+    docs = getUserDocumentation(DocumentationKind.SectionsType);
+    docs[name] = {
+        "documentation" : descr.replace(/(<br>|\\n)/g, "\n"),
+        "example" : example
+    }
+    setUserDocumentation(DocumentationKind.SectionsType, docs);
     window.showInformationMessage("Документация для  '" + name + "' успешно добавлена!");
 }
 

@@ -23,6 +23,9 @@ export async function provideHover(document: TextDocument, position: Position, t
     }
     else if (semantic.type === LtxSemanticType.property) {
         Mark = await getDocumentation(semantic.text.replace(/[0-9]/g, ''), DocumentationKind.Property, true);
-    }       
+    }  
+    else if (semantic.type === LtxSemanticType.struct) {
+        Mark = await getDocumentation(semantic.text.replace(/\@.+/g, ''), DocumentationKind.SectionsType, true) 
+    }     
     return new Hover(Mark);
 }

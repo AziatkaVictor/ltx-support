@@ -241,5 +241,10 @@ function isInsideSectionDefinition(text : string, position : Position) : boolean
 }
 
 async function getSectionsDefinitionTypes(): Promise<CompletionItem[]> {
-    return getModules().map((value) => {return new CompletionItem(value.split(":")[0], CompletionItemKind.Class);});
+    return await Promise.all(getModules().map(async (value) => {
+        var item = new CompletionItem(value.split(":")[0], CompletionItemKind.Class);
+        item.detail = "Section";
+        item.documentation = await getDocumentation(value.split(":")[0], DocumentationKind.SectionsType);
+        return item;
+    }));
 }
