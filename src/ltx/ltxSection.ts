@@ -66,6 +66,14 @@ export class LtxSection {
         }
     }
 
+    getText() {
+        var data = "";
+        for (const line of this.tempLines.values()) {
+            data = data.concat(line + "\n");
+        }
+        return data;
+    }
+
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType) {
         this.name = name.slice(1, name.length - 1).trim();
         if (this.name !== "") {

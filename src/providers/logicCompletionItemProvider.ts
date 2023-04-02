@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, Position, SnippetString, TextDocument, workspace } from "vscode";
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, SnippetString, TextDocument, workspace } from "vscode";
 import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
@@ -107,9 +107,10 @@ async function getSquads(document: TextDocument) : Promise<CompletionItem[]> {
     var files = await workspace.findFiles('{' + getPathToMisc() + 'squad_descr_*.ltx,' + getPathToMisc() + 'squad_descr.ltx}', document.uri.fsPath);
     for await (const file of files) {
         var items = [];
-        for await (const section of await LtxDocument.prototype.getSectionsByUri(file)) {
-            var item = new CompletionItem(section, CompletionItemKind.User);
-            item.detail = "Squad"
+        for await (const section of new LtxDocument(file).getSections()) {
+            var item = new CompletionItem(section.name, CompletionItemKind.User);
+            item.detail = "Squad";
+            item.documentation = new MarkdownString("").appendCodeblock(section.getText(), "ltx");
             items.push(item);
         }
     }
@@ -120,10 +121,10 @@ async function getTasks(document: TextDocument) : Promise<CompletionItem[]> {
     var items = [];
     var files = await workspace.findFiles('{' + getPathToMisc() + 'tm_*.ltx}', document.uri.fsPath);
     for await (const file of files) {
-        let ltxData =  await LtxDocument.prototype.getSectionsByUri(file);
-        for await (const section of ltxData) {
-            var item = new CompletionItem(section, CompletionItemKind.Event);
+        for await (const section of new LtxDocument(file).getSections()) {
+            var item = new CompletionItem(section.name, CompletionItemKind.Event);
             item.detail = "Task"
+            item.documentation = new MarkdownString("").appendCodeblock(section.getText(), "ltx");
             items.push(item);
         }
     }

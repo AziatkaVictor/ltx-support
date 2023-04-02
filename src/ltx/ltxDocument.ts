@@ -302,34 +302,20 @@ export class LtxDocument {
      * @param document Документ, который необходимо запарсить.
      * @param args[] Массив текстовых параметров, которые отвечают за поведение конструктора (например `fast` отключает все лишнее, чтобы ускорить процесс парсинга, нужен для предложения переменных в автодополнении) 
      */
-    constructor(document: TextDocument, args: string[] = []) {
-        if (args.indexOf('fast') !== -1) {
-            console.time('LtxDocument (Fast): '.concat(document.fileName));
-        }
-        else {
-            console.time('LtxDocument: '.concat(document.fileName));
-        }
-
-        this.filePath = document.uri.fsPath;
-        currentFile = document.uri.fsPath;
+    constructor(document: TextDocument | Uri, args: string[] = []) {
+        this.filePath = document instanceof Uri ? document.fsPath : document.uri.fsPath;
+        currentFile = this.filePath;
 
         globalErrorsData.set(currentFile, []);
         globalSenmaticsData.set(currentFile, []);
 
-        var content = document.getText();
+        var content = document instanceof Uri ? getFileData(this.filePath) : document.getText();
         this.sectionsName = this.findAllSectionsNames(content);
-
-        // TODO: Заменить на enum
-        if (args.indexOf('fast') !== -1) {
-            console.timeEnd('LtxDocument (Fast): '.concat(document.fileName))
-            return;
-        }
 
         this.parsingSections(content, args);
         this.setDocumentType();
 
         this.semanticData = globalSenmaticsData.get(currentFile);
         this.errorsData = globalErrorsData.get(currentFile);
-        console.timeEnd('LtxDocument: '.concat(document.fileName));
     }
 }
