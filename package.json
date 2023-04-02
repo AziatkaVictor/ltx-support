@@ -262,7 +262,7 @@
 		"isPreReleaseVersion": false
 	},
 	"bugs": {
-		"url": "https://ap-pro.ru/forums/topic/3561-vscode-podderzhka-sintaksisa-cop"
+		"url": "https://github.com/AziatkaVictor/ltx-support/issues"
 	},
 	"repository": {
 		"type": "git",
