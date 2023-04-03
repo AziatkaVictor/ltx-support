@@ -1,69 +1,72 @@
 import { workspace } from "vscode";
 
-const settings = workspace.getConfiguration("", workspace.workspaceFile);
+function getSettings() {
+    return workspace.getConfiguration("", workspace.workspaceFile);
+}
 
 export function getPathToScripts() : string | null {
-    return settings.get("ltx-support.directories.pathToScripts");
+    return getSettings().get("ltx-support.directories.pathToScripts");
 }
 
 export function getPathToMisc() : string | null {
-    return settings.get("ltx-support.directories.pathToMisc");
+    return getSettings().get("ltx-support.directories.pathToMisc");
 }
 
 export function getPathToLocalization() : string | null {
-    return settings.get("ltx-support.directories.pathToLocalization");
+    return getSettings().get("ltx-support.directories.pathToLocalization");
 }
 
 export function getIgnoredLocalization() : string[] {
-    return settings.get("ltx-support.completion.ignoreLocalizationFile");
+    return getSettings().get("ltx-support.completion.ignoreLocalizationFile");
 }
 
 export function isIgnoreQuests() : boolean {
-    return settings.get("ltx-support.completion.ignoreQuest");
+    return getSettings().get("ltx-support.completion.ignoreQuest");
 }
 
 export function isIgnoreDialogs() : boolean {
-    return settings.get("ltx-support.completion.ignoreDialogs");
+    return getSettings().get("ltx-support.completion.ignoreDialogs");
 }
 
 export function getUserDocumentation(filename : string) : Object {
-    return settings.get("ltx-support.documentation." + filename + "Documentation");
+    return getSettings().get("ltx-support.documentation." + filename + "Documentation");
 }
 
 export function GetUpdateDocumentation() : boolean {
-    return settings.get("ltx-support.documentation.updateDocumentation");
+    return getSettings().get("ltx-support.documentation.updateDocumentation");
 }
 
 export function getUserArgsDocumentation() : string[] {
-    return settings.get("ltx-support.documentation.argsTypeForFunctionsDocumentation");
+    return getSettings().get("ltx-support.documentation.argsTypeForFunctionsDocumentation");
 }
 
 export async function setUserDocumentation(filename : string, value) {
-    await settings.update("ltx-support.documentation." + filename + "Documentation", value);
+    await getSettings().update("ltx-support.documentation." + filename + "Documentation", value);
 }
 
 export function isIgnoreParamsDiagnostic() : boolean {
-    return settings.get("ltx-support.diagnostics.ignoreParamsDiagnostic");
+    return getSettings().get("ltx-support.diagnostics.ignoreParamsDiagnostic");
 }
 
 export function isDiagnosticEnabled() : boolean {
-    return false; //settings.get("Diagnostics.EnableDiagnostic");
+    return false; //getSettings().get("Diagnostics.EnableDiagnostic");
 }
 
 export function isUseWorkspaceFolder() : boolean {
-    return settings.get("ltx-support.game.useWorkspaceFolder");
+    return getSettings().get("ltx-support.game.useWorkspaceFolder");
+}
 }
 
 export function getAdditiveCommands() : string | null {
-    return settings.get("ltx-support.game.additiveCommands");
+    return getSettings().get("ltx-support.game.additiveCommands");
 }
 
 export function getGamePath() : string | null {
-    return settings.get("ltx-support.game.path");
+    return getSettings().get("ltx-support.game.path");
 }
 
 export function getGameCommands() : [] {
-    return settings.get("ltx-support.game.commands");
+    return getSettings().get("ltx-support.game.commands");
 }
 
 export function getDefaultPathToConditions() : string {
