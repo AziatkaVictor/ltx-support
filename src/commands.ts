@@ -1,7 +1,7 @@
 import { QuickPickItem, window, workspace } from "vscode";
 import { DocumentationKind, functionsFiles, getDocumentationData } from "./documentation";
 import { getAllParams, getModules } from "./utils/modulesParser";
-import { getGameCommands, isUseWorkspaceFolder, getAdditiveCommands, getGamePath, getUserArgsDocumentation, getUserDocumentation, setUserDocumentation } from "./settings";
+import { getGameCommands, isUseWorkspaceFolder, getAdditiveCommands, getGamePath, getUserArgsDocumentation, getUserDocumentation, setUserDocumentation, isSilentStart } from "./settings";
 
 const TYPES = new Map<string, Function>([
     ["Functions", addFunctionDocumentnation],
@@ -10,33 +10,19 @@ const TYPES = new Map<string, Function>([
 ]);
 
 class selectionItem implements QuickPickItem {
-    label: string;
-    description: string;
-
-    constructor(description: string, name: string) {
-        this.label = name;
-        this.description = description;
-    }
+    constructor(public description: string, public label: string) {}
 }
 
 export async function startGame() {
-    class gameStartChoise implements QuickPickItem {
-        constructor(public label : string, public detail : string) {
-        }
-    }
-
     var options = getGameCommands();
-    if (!options) {
-        return;
-    }
-
-    var choise = await window.showQuickPick(options.map((value) => {return new gameStartChoise(value[0], value[1])}));
-    if (!choise) {
-        return;
-    }
+    if (!options) {return;   }
+    var choise = await window.showQuickPick(options.map((value) => {return new selectionItem(value[1], value[0])}));
+    if (!choise) {return;}
 
     var terminal = window.activeTerminal ? window.activeTerminal : window.createTerminal();
-    terminal.show();
+    if (!isSilentStart()) {
+        terminal.show();
+    }
 
     if (isUseWorkspaceFolder()) {
         terminal.sendText("cd '" + workspace.workspaceFolders[0].uri.fsPath + "'");   
@@ -45,8 +31,7 @@ export async function startGame() {
     else {
         terminal.sendText("cd '" + getGamePath() + "'");
     }
-
-    terminal.sendText(choise.detail);
+    terminal.sendText(choise.label);
 }
 
 export async function addDocumentation() {

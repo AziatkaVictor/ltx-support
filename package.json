@@ -224,15 +224,20 @@
 						"default": true,
 						"markdownDescription": "Запускать игру относительно рабочей папки"
 					},
+					"ltx-support.game.silentStart": {
+						"type": "boolean",
+						"default": false,
+						"markdownDescription": "Не отображать терминал при запуске"
+					},
 					"ltx-support.game.additiveCommands": {
 						"type": "string",
 						"default": "cd ..",
-						"markdownDescription": "Дополнительная команда, которая вызывается при включенном `#ltx-support.game.useWorkspaceFolder#` перед стартом игры. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра."
+						"markdownDescription": "Дополнительная команда, которая вызывается при включенном `#ltx-support.game.useWorkspaceFolder#` перед запуском. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра."
 					},
 					"ltx-support.game.path": {
 						"type": "string",
 						"default": "",
-						"markdownDescription": "Путь к папке, относительно которой будет вызываться комманда. Игнорируется при включенном `#ltx-support.game.useWorkspaceFolder#`."
+						"markdownDescription": "Пользовательский путь к папке, относительно которой будет вызываться комманда. Игнорируется при включенном `#ltx-support.game.useWorkspaceFolder#`."
 					},
 					"ltx-support.game.commands": {
 						"type": "array",

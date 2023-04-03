@@ -55,6 +55,9 @@ export function isDiagnosticEnabled() : boolean {
 export function isUseWorkspaceFolder() : boolean {
     return getSettings().get("ltx-support.game.useWorkspaceFolder");
 }
+
+export function isSilentStart() : boolean {
+    return getSettings().get("ltx-support.game.silentStart");
 }
 
 export function getAdditiveCommands() : string | null {
