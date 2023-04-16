@@ -1,4 +1,4 @@
-import { TextDocument, Position, CancellationToken, Hover, ProviderResult, MarkdownString } from "vscode";
+import { TextDocument, Position, CancellationToken, Hover, MarkdownString } from "vscode";
 import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxSemanticType } from "../ltx/ltxSemantic";

@@ -4,9 +4,9 @@ import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKin
 import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
 import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
-import { getDefaultPathToLocalization, getDefaultPathToScripts, getIgnoredLocalization, getPathToLocalization, getPathToMisc, getPathToScripts, isIgnoreDialogs, isIgnoreQuests } from "../settings";
+import { getDefaultPathToScripts, getPathToMisc, getPathToScripts } from "../settings";
 import { getConditions, getFunctions } from "../utils/actionsParser";
-import { analyzeFile, findLuaElements, getLocalizationData, getXmlData } from "../utils/fileReader";
+import { analyzeFile, findLuaElements, getLocalizationData } from "../utils/fileReader";
 import { getModules, getParamsByFile } from "../utils/modulesParser";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];

@@ -6,7 +6,7 @@ import { provideFolding } from './providers/logicFoldingProvider';
 import { provideHover } from './providers/logicHoverProvider';
 import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
 import { provideSymbols } from './providers/logicSymbolsProvider';
-import { GetUpdateDocumentation as getUpdateDocumentation, isDiagnosticEnabled} from './settings';
+import { isUpdateDocumentation, isDiagnosticEnabled} from './settings';
 import { provideCompletion } from './providers/logicCompletionItemProvider';
 import { updateDocumentation } from './documentation';
 
@@ -39,7 +39,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
     context.subscriptions.push(commands.registerCommand("ltx-support.updateDocumentation", updateDocumentation));
 
-    if (getUpdateDocumentation()) {
+    if (isUpdateDocumentation()) {
         updateDocumentation();
     }
 

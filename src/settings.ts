@@ -32,7 +32,7 @@ export function getUserDocumentation(filename : string) : Object {
     return getSettings().get("ltx-support.documentation." + filename + "Documentation");
 }
 
-export function GetUpdateDocumentation() : boolean {
+export function isUpdateDocumentation() : boolean {
     return getSettings().get("ltx-support.documentation.updateDocumentation");
 }
 
