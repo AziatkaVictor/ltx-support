@@ -33,7 +33,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerDocumentSymbolProvider("ltx", {provideDocumentSymbols : provideSymbols}));    
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
     context.subscriptions.push(languages.registerHoverProvider("ltx", {provideHover : provideHover}));
-    
+
     context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addDocumentation));
     context.subscriptions.push(commands.registerCommand("ltx-support.Start", startGame));
     context.subscriptions.push(commands.registerCommand("ltx-support.updateScripts", updateScripts));
@@ -75,29 +75,29 @@ function createFileData() {
     
     diagnosticCollection.clear();
     if (isDiagnosticEnabled()) {
-        let diagnosticMap: Map<string, Diagnostic[]> = new Map();
-        workspace.textDocuments.forEach(document => {
-            if (document.languageId !== "ltx") {
-                return;
-            }
-            var errors = getLtxDocument(document).errorsData;
-            let canonicalFile = document.uri.toString();
-            let diagnostics = diagnosticMap.get(canonicalFile);
+        // let diagnosticMap: Map<string, Diagnostic[]> = new Map();
+        // workspace.textDocuments.forEach(document => {
+        //     if (document.languageId !== "ltx") {
+        //         return;
+        //     }
+        //     var errors = getLtxDocument(document).errorsData;
+        //     let canonicalFile = document.uri.toString();
+        //     let diagnostics = diagnosticMap.get(canonicalFile);
 
-            if (!diagnostics) {
-                diagnostics = [];
-            }
-            errors.forEach(item => {
-                let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
-                diagnosticItem.code = item.tag;
-                diagnostics.push(diagnosticItem);
-            });
-            diagnosticMap.set(canonicalFile, diagnostics);
-        })
+        //     if (!diagnostics) {
+        //         diagnostics = [];
+        //     }
+        //     errors.forEach(item => {
+        //         let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
+        //         diagnosticItem.code = item.tag;
+        //         diagnostics.push(diagnosticItem);
+        //     });
+        //     diagnosticMap.set(canonicalFile, diagnostics);
+        // })
 
-        diagnosticMap.forEach((diags, file) => {
-            diagnosticCollection.set(Uri.parse(file), diags);
-        });
+        // diagnosticMap.forEach((diags, file) => {
+        //     diagnosticCollection.set(Uri.parse(file), diags);
+        // });
     }
 }
 

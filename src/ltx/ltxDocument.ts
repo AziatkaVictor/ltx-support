@@ -5,7 +5,7 @@ import {
     Uri,
     DiagnosticSeverity
 } from "vscode";
-import { addError, globalErrorsData, LtxError } from "./ltxError";
+import { LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
@@ -32,7 +32,7 @@ export class LtxDocument {
     private sectionsName: string[] = []
 
     private semanticData: LtxSemantic[]
-    readonly errorsData: LtxError[]
+    private errorsData: LtxError[]
 
     private fileType: LtxDocumentType
     private tempSection: LtxSection
@@ -194,7 +194,7 @@ export class LtxDocument {
      * @param section Ссылка на секцию, которую нужно закрыть
      * @param index Номер строки
      */
-    private closeSection(section: LtxSection, line? : number) {
+    private closeSection(section: LtxSection, line?: number) {
         section.close(line);
         this.sections.push(section);
     }
@@ -215,8 +215,8 @@ export class LtxDocument {
                 result = match;
                 continue;
             }
-            let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
-            addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
+            // let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
+            // addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
         }
 
         return result;
@@ -305,8 +305,7 @@ export class LtxDocument {
     constructor(document: TextDocument | Uri, args: string[] = []) {
         this.filePath = document instanceof Uri ? document.fsPath : document.uri.fsPath;
         currentFile = this.filePath;
-
-        globalErrorsData.set(currentFile, []);
+        
         globalSenmaticsData.set(currentFile, []);
 
         var content = document instanceof Uri ? getFileData(this.filePath) : document.getText();
@@ -316,6 +315,5 @@ export class LtxDocument {
         this.setDocumentType();
 
         this.semanticData = globalSenmaticsData.get(currentFile);
-        this.errorsData = globalErrorsData.get(currentFile);
     }
 }

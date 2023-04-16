@@ -2,7 +2,6 @@ import { DiagnosticSeverity, Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
 import { getSectionData, getBasedConditions, getModules } from "../utils/modulesParser";
 import { LtxDocumentType } from "./ltxDocument";
-import { addError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 
@@ -17,9 +16,9 @@ export class LtxSection {
     private tempLines: Map<number, string> = new Map<number, string>()
 
     validate() {
-        if (this.tempLines.size === 0) {
-            addError(this.linkRange, "Рекомендуется, если хотите закончить логику, использовать nil.", this.name, DiagnosticSeverity.Warning, "ReplaceToNil");
-        }
+        // if (this.tempLines.size === 0) {
+        //     addError(this.linkRange, "Рекомендуется, если хотите закончить логику, использовать nil.", this.name, DiagnosticSeverity.Warning, "ReplaceToNil");
+        // }
     }
 
     close(line? : number) {
