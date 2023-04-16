@@ -10,7 +10,8 @@ import { isUpdateDocumentation, isDiagnosticEnabled} from './settings';
 import { provideCompletion } from './providers/logicCompletionItemProvider';
 import { updateDocumentation } from './documentation';
 
-let diagnosticCollection: DiagnosticCollection;
+export var diagnosticCollection: DiagnosticCollection;
+export var diagnosticMap: Map<string, Diagnostic[]> = new Map();
 export var documents: Map<TextDocument, LtxDocument> = new Map<TextDocument, LtxDocument>();
 
 export function getLtxDocument(document : TextDocument) {
@@ -73,31 +74,8 @@ function createFileData() {
         return;
     }
     
-    diagnosticCollection.clear();
-    if (isDiagnosticEnabled()) {
-        // let diagnosticMap: Map<string, Diagnostic[]> = new Map();
-        // workspace.textDocuments.forEach(document => {
-        //     if (document.languageId !== "ltx") {
-        //         return;
-        //     }
-        //     var errors = getLtxDocument(document).errorsData;
-        //     let canonicalFile = document.uri.toString();
-        //     let diagnostics = diagnosticMap.get(canonicalFile);
-
-        //     if (!diagnostics) {
-        //         diagnostics = [];
-        //     }
-        //     errors.forEach(item => {
-        //         let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
-        //         diagnosticItem.code = item.tag;
-        //         diagnostics.push(diagnosticItem);
-        //     });
-        //     diagnosticMap.set(canonicalFile, diagnostics);
-        // })
-
-        // diagnosticMap.forEach((diags, file) => {
-        //     diagnosticCollection.set(Uri.parse(file), diags);
-        // });
+    if (!isDiagnosticEnabled()) {
+        diagnosticCollection.clear();        
     }
 }
 

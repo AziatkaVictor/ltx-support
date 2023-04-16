@@ -2,7 +2,7 @@ import { CancellationToken, CompletionContext, SemanticTokens, SemanticTokensBui
 import { getLtxDocument } from "../extension";
 
 const tokenTypes = ['property', 'struct', 'class', 'number', 'keyword', 'function', 'variable', 'string', "constant"];
-const tokenModifiers = ['declaration', 'definition', 'documentation', 'readonly'];
+const tokenModifiers = ['declaration', 'definition', 'documentation', 'readonly', 'deprecated'];
 export const legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 export async function provideLogicSemantic(document: TextDocument, token?: CancellationToken, context?: CompletionContext): Promise<SemanticTokens> {

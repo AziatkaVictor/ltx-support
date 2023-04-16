@@ -49,7 +49,7 @@ export function isIgnoreParamsDiagnostic() : boolean {
 }
 
 export function isDiagnosticEnabled() : boolean {
-    return false; //getSettings().get("Diagnostics.EnableDiagnostic");
+    return getSettings().get("ltx-support.diagnostics.enable");
 }
 
 export function isUseWorkspaceFolder() : boolean {

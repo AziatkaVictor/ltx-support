@@ -55,7 +55,8 @@ export enum LtxSemanticModification {
     declaration = "declaration",
     readonly = "readonly",
     definition = "definition",
-    documentation = "documentation"
+    documentation = "documentation",
+    deprecated = "deprecated"
 }
 
 export enum LtxSemanticDescription {

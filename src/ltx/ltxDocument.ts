@@ -3,7 +3,8 @@ import {
     Position,
     TextDocument,
     Uri,
-    DiagnosticSeverity
+    DiagnosticSeverity,
+    Diagnostic
 } from "vscode";
 import { LtxError } from "./ltxError";
 import { LtxLine } from "./ltxLine";
@@ -11,6 +12,8 @@ import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
 import { getFileData } from "../utils/fileReader";
 import { getParamsByFile } from "../utils/modulesParser";
+import { isDiagnosticEnabled } from "../settings";
+import { diagnosticCollection, diagnosticMap } from "../extension";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -27,15 +30,21 @@ export enum LtxDocumentType {
  */
 export class LtxDocument {
     readonly filePath: string
+    readonly uri: Uri
+    readonly text: string
     private sections: LtxSection[] = []
     private rawData: Map<number, LtxLine> = new Map<number, LtxLine>()
     private sectionsName: string[] = []
 
-    private semanticData: LtxSemantic[]
-    private errorsData: LtxError[]
+    private semanticData: LtxSemantic[] = []
+    private errorsData: LtxError[] = []
 
     private fileType: LtxDocumentType
     private tempSection: LtxSection
+
+    addError(range: Range, descr: string, data?: string, errorType?: DiagnosticSeverity, tag?: string) {
+        this.errorsData.push(new LtxError(range, descr, data, errorType, tag));
+    }
 
     getSections(): LtxSection[] {
         return this.sections;
@@ -73,11 +82,6 @@ export class LtxDocument {
                 return semanticItem;
             }
         }
-    }
-
-    // TODO: Заменить на Validate
-    getErrorsData(): LtxError[] {
-        return this.errorsData;
     }
 
     getType(): LtxDocumentType {
@@ -151,7 +155,7 @@ export class LtxDocument {
     }
 
     canAddSectionLink(position: Position): boolean {
-        return this.inInsideCondlist(position) && !this.isInsideCondlistGroups(position) && (this.getLine(position).isType("condlist") || this.getLine(position).isType("npc_and_zone"))
+        return this.inInsideCondlist(position) && !this.isInsideCondlistGroups(position) && this.getLine(position).canHaveSectionLink()
     }
 
     /**
@@ -206,7 +210,7 @@ export class LtxDocument {
      * @returns Возвращаем первую секцию, которую мы нашли
      */
     private findSection(text: string, lineIndex: number) {
-        var re = /\[.*\]/g;
+        var re = /\[.*?\]/g;
         var match: RegExpExecArray;
         var result: RegExpExecArray;
 
@@ -215,8 +219,8 @@ export class LtxDocument {
                 result = match;
                 continue;
             }
-            // let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
-            // addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Remove");
+            let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
+            this.addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Section Repetition");
         }
 
         return result;
@@ -232,6 +236,12 @@ export class LtxDocument {
         var match;
         sectionsArray = [];
         while ((match = re.exec(text)) !== null) {
+            if (sectionsArray.includes(match[0])) {
+                let substr = text.substring(0, match.index);
+                let lineIndex = (substr.match(/\n/g) || []).length || 0;
+                let range = new Range(new Position(lineIndex, substr.length - match.index), new Position(lineIndex, substr.length - match.index + match[0].length));
+                this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "Section Repetition")
+            }
             sectionsArray.push(match[0]);
         }
         return sectionsArray;
@@ -247,7 +257,7 @@ export class LtxDocument {
             if (this.tempSection) {
                 this.closeSection(this.tempSection);
             }
-            this.tempSection = new LtxSection(result[0], lineIndex, result.index, this.fileType);
+            this.tempSection = new LtxSection(result[0], lineIndex, result.index, this.fileType, this);
             return;
         }
         else if (this.tempSection) {
@@ -259,7 +269,7 @@ export class LtxDocument {
         this.rawData.set(lineIndex, new LtxLine(lineIndex, line, null));
     }
 
-    private async parsingSections(content: string, args: string[]) {
+    private async parsingData(content: string, args: string[]) {
         let contentArray = content.split("\n");
 
         for (let lineIndex = 0; lineIndex < contentArray.length; lineIndex++) {
@@ -273,6 +283,22 @@ export class LtxDocument {
         for await (const section of this.sections) {
             section.parseLines();
         }
+
+        if (isDiagnosticEnabled()) {
+            this.validate();
+        }
+    }
+
+    validate() {
+        let canonicalFile = this.uri.toString();
+        var diagnostics = [];
+        this.errorsData.forEach(item => {
+            let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
+            diagnosticItem.code = item.tag;
+            diagnostics.push(diagnosticItem);
+        });
+        diagnosticMap.set(canonicalFile, diagnostics);
+        diagnosticCollection.set(Uri.parse(canonicalFile), diagnostics);
     }
 
     private setDocumentType() {
@@ -304,15 +330,16 @@ export class LtxDocument {
      */
     constructor(document: TextDocument | Uri, args: string[] = []) {
         this.filePath = document instanceof Uri ? document.fsPath : document.uri.fsPath;
+        this.uri = document instanceof Uri ? document : document.uri;
         currentFile = this.filePath;
-        
+        this.setDocumentType();
+
         globalSenmaticsData.set(currentFile, []);
 
-        var content = document instanceof Uri ? getFileData(this.filePath) : document.getText();
-        this.sectionsName = this.findAllSectionsNames(content);
+        this.text = document instanceof Uri ? getFileData(this.filePath) : document.getText();
+        this.sectionsName = this.findAllSectionsNames(this.text);
 
-        this.parsingSections(content, args);
-        this.setDocumentType();
+        this.parsingData(this.text, args);
 
         this.semanticData = globalSenmaticsData.get(currentFile);
     }

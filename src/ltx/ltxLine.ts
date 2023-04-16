@@ -33,13 +33,20 @@ export class LtxLine {
     }
 
     isType(name: string): boolean {
-        return this.getType().includes(name);
+        return this.getType() ? this.getType().includes(name) : false;
+    }
+     
+    canHaveSectionLink(): boolean {
+        return this.isType("condlist") || this.isType("npc_and_zone");
     }
 
     getType(): string | null {
-        for (const param of getSectionData().get(this.owner.getTypeName())) {
-            if (param.indexOf(this.propertyName) !== -1) {
-                return param.split(":")[0];
+        const data = getSectionData().get(this.owner.getTypeName());
+        if (data) {
+            for (const param of data) {
+                if (param.indexOf(this.propertyName) !== -1) {
+                    return param.split(":")[0];
+                }
             }
         }
 
@@ -96,7 +103,7 @@ export class LtxLine {
         re = /(?<=(\=|\,)).+?(?=(\,|\\n|$))/gm;
         let match;
         while ((match = re.exec(tempData)) !== null) {
-            this.condlists.push(new LtxCondlist(index, match.index, match[0]));
+            this.condlists.push(new LtxCondlist(index, match.index, match[0], this));
         }
     }
 }

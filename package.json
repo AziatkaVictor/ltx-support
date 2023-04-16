@@ -204,10 +204,10 @@
 			{
 				"title": "Diagnostics",
 				"properties": {
-					"ltx-support.diagnostics.enableDiagnostic": {
+					"ltx-support.diagnostics.enable": {
 						"type": "boolean",
-						"default": false,
-						"markdownDescription": "Включить диагностику файлов. Будет происходить проверка файла на ошибки. На данный момент не работает. `WiP`"
+						"default": true,
+						"markdownDescription": "Включить диагностику файлов. Будет происходить проверка файла на ошибки."
 					},
 					"ltx-support.diagnostics.ignoreParamsDiagnostic": {
 						"type": "boolean",
