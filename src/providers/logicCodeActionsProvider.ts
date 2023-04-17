@@ -6,7 +6,9 @@ import { LtxError } from "../ltx/ltxError";
 export const DiagnosticTag = {
     "ReplaceSectionToNil": [Action_ReplaceSectionToNil],
     "Remove": [Action_Remove],
-    "InvalidSectionType": [Action_InvalidSectionType]
+    "InvalidSectionType": [Action_InvalidSectionType],
+    "InvalidSectionLink": [Action_InvalidSectionLink, Action_RemoveSectionLink],
+    "SelfSectionLink": [Action_RemoveSectionLink]
 }
 
 export function provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeAction[]> {
@@ -39,13 +41,13 @@ function Action_ReplaceSectionToNil(document: TextDocument, range: Range, data: 
 }
 
 function Action_Remove(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
-    const fix = new CodeAction(`Удалить секцию`, CodeActionKind.QuickFix);
+    const fix = new CodeAction(`Удалить`, CodeActionKind.QuickFix);
     fix.edit = new WorkspaceEdit();
     fix.edit.delete(document.uri, new Range(error.range.start, new Position(error.range.end.line + 1, 0)));
     return [fix];
 }
 
-function Action_InvalidSectionType(document: TextDocument, range: Range, data: LtxDocument, error: LtxError) {
+function Action_InvalidSectionType(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
     var result = [];
     const section = data.getSection(error.range.start);
     for (const sectionType of section.getSimilarType(3, 0.5)) {
@@ -55,4 +57,21 @@ function Action_InvalidSectionType(document: TextDocument, range: Range, data: L
         result.push(fix);
     }
     return result;
+}
+
+function Action_InvalidSectionLink(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
+    var result = [];
+    const section = data.getSection(error.range.start);
+    const fix = new CodeAction(`Добавить объявление секции ${error.data}`, CodeActionKind.QuickFix);
+    fix.edit = new WorkspaceEdit();
+    fix.edit.insert(document.uri, new Position(section.startLine, 0), `[${error.data}]\n\n`); // TODO: Заменить на информацию из документации
+    result.push(fix);
+    return result;
+}
+
+function Action_RemoveSectionLink(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
+    const fix = new CodeAction(`Заменить на nil`, CodeActionKind.QuickFix);
+    fix.edit = new WorkspaceEdit();
+    fix.edit.replace(document.uri, error.range, "nil");
+    return [fix];
 }

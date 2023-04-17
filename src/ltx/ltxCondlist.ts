@@ -1,4 +1,4 @@
-import { Position, Range } from "vscode";
+import { DiagnosticSeverity, Position, Range } from "vscode";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxLine } from "./ltxLine";
 
@@ -48,12 +48,33 @@ export class LtxCondlist {
         this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
 
         if (this.owner.canHaveSectionLink()) {
-            this.findElements(/(?<![\w\@])[\w\@]+?(?![\w\@])(?=\b)/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
+            var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
+            for (const sectionLink of sectionsLinks) {
+                if (sectionsLinks.length > 1) {
+                    this.getDocument().addError(sectionLink.range, "В одном Condlist-е не можеть быть несколько ссылок на секции", sectionLink.text, DiagnosticSeverity.Error, "MultipleSectionLink");
+                }
+                else {
+                    if (!this.getDocument().getSectionsName().includes(sectionLink.text)) {
+                        this.getDocument().addError(sectionLink.range, "Ссылка на несуществующую секцию", sectionLink.text, DiagnosticSeverity.Error, "InvalidSectionLink");
+                    }
+                    else if (this.getSection().name === sectionLink.text) {
+                        this.getDocument().addError(sectionLink.range, "Нельзя ссылаться на самого себя", sectionLink.text, DiagnosticSeverity.Error, "SelfSectionLink");
+                    }
+                }
+            }
         }
         this.tempData = content;
     }
 
-    private findElements(RegExp: RegExp, SemanticType: LtxSemanticType, SemanticModification: LtxSemanticModification, SemanticDescription: LtxSemanticDescription, condition?: (match: RegExpExecArray, condlist: LtxCondlist) => boolean) {
+    getDocument() {
+        return this.owner.owner.getOwner();
+    }
+
+    getSection() {
+        return this.owner.owner;
+    }
+
+    private findElements(RegExp: RegExp, SemanticType: LtxSemanticType, SemanticModification: LtxSemanticModification, SemanticDescription: LtxSemanticDescription, condition?: (match: RegExpExecArray, condlist: LtxCondlist) => boolean): LtxSemantic[] {
         var match;
         var data = [];
         while ((match = RegExp.exec(this.tempData)) !== null) {
