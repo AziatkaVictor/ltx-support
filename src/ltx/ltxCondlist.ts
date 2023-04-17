@@ -79,7 +79,7 @@ export class LtxCondlist {
 }
 
 function isOutside(match: RegExpExecArray, condlist: LtxCondlist): boolean {
-    if (!match) {
+    if (!match || match[0] === "nil") {
         return false;
     }
     var pos = new Position(condlist.lineIndex, condlist.positionIndex + match.index);
