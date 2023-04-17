@@ -4,6 +4,7 @@ import { getSectionData, getBasedConditions, getModules } from "../utils/modules
 import { LtxDocument, LtxDocumentType } from "./ltxDocument";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
+import { LtxSectionLink } from "./ltxSectionLink";
 
 export class LtxSection {
     private owner: LtxDocument;
@@ -19,17 +20,17 @@ export class LtxSection {
     validate() {
         if (this.tempLines.size === 0) {
             if (this.owner.getType() === LtxDocumentType.Logic) {
-                this.owner.addError(this.linkRange, "В целях оптимизиции, рекомендуется, если хотите закончить логику, использовать nil. Однако, некоторые секции, перед окончанием работы, должны смениться на другую.", this.name, DiagnosticSeverity.Hint, "Replace To Nil");
+                this.owner.addError(this.getRange(), "В целях оптимизиции, рекомендуется, если хотите закончить логику, использовать nil. Однако, некоторые секции, перед окончанием работы, должны смениться на другую.", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
             }
             else {
-                this.owner.addError(this.linkRange, "Пустая секция", this.name, DiagnosticSeverity.Warning, "Replace To Nil");
+                this.owner.addError(this.getRange(), "Пустая секция", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
             }
         }
         if (!this.isTypeValid()) {
-            this.owner.addError(this.linkRange, "Неизвестный тип секции.", this.name, DiagnosticSeverity.Error, "Invalid Section Type");
+            this.owner.addError(this.getTypeRange(), "Неизвестный тип секции.", this.name, DiagnosticSeverity.Error, "InvalidSectionType");
         }
         if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && this.getTypeName() !== "logic") {
-            this.owner.addError(this.linkRange, "Данная секция не используется.", this.name, DiagnosticSeverity.Hint, "Remove");
+            this.owner.addError(this.getRange(), "Данная секция не используется.", this.name, DiagnosticSeverity.Information, "Remove");
         }
     }
 
@@ -50,6 +51,11 @@ export class LtxSection {
         this.tempLines.set(index, line);
     }
 
+    getRange() {
+        const end = this.endLine ? this.endLine : this.startLine;
+        return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
+    }
+
     async parseLines() {
         if (this.tempLines.size === 0) {
             return;
@@ -59,7 +65,6 @@ export class LtxSection {
             data.set(key, new LtxLine(key, value, this));
         }
         this.lines = data;
-        // LtxSemanticType.class, LtxSemanticModification.definition
     }
 
     isTypeValid() {
@@ -74,6 +79,10 @@ export class LtxSection {
 
     getTypeName() {
         return this.type;
+    }
+
+    getTypeRange() {
+        return new Range(new Position(this.startLine, this.linkRange.start.character), new Position(this.startLine, this.linkRange.start.character + this.getTypeName().length));
     }
 
     getParams() {
@@ -100,18 +109,25 @@ export class LtxSection {
         return this.owner;
     }
     
-    getLinks(): RegExpMatchArray|null {
+    getLinks(): LtxSectionLink[]|null {
         if (!this.name) {
             return;
         }
         var re = new RegExp(`(?<!(\\[|[\\w@]))${this.name}(?!(\\[|[\\w@]))`, "g");
-        var data = this.getOwner().text.match(re);
-        console.log(data, re);
+        var match;
+        var data = [];
+        while ((match = re.exec(this.getOwner().text)) !== null) {
+            let substr = this.getOwner().text.substring(0, match.index);
+            let lineIndex = (substr.match(/\n/g) || []).length || 0;
+            let offset = substr.lastIndexOf("\n") !== -1 ? substr.lastIndexOf("\n") : 0;
+            data.push(new LtxSectionLink(match[0], new Position(lineIndex, match.index - offset - 1), new Position(lineIndex, match.index + match[0].length - offset - 1)));
+        }
+        console.log(data);
         return data;
     }
 
     isHaveLinks(): boolean {
-        return this.getLinks() ? this.getLinks().length !== 0 : this.getLinks() !== null;
+        return this.getLinks() ? this.getLinks().length !== 0 : false;
     }
 
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType, owner: LtxDocument) {

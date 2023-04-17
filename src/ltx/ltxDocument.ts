@@ -45,6 +45,16 @@ export class LtxDocument {
     addError(range: Range, descr: string, data?: string, errorType?: DiagnosticSeverity, tag?: string) {
         this.errorsData.push(new LtxError(range, descr, data, errorType, tag));
     }
+    
+    getErrorsByPosition(position: Position): LtxError[] {
+        var data = [];
+        for (const error of this.errorsData) {
+            if (error.range.contains(position)) {
+                data.push(error);
+            }
+        }
+        return data;
+    }
 
     getSections(): LtxSection[] {
         return this.sections;

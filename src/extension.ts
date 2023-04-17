@@ -9,6 +9,7 @@ import { provideSymbols } from './providers/logicSymbolsProvider';
 import { isUpdateDocumentation, isDiagnosticEnabled} from './settings';
 import { provideCompletion } from './providers/logicCompletionItemProvider';
 import { updateDocumentation } from './documentation';
+import { provideCodeActions } from './providers/logicCodeActionsProvider';
 
 export var diagnosticCollection: DiagnosticCollection;
 export var diagnosticMap: Map<string, Diagnostic[]> = new Map();
@@ -34,6 +35,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerDocumentSymbolProvider("ltx", {provideDocumentSymbols : provideSymbols}));    
     context.subscriptions.push(languages.registerDocumentSemanticTokensProvider("ltx", {provideDocumentSemanticTokens : provideLogicSemantic}, legend));
     context.subscriptions.push(languages.registerHoverProvider("ltx", {provideHover : provideHover}));
+    context.subscriptions.push(languages.registerCodeActionsProvider("ltx", {provideCodeActions : provideCodeActions}));
 
     context.subscriptions.push(commands.registerCommand("ltx-support.addDocumentation", addDocumentation));
     context.subscriptions.push(commands.registerCommand("ltx-support.Start", startGame));
