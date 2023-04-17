@@ -265,7 +265,7 @@ export class LtxDocument {
 
         if (result) {
             if (this.tempSection) {
-                this.closeSection(this.tempSection);
+                this.closeSection(this.tempSection, lineIndex - 1);
             }
             this.tempSection = new LtxSection(result[0], lineIndex, result.index, this.fileType, this);
             return;
