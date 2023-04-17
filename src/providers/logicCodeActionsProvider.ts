@@ -36,7 +36,7 @@ function Action_ReplaceSectionToNil(document: TextDocument, range: Range, data: 
         edits.push(new TextEdit(new Range(link.start, link.end), "nil"));
     }
     fix.edit.set(document.uri, edits);
-    fix.edit.delete(document.uri, new Range(new Position(section.startLine, 0), new Position(section.endLine, document.lineAt(section.endLine).text.length)));
+    fix.edit.delete(document.uri, new Range(error.range.start, new Position(error.range.end.line + 1, 0)));
     return [fix];
 }
 

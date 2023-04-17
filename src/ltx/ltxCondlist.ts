@@ -11,6 +11,8 @@ export class LtxCondlist {
     readonly function?;
     readonly functionRange?: Range;
     readonly sectionLink?;
+    readonly infos;
+    readonly functions;
 
     private tempData;
     owner: LtxLine;
@@ -44,8 +46,8 @@ export class LtxCondlist {
             this.functionRange = new Range(new Position(lineIndex, PosIndex + this.function.index), new Position(lineIndex, PosIndex + this.function[0].length + this.function.index - 1));
         }
 
-        this.findElements(/(\-|\+)(?!\d)\w*\b(?<=\w)/g, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);
-        this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
+        this.infos = this.findElements(/(\-|\+)(?!\d)\w*\b(?<=\w)/g, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);
+        this.functions = this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
 
         if (this.owner.canHaveSectionLink()) {
             var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
@@ -72,6 +74,13 @@ export class LtxCondlist {
 
     getSection() {
         return this.owner.owner;
+    }
+
+    validateInfoCondition() {
+        var infos = [];
+        for (const info of this.infos) {
+            this.isInsideCondition(info.range)
+        }
     }
 
     private findElements(RegExp: RegExp, SemanticType: LtxSemanticType, SemanticModification: LtxSemanticModification, SemanticDescription: LtxSemanticDescription, condition?: (match: RegExpExecArray, condlist: LtxCondlist) => boolean): LtxSemantic[] {
