@@ -18,19 +18,16 @@ export class LtxSection {
     private tempLines: Map<number, string> = new Map<number, string>()
 
     validate() {
-        if (this.tempLines.size === 0) {
-            if (this.owner.getType() === LtxDocumentType.Logic) {
-                this.owner.addError(this.getRange(), "В целях оптимизиции, рекомендуется, если хотите закончить логику, использовать nil. Однако, некоторые секции, перед окончанием работы, должны смениться на другую.", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
-            }
-            else {
-                this.owner.addError(this.getRange(), "Пустая секция", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
-            }
-        }
         if (!this.isTypeValid()) {
             this.owner.addError(this.getTypeRange(), "Неизвестный тип секции.", this.name, DiagnosticSeverity.Error, "InvalidSectionType");
         }
-        if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && this.getTypeName() !== "logic") {
-            this.owner.addError(this.getRange(), "Данная секция не используется.", this.name, DiagnosticSeverity.Information, "Remove");
+        else {
+            if (this.tempLines.size === 0) {
+                this.owner.addError(this.getRange(), "Пустая секция", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
+            }
+            if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && this.getTypeName() !== "logic") {
+                this.owner.addError(this.getRange(), "Данная секция не используется.", this.name, DiagnosticSeverity.Information, "Remove");
+            }
         }
     }
 
