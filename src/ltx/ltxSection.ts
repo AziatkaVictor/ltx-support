@@ -31,7 +31,7 @@ export class LtxSection {
         }
     }
 
-    close(line? : number) {
+    close(line?: number) {
         if (!line) {
             this.endLine = this.tempLines.size !== 0 ? Math.max(...Array.from(this.tempLines.keys())) : this.startLine;
         }
@@ -79,7 +79,7 @@ export class LtxSection {
     }
 
     getTypeRange() {
-        return new Range(new Position(this.startLine, this.linkRange.start.character), new Position(this.startLine, this.linkRange.start.character + this.getTypeName().length));
+        return new Range(new Position(this.startLine, this.linkRange.start.character), new Position(this.startLine, this.linkRange.start.character + this.getTypeName() ? this.getTypeName().length + 1: this.name.length));
     }
 
     getParams() {
@@ -105,8 +105,8 @@ export class LtxSection {
     getOwner() {
         return this.owner;
     }
-    
-    getLinks(): LtxSectionLink[]|null {
+
+    getLinks(): LtxSectionLink[] | null {
         if (!this.name) {
             return;
         }
@@ -126,6 +126,18 @@ export class LtxSection {
         return this.getLinks() ? this.getLinks().length !== 0 : false;
     }
 
+    getSimilarType(count: number, minSimilarity: number): string[] {
+        var data = [];
+        var min = minSimilarity;
+        for (const sectionType of getSectionData().keys()) {
+            var value = similarity(sectionType, this.getTypeName());
+            if (value >= min && data.length < count) {
+                data.push(sectionType);
+            }
+        }
+        return data.sort();
+    }
+
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType, owner: LtxDocument) {
         this.owner = owner;
         this.name = name.slice(1, name.length - 1).trim();
@@ -134,7 +146,48 @@ export class LtxSection {
         }
 
         this.linkRange = new Range(new Position(startLine, startCharacter + 1), new Position(startLine, startCharacter + name.length - 1));
-        this.startLine = startLine;  
+        this.startLine = startLine;
         addSemantic(new LtxSemantic(LtxSemanticType.struct, LtxSemanticModification.declaration, this.linkRange, LtxSemanticDescription.signal, this.name));
     }
+}
+
+function similarity(s1: string, s2: string) {
+    var longer = s1;
+    var shorter = s2;
+    if (s1.length < s2.length) {
+        longer = s2;
+        shorter = s1;
+    }
+    var longerLength = longer.length;
+    if (longerLength == 0) {
+        return 1.0;
+    }
+    return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength.toString());
+}
+
+function editDistance(s1: string, s2: string) {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+
+    var costs = new Array();
+    for (var i = 0; i <= s1.length; i++) {
+        var lastValue = i;
+        for (var j = 0; j <= s2.length; j++) {
+            if (i == 0)
+                costs[j] = j;
+            else {
+                if (j > 0) {
+                    var newValue = costs[j - 1];
+                    if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                        newValue = Math.min(Math.min(newValue, lastValue),
+                            costs[j]) + 1;
+                    costs[j - 1] = lastValue;
+                    lastValue = newValue;
+                }
+            }
+        }
+        if (i > 0)
+            costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
 }
