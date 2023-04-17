@@ -122,7 +122,6 @@ export class LtxSection {
             let offset = substr.lastIndexOf("\n") !== -1 ? substr.lastIndexOf("\n") : 0;
             data.push(new LtxSectionLink(match[0], new Position(lineIndex, match.index - offset - 1), new Position(lineIndex, match.index + match[0].length - offset - 1)));
         }
-        console.log(data);
         return data;
     }
 

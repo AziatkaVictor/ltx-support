@@ -166,7 +166,6 @@ function canAddParam(document: TextDocument, position: Position): boolean {
         return false;
     }
     var resultEnd = match.index <= position.character && (match.index + match[0].length) >= position.character;
-    console.log(resultEnd);
     return resultEnd;
 }
 
