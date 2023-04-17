@@ -1,4 +1,4 @@
-import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, Uri, window, workspace } from 'vscode';
+import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, ExtensionContext, languages, TextDocument, window, workspace } from 'vscode';
 import { addDocumentation, startGame } from './commands';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './utils/actionsParser';

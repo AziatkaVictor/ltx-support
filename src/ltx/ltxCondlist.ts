@@ -1,5 +1,4 @@
 import { Position, Range } from "vscode";
-import { sectionsArray } from "./ltxDocument";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxLine } from "./ltxLine";
 
