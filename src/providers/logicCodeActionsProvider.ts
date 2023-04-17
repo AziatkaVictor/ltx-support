@@ -41,7 +41,7 @@ function Action_ReplaceSectionToNil(document: TextDocument, range: Range, data: 
 function Action_Remove(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction {
     const fix = new CodeAction(`Удалить секцию`, CodeActionKind.QuickFix);
     fix.edit = new WorkspaceEdit();
-    fix.edit.delete(document.uri, new Range(error.range.start, new Position(error.range.end.line, document.lineAt(error.range.end.line).text.length)));
+    fix.edit.delete(document.uri, new Range(error.range.start, new Position(error.range.end.line + 1, 0)));
     return fix;
 }
 
