@@ -11,8 +11,8 @@ export class LtxCondlist {
     readonly function?;
     readonly functionRange?: Range;
     readonly sectionLink?;
-    readonly infos;
-    readonly functions;
+    readonly infos: LtxSemantic[];
+    readonly actions: LtxSemantic[];
 
     private tempData;
     owner: LtxLine;
@@ -47,7 +47,9 @@ export class LtxCondlist {
         }
 
         this.infos = this.findElements(/(\-|\+)(?!\d)\w*\b(?<=\w)/g, LtxSemanticType.variable, LtxSemanticModification.declaration, LtxSemanticDescription.info);
-        this.functions = this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
+        this.validateInfoCondition();
+        this.actions = this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
+        this.validateActionCondition();
 
         if (this.owner.canHaveSectionLink()) {
             var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
@@ -79,7 +81,32 @@ export class LtxCondlist {
     validateInfoCondition() {
         var infos = [];
         for (const info of this.infos) {
-            this.isInsideCondition(info.range)
+            if (!this.isInsideCondition(info.range.start)) {
+                continue;
+            }
+            
+            var infoName = info.text.substring(1, info.text.length);
+            var infoType = info.text.substring(0, 1);
+            if (infos.includes((infoType === "-" ? "+" : "-") + infoName)) {
+                this.getDocument().addError(info.range, "Одинаковые инфопоршни, с разными знаками. Условие всегда будет ложным.", info.text, DiagnosticSeverity.Warning, "InvalidCondition");
+            }
+            infos.push(info.text);
+        }
+    }
+
+    validateActionCondition() {
+        var actions = [];
+        for (const action of this.actions) {
+            if (!this.isInsideCondition(action.range.start)) {
+                continue;
+            }
+        
+            var actionName = action.text.substring(1, action.text.length);
+            var actionType = action.text.substring(0, 1);
+            if (actions.includes((actionType === "=" ? "!" : "=") + actionName)) {
+                this.getDocument().addError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text, DiagnosticSeverity.Warning, "InvalidCondition");
+            }
+            actions.push(action.text);
         }
     }
 
