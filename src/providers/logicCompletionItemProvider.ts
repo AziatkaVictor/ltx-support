@@ -7,9 +7,8 @@ import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
 import { getDefaultPathToScripts, getPathToMisc, getPathToScripts } from "../settings";
 import { getConditions, getFunctions } from "../utils/actionsParser";
 import { analyzeFile, findLuaElements, getLocalizationData } from "../utils/fileReader";
-import { getModules, getParamsByFile } from "../utils/modulesParser";
+import { getModules } from "../utils/modulesParser";
 
-const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const paramSnippets = {
     "cfg_get_number_and_condlist": "{value} = ${1:100} | ${0}",
     "cfg_get_string_and_condlist": "{value} = ${1:text} | ${0}",
@@ -172,14 +171,6 @@ function canAddParam(document: TextDocument, position: Position): boolean {
 async function getParams(data: LtxDocument, position: Position) {
     const currentSection = data.getSection(position);
     var items = data.getType() !== LtxDocumentType.Logic ? data.getTypeParams() : currentSection.getParams();
-
-    if (currentSection.getModuleType() === "stype_stalker" && !ignoreSections.includes(currentSection.getTypeName())) {
-        items = items.concat(getParamsByFile("stalker_generic.script"));
-        items = items.concat(getParamsByFile("xr_logic.script"));
-    }
-    if (currentSection.getTypeName() === "logic") {
-        items = items.concat(getParamsByFile("gulag_general.script"));
-    }
 
     return await Promise.all(Array.from(new Set(items)).map(async (value) => {
         var name = value.split(":")[1];

@@ -45,14 +45,14 @@ export class LtxLine {
         const data = getSectionData().get(this.owner.getTypeName());
         if (data) {
             for (const param of data) {
-                if (param.indexOf(this.propertyName) !== -1) {
+                if (param.indexOf(this.getPropertyName()) !== -1) {
                     return param.split(":")[0];
                 }
             }
         }
 
         for (const condition of getBasedConditions()) {
-            if (condition.indexOf(this.propertyName.replace(/\d+\b/g, "")) !== -1) {
+            if (condition.indexOf(this.getPropertyName()) !== -1) {
                 return condition.split(":")[0];
             }
         }
@@ -108,9 +108,14 @@ export class LtxLine {
             this.condlists.push(new LtxCondlist(index, match.index, match[0], this));
         }
 
-        if (!this.getType()) {
+        var paramsData = this.getOwnedSection().getParams().map(value => {return value.split(":")[1]});
+        if (!paramsData.includes(this.getPropertyName())) {
             this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")
         }
+    }
+
+    getPropertyName() {
+        return this.propertyName.replace(/\d+\b/g, "");
     }
 
     getOwnedSection(): LtxSection {

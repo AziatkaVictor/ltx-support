@@ -17,6 +17,9 @@ export const DiagnosticTag = {
 
 export function provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeAction[]> {
     const data = getLtxDocument(document);
+    if (!data) {
+        return;
+    }
     var result = [];
     var tags = [];
     for (const error of data.getErrorsByPosition(range.start)) {

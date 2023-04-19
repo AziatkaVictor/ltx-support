@@ -1,10 +1,13 @@
 import { DiagnosticSeverity, Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
-import { getSectionData, getBasedConditions, getModules, similarity } from "../utils/modulesParser";
+import { getSectionData, getBasedConditions, getModules, getParamsByFile } from "../utils/modulesParser";
 import { LtxDocument, LtxDocumentType } from "./ltxDocument";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxSectionLink } from "./ltxSectionLink";
+
+const ignoreSections = ["hit", "death", "meet", "gather_items"];
+const startSection = ['anomal_zone', 'logic', 'smart_terrain', 'exclusive']
 
 export class LtxSection {
     private owner: LtxDocument;
@@ -25,7 +28,7 @@ export class LtxSection {
             if (this.tempLines.size === 0) {
                 this.owner.addError(this.getRange(), "Пустая секция", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
             }
-            if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && this.getTypeName() !== "logic") {
+            if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && !startSection.includes(this.getTypeName())) {
                 this.owner.addError(this.getRange(), "Данная секция не используется.", this.name, DiagnosticSeverity.Information, "Remove");
             }
         }
@@ -65,7 +68,7 @@ export class LtxSection {
     }
 
     isTypeValid() {
-        if (this.owner.getType() !== LtxDocumentType.Logic) {
+        if (this.getOwnedDocument().getType() !== LtxDocumentType.Logic || startSection.includes(this.getTypeName())) {
             return true;
         }
         if (getSectionData().get(this.getTypeName())) {
@@ -82,13 +85,29 @@ export class LtxSection {
         return new Range(new Position(this.startLine, this.linkRange.start.character), new Position(this.startLine, this.linkRange.start.character + this.getTypeName() ? this.getTypeName().length + 1: this.name.length));
     }
 
-    getParams() {
-        return getSectionData().get(this.type).concat(getBasedConditions());
+    getParams(): string[] {
+        if (this.getOwnedDocument().getType() !== LtxDocumentType.Logic) {
+            return this.getOwnedDocument().getTypeParams();
+        }
+        var data = getSectionData().get(this.getTypeName()) || [];
+        data = data.concat(getBasedConditions());
+        var items = [];
+        if (this.getModuleType() === "stype_stalker" && !ignoreSections.includes(this.getTypeName())) {
+            items = items.concat(getParamsByFile("stalker_generic.script"));
+            items = items.concat(getParamsByFile("xr_logic.script"));
+        }
+        if (this.getTypeName() === "logic") {
+            items = items.concat(getParamsByFile("gulag_general.script"));
+        }
+        if (data.concat(items).length === 0) {
+            console.log("Can`t find section params for " + this.getTypeName());
+        }
+        return data.concat(items);
     }
 
-    getModuleType() {
+    getModuleType() {   
         for (const sectionModule of getModules()) {
-            if (sectionModule.indexOf(this.type) !== -1) {
+            if (sectionModule.indexOf(this.getTypeName()) !== -1) {
                 return sectionModule.split(":")[2];
             }
         }

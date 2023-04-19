@@ -8,6 +8,9 @@ import { getDefaultPathToLocalization, getIgnoredLocalization, getPathToLocaliza
  * Чтение файла, в обход VSCode API, чтобы не генерировать автодополнение текста в памяти.
  */
 export function getFileData(path: string): string | null {
+    if (!path) {
+        return;
+    }
     if (fs.existsSync(path)) {
         return fs.readFileSync(path, "utf8");
     }
