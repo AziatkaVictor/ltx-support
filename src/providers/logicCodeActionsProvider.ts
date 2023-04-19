@@ -2,13 +2,15 @@ import { TextDocument, Range, CodeAction, CodeActionKind, WorkspaceEdit, Cancell
 import { getLtxDocument } from "../extension";
 import { LtxDocument } from "../ltx/ltxDocument";
 import { LtxError } from "../ltx/ltxError";
+import { getSimilarAction } from "../utils/actionsParser";
 
 export const DiagnosticTag = {
     "ReplaceSectionToNil": [Action_ReplaceSectionToNil],
     "Remove": [Action_Remove],
     "InvalidSectionType": [Action_InvalidSectionType],
     "InvalidSectionLink": [Action_InvalidSectionLink, Action_RemoveSectionLink],
-    "SelfSectionLink": [Action_RemoveSectionLink]
+    "SelfSectionLink": [Action_RemoveSectionLink],
+    "InvalidAction": [Action_InvalidAction]
 }
 
 export function provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeAction[]> {
@@ -74,4 +76,17 @@ function Action_RemoveSectionLink(document: TextDocument, range: Range, data: Lt
     fix.edit = new WorkspaceEdit();
     fix.edit.replace(document.uri, error.range, "nil");
     return [fix];
+}
+
+function Action_InvalidAction(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
+    var result = [];
+    const type = data.isInsideCondition(error.range.start);
+
+    for (const functionName of getSimilarAction(error.data, 3, type)) {
+        const fix = new CodeAction(`Заменить на ${functionName.name}`, CodeActionKind.QuickFix);
+        fix.edit = new WorkspaceEdit();
+        fix.edit.replace(document.uri, error.range, functionName.name);
+        result.push(fix);
+    }
+    return result;
 }
