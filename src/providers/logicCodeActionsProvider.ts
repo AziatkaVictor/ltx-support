@@ -3,7 +3,7 @@ import { getLtxDocument } from "../extension";
 import { LtxDocument } from "../ltx/ltxDocument";
 import { LtxError } from "../ltx/ltxError";
 import { getConditions, getFunctions } from "../utils/actionsParser";
-import { getMostSimilar, getSectionData } from "../utils/modulesParser";
+import { getBasedConditions, getMostSimilar, getSectionData } from "../utils/modulesParser";
 
 export const DiagnosticTag = {
     "ReplaceSectionToNil": [Action_ReplaceSectionToNil],
@@ -11,7 +11,8 @@ export const DiagnosticTag = {
     "InvalidSectionType": [Action_InvalidSectionType],
     "InvalidSectionLink": [Action_InvalidSectionLink, Action_RemoveSectionLink],
     "SelfSectionLink": [Action_RemoveSectionLink],
-    "InvalidAction": [Action_InvalidAction]
+    "InvalidAction": [Action_InvalidAction],
+    "InvalidParameter": [Action_InvalidParameter]
 }
 
 export function provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeAction[]> {
@@ -86,6 +87,18 @@ function Action_InvalidAction(document: TextDocument, range: Range, data: LtxDoc
         const fix = new CodeAction(`Заменить на ${functionName.name}`, CodeActionKind.QuickFix);
         fix.edit = new WorkspaceEdit();
         fix.edit.replace(document.uri, error.range, functionName.name);
+        result.push(fix);
+    }
+    return result;
+}
+
+function Action_InvalidParameter(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
+    var result = [];
+    const section = data.getSection(error.range.start);
+    for (const parapmName of getMostSimilar(error.data, 3, section ? section.getParams() : getBasedConditions())) {
+        const fix = new CodeAction(`Заменить на ${parapmName.name.split(":")[1]}`, CodeActionKind.QuickFix);
+        fix.edit = new WorkspaceEdit();
+        fix.edit.replace(document.uri, error.range, parapmName.name.split(":")[1]);
         result.push(fix);
     }
     return result;

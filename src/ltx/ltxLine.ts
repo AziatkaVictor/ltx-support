@@ -52,7 +52,7 @@ export class LtxLine {
         }
 
         for (const condition of getBasedConditions()) {
-            if (condition.indexOf(this.propertyName) !== -1) {
+            if (condition.indexOf(this.propertyName.replace(/\d+\b/g, "")) !== -1) {
                 return condition.split(":")[0];
             }
         }
@@ -106,6 +106,10 @@ export class LtxLine {
         let match;
         while ((match = re.exec(tempData)) !== null) {
             this.condlists.push(new LtxCondlist(index, match.index, match[0], this));
+        }
+
+        if (!this.getType()) {
+            this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")
         }
     }
 
