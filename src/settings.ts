@@ -44,12 +44,12 @@ export async function setUserDocumentation(filename : string, value) {
     await getSettings().update("ltx-support.documentation." + filename + "Documentation", value);
 }
 
-export function isIgnoreParamsDiagnostic() : boolean {
-    return getSettings().get("ltx-support.diagnostics.ignoreParamsDiagnostic");
-}
-
 export function isDiagnosticEnabled() : boolean {
     return getSettings().get("ltx-support.diagnostics.enable");
+}
+
+export function isHideInformation() : boolean {
+    return getSettings().get("ltx-support.diagnostics.hideInformation");
 }
 
 export function isUseWorkspaceFolder() : boolean {

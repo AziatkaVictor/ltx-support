@@ -209,10 +209,10 @@
 						"default": true,
 						"markdownDescription": "Включить диагностику файлов. Будет происходить проверка файла на ошибки."
 					},
-					"ltx-support.diagnostics.ignoreParamsDiagnostic": {
+					"ltx-support.diagnostics.hideInformation": {
 						"type": "boolean",
 						"default": false,
-						"markdownDescription": "Игнорировать проверку параметров секции. На данный момент не работает. `WiP`"
+						"markdownDescription": "Сменить отображение информации, сделав их более незаметными, ввиде трёх точек около ошибки. Так же убирет их из списка ошибок."
 					}
 				}
 			},

@@ -1,4 +1,5 @@
 import { DiagnosticSeverity, Range } from "vscode";
+import { isHideInformation } from "../settings";
 
 export class LtxError {
     data: string
@@ -11,7 +12,7 @@ export class LtxError {
         this.data = data;
         this.range = range;
         this.descr = data ? `\`${data}\`: ${descr}` : descr;
-        this.errorType = errorType;
+        this.errorType = isHideInformation() && errorType == DiagnosticSeverity.Information ? DiagnosticSeverity.Hint : errorType;
         this.tag = tag;
     }
 }
