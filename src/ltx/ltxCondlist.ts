@@ -3,6 +3,7 @@ import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModificati
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { LtxDocument } from "./ltxDocument";
+import { getConditions, getFunctions } from "../utils/actionsParser";
 
 export class LtxCondlist {
     readonly range: Range;
@@ -52,6 +53,7 @@ export class LtxCondlist {
         this.validateInfoCondition();
         this.actions = this.findElements(/(\=|\!)\w*\b(?<=\w)/g, LtxSemanticType.function, LtxSemanticModification.definition, null);
         this.validateActionCondition();
+        this.validateActions();
 
         if (this.owner.canHaveSectionLink()) {
             var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
@@ -113,6 +115,15 @@ export class LtxCondlist {
                 this.getOwnedDocument().addError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text, DiagnosticSeverity.Warning, "InvalidCondition");
             }
             actions.push(action.text);
+        }
+    }
+    
+    validateActions() {
+        for (const action of this.actions) {
+            var actionName = action.text.substring(1, action.text.length);
+            if (!(getFunctions().includes(actionName) || getConditions().includes(actionName))) {
+                this.getOwnedDocument().addError(action.range, "Неизвестная функция", action.text, DiagnosticSeverity.Error, "InvalidAction");
+            }
         }
     }
 
