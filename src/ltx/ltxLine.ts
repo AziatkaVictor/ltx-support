@@ -1,4 +1,4 @@
-import { Position, Range } from "vscode"
+import { DiagnosticSeverity, Position, Range } from "vscode"
 import { getBasedConditions, getSectionData } from "../utils/modulesParser"
 import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
@@ -63,11 +63,12 @@ export class LtxLine {
         this.rawData = data;
         this.owner = owner;
 
-        let re = /^(\s*?)?[\w\$]+?(?=(\s*?)?\=)/gm;
+        let re = /^\s*[\w\$]+?(?=\s*\=)/gm;
         var param = re.exec(data);
 
         if (!param) {
             this.isPropertyValid = false;
+            this.getOwnedDocument().addError(new Range(new Position(index, 0), new Position(index, data.length)), "Некорректная запись", null, DiagnosticSeverity.Error, "InvalidLine")
             return;
         }
 
