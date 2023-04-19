@@ -102,7 +102,7 @@ export class LtxSection {
         return data;
     }
 
-    getOwner() {
+    getOwnedDocument(): LtxDocument {
         return this.owner;
     }
 
@@ -113,8 +113,8 @@ export class LtxSection {
         var re = new RegExp(`(?<!(\\[|[\\w@]))${this.name}(?!(\\[|[\\w@]))`, "g");
         var match;
         var data = [];
-        while ((match = re.exec(this.getOwner().text)) !== null) {
-            let substr = this.getOwner().text.substring(0, match.index);
+        while ((match = re.exec(this.getOwnedDocument().text)) !== null) {
+            let substr = this.getOwnedDocument().text.substring(0, match.index);
             let lineIndex = (substr.match(/\n/g) || []).length || 0;
             let offset = substr.lastIndexOf("\n") !== -1 ? substr.lastIndexOf("\n") : 0;
             data.push(new LtxSectionLink(match[0], new Position(lineIndex, match.index - offset - 1), new Position(lineIndex, match.index + match[0].length - offset - 1)));

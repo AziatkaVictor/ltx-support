@@ -3,6 +3,7 @@ import { getBasedConditions, getSectionData } from "../utils/modulesParser"
 import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
+import { LtxDocument } from "./ltxDocument"
 
 export class LtxLine {
     readonly index: number
@@ -105,5 +106,13 @@ export class LtxLine {
         while ((match = re.exec(tempData)) !== null) {
             this.condlists.push(new LtxCondlist(index, match.index, match[0], this));
         }
+    }
+
+    getOwnedSection(): LtxSection {
+        return this.owner;
+    }
+
+    getOwnedDocument(): LtxDocument {
+        return this.getOwnedSection().getOwnedDocument();
     }
 }

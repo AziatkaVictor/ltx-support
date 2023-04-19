@@ -1,6 +1,8 @@
 import { DiagnosticSeverity, Position, Range } from "vscode";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxLine } from "./ltxLine";
+import { LtxSection } from "./ltxSection";
+import { LtxDocument } from "./ltxDocument";
 
 export class LtxCondlist {
     readonly range: Range;
@@ -55,14 +57,14 @@ export class LtxCondlist {
             var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
             for (const sectionLink of sectionsLinks) {
                 if (sectionsLinks.length > 1) {
-                    this.getDocument().addError(sectionLink.range, "В одном Condlist-е не можеть быть несколько ссылок на секции", sectionLink.text, DiagnosticSeverity.Error, "MultipleSectionLink");
+                    this.getOwnedDocument().addError(sectionLink.range, "В одном Condlist-е не можеть быть несколько ссылок на секции", sectionLink.text, DiagnosticSeverity.Error, "MultipleSectionLink");
                 }
                 else {
-                    if (!this.getDocument().getSectionsName().includes(sectionLink.text)) {
-                        this.getDocument().addError(sectionLink.range, "Ссылка на несуществующую секцию", sectionLink.text, DiagnosticSeverity.Error, "InvalidSectionLink");
+                    if (!this.getOwnedDocument().getSectionsName().includes(sectionLink.text)) {
+                        this.getOwnedDocument().addError(sectionLink.range, "Ссылка на несуществующую секцию", sectionLink.text, DiagnosticSeverity.Error, "InvalidSectionLink");
                     }
-                    else if (this.getSection().name === sectionLink.text) {
-                        this.getDocument().addError(sectionLink.range, "Нельзя ссылаться на самого себя", sectionLink.text, DiagnosticSeverity.Error, "SelfSectionLink");
+                    else if (this.getOwnedSection().name === sectionLink.text) {
+                        this.getOwnedDocument().addError(sectionLink.range, "Нельзя ссылаться на самого себя", sectionLink.text, DiagnosticSeverity.Error, "SelfSectionLink");
                     }
                 }
             }
@@ -70,12 +72,16 @@ export class LtxCondlist {
         this.tempData = content;
     }
 
-    getDocument() {
-        return this.owner.owner.getOwner();
+    getOwnedDocument(): LtxDocument {
+        return this.getOwnedSection().getOwnedDocument();
     }
 
-    getSection() {
-        return this.owner.owner;
+    getOwnedSection(): LtxSection {
+        return this.getOwnedLine().getOwnedSection();
+    }
+
+    getOwnedLine(): LtxLine {
+        return this.owner;
     }
 
     validateInfoCondition() {
@@ -88,7 +94,7 @@ export class LtxCondlist {
             var infoName = info.text.substring(1, info.text.length);
             var infoType = info.text.substring(0, 1);
             if (infos.includes((infoType === "-" ? "+" : "-") + infoName)) {
-                this.getDocument().addError(info.range, "Одинаковые инфопоршни, с разными знаками. Условие всегда будет ложным.", info.text, DiagnosticSeverity.Warning, "InvalidCondition");
+                this.getOwnedDocument().addError(info.range, "Одинаковые инфопоршни, с разными знаками. Условие всегда будет ложным.", info.text, DiagnosticSeverity.Warning, "InvalidCondition");
             }
             infos.push(info.text);
         }
@@ -104,7 +110,7 @@ export class LtxCondlist {
             var actionName = action.text.substring(1, action.text.length);
             var actionType = action.text.substring(0, 1);
             if (actions.includes((actionType === "=" ? "!" : "=") + actionName)) {
-                this.getDocument().addError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text, DiagnosticSeverity.Warning, "InvalidCondition");
+                this.getOwnedDocument().addError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text, DiagnosticSeverity.Warning, "InvalidCondition");
             }
             actions.push(action.text);
         }
