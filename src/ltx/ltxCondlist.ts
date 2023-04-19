@@ -122,7 +122,7 @@ export class LtxCondlist {
         for (const action of this.actions) {
             var actionName = action.text.substring(1, action.text.length);
             if (!(getFunctions().includes(actionName) || getConditions().includes(actionName))) {
-                this.getOwnedDocument().addError(action.range, "Неизвестная функция", action.text, DiagnosticSeverity.Error, "InvalidAction");
+                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция", actionName, DiagnosticSeverity.Error, "InvalidAction");
             }
         }
     }
