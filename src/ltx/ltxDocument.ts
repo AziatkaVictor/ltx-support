@@ -230,7 +230,7 @@ export class LtxDocument {
                 continue;
             }
             let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
-            this.addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "Section Repetition");
+            this.addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "InvalidDeclaration");
         }
 
         return result;
@@ -249,8 +249,8 @@ export class LtxDocument {
             if (sectionsArray.includes(match[0])) {
                 let substr = text.substring(0, match.index);
                 let lineIndex = (substr.match(/\n/g) || []).length || 0;
-                let range = new Range(new Position(lineIndex, substr.length - match.index), new Position(lineIndex, substr.length - match.index + match[0].length));
-                this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "Section Repetition")
+                let range = new Range(new Position(lineIndex, substr.length - match.index + 1), new Position(lineIndex, substr.length - match.index + match[0].length + 1));
+                this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "SectionRepetition")
             }
             sectionsArray.push(match[0]);
         }
