@@ -38,5 +38,5 @@ function updateConditions() {
 }
 
 function findFunctions(filePath: string) {
-    return findLuaElements(filePath, /(?<=^function\s).+?(?=\(.*?\))/gm, (match) => {return match[0]});
+    return findLuaElements(filePath, /(?<=^function\s).+?(?=\(.*?\))/gm, (match) => { return match[0].trim() });
 }
