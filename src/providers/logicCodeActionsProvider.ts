@@ -3,7 +3,7 @@ import { getLtxDocument } from "../extension";
 import { LtxDocument } from "../ltx/ltxDocument";
 import { LtxError } from "../ltx/ltxError";
 import { getConditions, getFunctions } from "../utils/actionsParser";
-import { getMostSimilar } from "../utils/modulesParser";
+import { getMostSimilar, getSectionData } from "../utils/modulesParser";
 
 export const DiagnosticTag = {
     "ReplaceSectionToNil": [Action_ReplaceSectionToNil],
@@ -53,10 +53,10 @@ function Action_Remove(document: TextDocument, range: Range, data: LtxDocument, 
 function Action_InvalidSectionType(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
     var result = [];
     const section = data.getSection(error.range.start);
-    for (const sectionType of section.getSimilarType(3, 0.5)) {
-        const fix = new CodeAction(`Заменить на ${sectionType}`, CodeActionKind.QuickFix);
+    for (const sectionType of getMostSimilar(section.name, 3, Array.from(getSectionData().keys()))) {
+        const fix = new CodeAction(`Заменить на ${sectionType.name}`, CodeActionKind.QuickFix);
         fix.edit = new WorkspaceEdit();
-        fix.edit.replace(document.uri, error.range, sectionType);
+        fix.edit.replace(document.uri, error.range, sectionType.name);
         result.push(fix);
     }
     return result;

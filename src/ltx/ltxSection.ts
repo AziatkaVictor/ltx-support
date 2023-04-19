@@ -126,18 +126,6 @@ export class LtxSection {
         return this.getLinks() ? this.getLinks().length !== 0 : false;
     }
 
-    getSimilarType(count: number, minSimilarity: number): string[] {
-        var data = [];
-        var min = minSimilarity;
-        for (const sectionType of getSectionData().keys()) {
-            var value = similarity(sectionType, this.getTypeName());
-            if (value >= min && data.length < count) {
-                data.push(sectionType);
-            }
-        }
-        return data.sort();
-    }
-
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType, owner: LtxDocument) {
         this.owner = owner;
         this.name = name.slice(1, name.length - 1).trim();
