@@ -2,7 +2,8 @@ import { TextDocument, Range, CodeAction, CodeActionKind, WorkspaceEdit, Cancell
 import { getLtxDocument } from "../extension";
 import { LtxDocument } from "../ltx/ltxDocument";
 import { LtxError } from "../ltx/ltxError";
-import { getSimilarAction } from "../utils/actionsParser";
+import { getConditions, getFunctions } from "../utils/actionsParser";
+import { getMostSimilar } from "../utils/modulesParser";
 
 export const DiagnosticTag = {
     "ReplaceSectionToNil": [Action_ReplaceSectionToNil],
@@ -81,8 +82,7 @@ function Action_RemoveSectionLink(document: TextDocument, range: Range, data: Lt
 function Action_InvalidAction(document: TextDocument, range: Range, data: LtxDocument, error: LtxError): CodeAction[] {
     var result = [];
     const type = data.isInsideCondition(error.range.start);
-
-    for (const functionName of getSimilarAction(error.data, 3, type)) {
+    for (const functionName of getMostSimilar(error.data, 3, type ? getConditions() : getFunctions())) {
         const fix = new CodeAction(`Заменить на ${functionName.name}`, CodeActionKind.QuickFix);
         fix.edit = new WorkspaceEdit();
         fix.edit.replace(document.uri, error.range, functionName.name);

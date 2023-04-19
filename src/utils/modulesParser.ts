@@ -143,3 +143,10 @@ function editDistance(s1: string, s2: string) {
     }
     return costs[s2.length];
 }
+
+export function getMostSimilar(name: string, count = 3, arr: string[]) {
+    var data = (arr).map(item => {
+        return {"name" : item, "value" : similarity(item, name)}
+    });
+    return data.sort((a, b) => b.value - a.value).slice(0, count);
+}
