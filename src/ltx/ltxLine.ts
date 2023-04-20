@@ -24,7 +24,7 @@ export class LtxLine {
         return false;
     }
 
-    isInsideSignal(position : Position): boolean {
+    isInsideSignal(position: Position): boolean {
         for (const signal of this.signals.keys()) {
             if (signal.start.isBefore(position) && signal.end.isAfterOrEqual(position)) {
                 return true;
@@ -36,7 +36,7 @@ export class LtxLine {
     isType(name: string): boolean {
         return this.getType() ? this.getType().includes(name) : false;
     }
-     
+
     canHaveSectionLink(): boolean {
         return this.isType("condlist") || this.isType("npc_and_zone");
     }
@@ -68,7 +68,10 @@ export class LtxLine {
 
         if (!param) {
             this.isPropertyValid = false;
-            this.getOwnedDocument().addError(new Range(new Position(index, 0), new Position(index, data.length)), "Некорректная запись", null, DiagnosticSeverity.Error, "InvalidLine")
+            if (!this.owner) {
+                return;
+            }
+            this.getOwnedDocument().addError(new Range(new Position(index, 0), new Position(index, data.length)), "Некорректная запись", null, DiagnosticSeverity.Error, "InvalidLine");
             return;
         }
 
@@ -92,7 +95,7 @@ export class LtxLine {
                     addSemantic(new LtxSemantic(LtxSemanticType.variable, null, tempRange, LtxSemanticDescription.signal, match[0]));
                 }
                 else {
-                    addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]));                                    
+                    addSemantic(new LtxSemantic(LtxSemanticType.number, null, tempRange, LtxSemanticDescription.signal, match[0]));
                 }
                 this.signals.set(tempRange, match[0]);
 
@@ -108,9 +111,15 @@ export class LtxLine {
             this.condlists.push(new LtxCondlist(index, match.index, match[0], this));
         }
 
-        var paramsData = this.getOwnedSection().getParams().map(value => {return value.split(":")[1]});
-        if (!paramsData.includes(this.getPropertyName())) {
-            this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")
+        if (!this.owner) {
+            return;
+        }
+
+        if (!this.getOwnedSection().isIgnoreParamValidation()) {
+            var paramsData = this.getOwnedSection().getParams().map(value => { return value.split(":")[1] });
+            if (!paramsData.includes(this.getPropertyName()) && paramsData.length > 0) {
+                this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")
+            }
         }
     }
 

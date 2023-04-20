@@ -8,6 +8,7 @@ import { LtxSectionLink } from "./ltxSectionLink";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const startSection = ['anomal_zone', 'logic', 'smart_terrain', 'exclusive']
+const ignoreParamValidation = ['exclusive'];
 
 export class LtxSection {
     private owner: LtxDocument;
@@ -143,6 +144,10 @@ export class LtxSection {
 
     isHaveLinks(): boolean {
         return this.getLinks() ? this.getLinks().length !== 0 : false;
+    }
+
+    isIgnoreParamValidation() {
+        return ignoreParamValidation.includes(this.getTypeName());
     }
 
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType, owner: LtxDocument) {
