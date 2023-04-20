@@ -3,7 +3,7 @@ import { getBasedConditions, getSectionData } from "../utils/modulesParser"
 import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
-import { LtxDocument } from "./ltxDocument"
+import { LtxDocument, LtxDocumentType } from "./ltxDocument"
 
 export class LtxLine {
     readonly index: number
@@ -13,7 +13,7 @@ export class LtxLine {
     readonly condlists: LtxCondlist[] = []
     readonly signals: Map<Range, string> = new Map<Range, string>()
     readonly owner: LtxSection
-    readonly rawData: string
+    readonly rawData: string    
 
     inInsideCondlist(position: Position): boolean {
         for (const condlist of this.condlists) {
@@ -38,7 +38,7 @@ export class LtxLine {
     }
 
     canHaveSectionLink(): boolean {
-        return this.isType("condlist") || this.isType("npc_and_zone");
+        return (this.isType("condlist") || this.isType("npc_and_zone")) && (this.getOwnedDocument().getType() === LtxDocumentType.Trade || this.getOwnedDocument().getType() === LtxDocumentType.Logic);
     }
 
     getType(): string | null {
