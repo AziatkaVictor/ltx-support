@@ -31,7 +31,7 @@ export async function startGame() {
     else {
         terminal.sendText("cd '" + getGamePath() + "'");
     }
-    terminal.sendText(choise.label);
+    terminal.sendText(choise.description);
 }
 
 export async function addDocumentation() {
