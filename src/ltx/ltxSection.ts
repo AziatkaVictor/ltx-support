@@ -1,14 +1,18 @@
 import { DiagnosticSeverity, Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
 import { getSectionData, getBasedConditions, getModules, getParamsByFile } from "../utils/modulesParser";
-import { LtxDocument, LtxDocumentType } from "./ltxDocument";
+import { LtxDocument } from "./ltxDocument";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxSectionLink } from "./ltxSectionLink";
+import { LtxDocumentType } from "./LtxDocumentType";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const startSection = ['anomal_zone', 'logic', 'smart_terrain', 'exclusive']
 const ignoreParamValidation = ['exclusive'];
+const ignoreParamValidationByFiletype: { [key in LtxDocumentType]? : string[] } = {
+    [LtxDocumentType.Squad]: ["story_id"],
+}
 
 export class LtxSection {
     private owner: LtxDocument;
@@ -146,8 +150,8 @@ export class LtxSection {
         return this.getLinks() ? this.getLinks().length !== 0 : false;
     }
 
-    isIgnoreParamValidation() {
-        return ignoreParamValidation.includes(this.getTypeName());
+    isIgnoreParamValidation(paramName: string) {        
+        return ignoreParamValidation.includes(this.getTypeName()) || ignoreParamValidationByFiletype[this.owner.getType()] ? ignoreParamValidationByFiletype[this.owner.getType()].includes(paramName) : false;
     }
 
     constructor(name: string, startLine: number, startCharacter: number, filetype: LtxDocumentType, owner: LtxDocument) {

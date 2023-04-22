@@ -3,7 +3,8 @@ import { getBasedConditions, getSectionData } from "../utils/modulesParser"
 import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
-import { LtxDocument, LtxDocumentType } from "./ltxDocument"
+import { LtxDocument } from "./ltxDocument"
+import { LtxDocumentType } from "./LtxDocumentType"
 
 export class LtxLine {
     readonly index: number
@@ -115,7 +116,7 @@ export class LtxLine {
             return;
         }
 
-        if (!this.getOwnedSection().isIgnoreParamValidation()) {
+        if (!this.getOwnedSection().isIgnoreParamValidation(this.propertyName)) {
             var paramsData = this.getOwnedSection().getParams().map(value => { return value.split(":")[1] });
             if (!paramsData.includes(this.getPropertyName()) && paramsData.length > 0) {
                 this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")

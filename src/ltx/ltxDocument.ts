@@ -14,16 +14,9 @@ import { getFileData } from "../utils/fileReader";
 import { getParamsByFile } from "../utils/modulesParser";
 import { isDiagnosticEnabled } from "../settings";
 import { diagnosticCollection, diagnosticMap } from "../extension";
+import { LtxDocumentType } from "./LtxDocumentType";
 export var sectionsArray: string[];
 export var currentFile: string;
-
-export enum LtxDocumentType {
-    Logic = "xr_logic.script",
-    Squad = "sim_squad_scripted.script",
-    Tasks = "task_objects.script",
-    Sound = "sound_theme.script",
-    Trade = "trade_manager.script"
-}
 
 /**
  * Главный класс, который отвечает за парсинг *.ltx файлов, сохранения структуры в переменные и массивы. 

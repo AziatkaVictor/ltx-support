@@ -3,11 +3,12 @@ import * as path from 'path';
 import { CancellationToken, CompletionContext, CompletionItem, CompletionItemKind, MarkdownString, Position, SnippetString, TextDocument, workspace } from "vscode";
 import { DocumentationKind, getDocumentation } from "../documentation";
 import { getLtxDocument } from "../extension";
-import { LtxDocument, LtxDocumentType } from "../ltx/ltxDocument";
+import { LtxDocument } from "../ltx/ltxDocument";
 import { getDefaultPathToScripts, getPathToMisc, getPathToScripts } from "../settings";
 import { getConditions, getFunctions } from "../utils/actionsParser";
 import { analyzeFile, findLuaElements, getLocalizationData } from "../utils/fileReader";
 import { getModules } from "../utils/modulesParser";
+import { LtxDocumentType } from '../ltx/LtxDocumentType';
 
 const paramSnippets = {
     "cfg_get_number_and_condlist": "{value} = ${1:100} | ${0}",
