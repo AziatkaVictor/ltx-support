@@ -14,7 +14,7 @@ import { getFileData } from "../utils/fileReader";
 import { getParamsByFile } from "../utils/modulesParser";
 import { isDiagnosticEnabled } from "../settings";
 import { diagnosticCollection, diagnosticMap } from "../extension";
-import { LtxDocumentType } from "./LtxDocumentType";
+import { LtxDocumentType } from "./ltxDocumentType";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -317,8 +317,11 @@ export class LtxDocument {
         else if (this.filePath.includes("misc\\trade")) {
             this.fileType = LtxDocumentType.Trade;
         }
-        else {
+        else if (this.filePath.includes("configs\\scripts\\")) {
             this.fileType = LtxDocumentType.Logic;
+        }
+        else {
+            this.fileType = LtxDocumentType.Unknown;
         }
 
     }

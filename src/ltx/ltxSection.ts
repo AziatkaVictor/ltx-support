@@ -5,13 +5,15 @@ import { LtxDocument } from "./ltxDocument";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxSectionLink } from "./ltxSectionLink";
-import { LtxDocumentType } from "./LtxDocumentType";
+import { LtxDocumentType } from "./ltxDocumentType";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const startSection = ['anomal_zone', 'logic', 'smart_terrain', 'exclusive']
 const ignoreParamValidation = ['exclusive'];
+// TODO: Заменить на дополение параметров, а не игнор лист
 const ignoreParamValidationByFiletype: { [key in LtxDocumentType]? : string[] } = {
-    [LtxDocumentType.Squad]: ["story_id"],
+    [LtxDocumentType.Squad]: ["story_id", "npc_in_squad", "auto_id", "arrive_dist"],
+    [LtxDocumentType.Tasks]: ["condlist_"],
 }
 
 export class LtxSection {
