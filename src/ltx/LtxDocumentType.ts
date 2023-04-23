@@ -1,8 +1,16 @@
 export enum LtxDocumentType {
-    Logic = "xr_logic.script",
-    Squad = "sim_squad_scripted.script",
-    Tasks = "task_objects.script",
-    Sound = "sound_theme.script",
-    Trade = "trade_manager.script",
-    Unknown = ""
+    Logic,
+    Squad,
+    Tasks,
+    Sound,
+    Trade,
+    Unknown
+}
+
+export const LtxDocumentTypeParams: { [key in LtxDocumentType]?: string } = {
+    [LtxDocumentType.Logic]: "xr_logic.script",
+    [LtxDocumentType.Squad]: "sim_squad_scripted.script",
+    [LtxDocumentType.Tasks]: "task_objects.script",
+    [LtxDocumentType.Sound]: "sound_theme.script",
+    [LtxDocumentType.Trade]: "trade_manager.script",
 }

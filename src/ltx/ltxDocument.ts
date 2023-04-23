@@ -14,7 +14,7 @@ import { getFileData } from "../utils/fileReader";
 import { getParamsByFile } from "../utils/modulesParser";
 import { isDiagnosticEnabled } from "../settings";
 import { diagnosticCollection, diagnosticMap } from "../extension";
-import { LtxDocumentType } from "./ltxDocumentType";
+import { LtxDocumentType, LtxDocumentTypeParams } from "./ltxDocumentType";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -243,7 +243,9 @@ export class LtxDocument {
                 let substr = text.substring(0, match.index);
                 let lineIndex = (substr.match(/\n/g) || []).length || 0;
                 let range = new Range(new Position(lineIndex, substr.length - match.index + 1), new Position(lineIndex, substr.length - match.index + match[0].length + 1));
-                this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "SectionRepetition")
+                if (this.getType() !== LtxDocumentType.Unknown) {
+                    this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "SectionRepetition");
+                }
             }
             sectionsArray.push(match[0]);
         }
@@ -305,7 +307,10 @@ export class LtxDocument {
     }
 
     private setDocumentType() {
-        if (this.filePath.match(/tm\_.+.ltx/)) {
+        if (this.filePath.includes("configs\\scripts\\") || this.text.match(new RegExp(/\[logic(@.+)?\]/))) {
+            this.fileType = LtxDocumentType.Logic;
+        }
+        else if (this.filePath.match(/tm\_.+.ltx/) || this.filePath.includes("task_manager.ltx")) {
             this.fileType = LtxDocumentType.Tasks;
         }
         else if (this.filePath.match(/squad_descr(\_.+)?.ltx/)) {
@@ -317,9 +322,6 @@ export class LtxDocument {
         else if (this.filePath.includes("misc\\trade")) {
             this.fileType = LtxDocumentType.Trade;
         }
-        else if (this.filePath.includes("configs\\scripts\\")) {
-            this.fileType = LtxDocumentType.Logic;
-        }
         else {
             this.fileType = LtxDocumentType.Unknown;
         }
@@ -327,7 +329,8 @@ export class LtxDocument {
     }
 
     getTypeParams() {
-        return getParamsByFile(this.getType());
+        var file = LtxDocumentTypeParams[this.getType()];
+        return file ? getParamsByFile(file) : [];
     }
 
     /**
@@ -338,13 +341,12 @@ export class LtxDocument {
         this.filePath = document instanceof Uri ? document.fsPath : document.uri.fsPath;
         this.uri = document instanceof Uri ? document : document.uri;
         currentFile = this.filePath;
-        this.setDocumentType();
+        this.text = document instanceof Uri ? getFileData(this.filePath) : document.getText();
 
         globalSenmaticsData.set(currentFile, []);
 
-        this.text = document instanceof Uri ? getFileData(this.filePath) : document.getText();
+        this.setDocumentType();
         this.sectionsName = this.findAllSectionsNames(this.text);
-
         this.parsingData(this.text, args);
 
         this.semanticData = globalSenmaticsData.get(currentFile);
