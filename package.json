@@ -4,7 +4,7 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.5.4",
+	"version": "0.6.0",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
