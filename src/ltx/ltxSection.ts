@@ -95,15 +95,18 @@ export class LtxSection {
     getParams(): string[] {
         if (this.getOwnedDocument().getType() !== LtxDocumentType.Logic) {
             return this.getOwnedDocument().getTypeParams();
-        }
+        }   
         var data = getSectionData().get(this.getTypeName()) || [];
         data = data.concat(getBasedConditions());
         var items = [];
         if (this.getModuleType() === "stype_stalker" && !ignoreSections.includes(this.getTypeName())) {
             items = items.concat(getParamsByFile("stalker_generic.script"));
             items = items.concat(getParamsByFile("xr_logic.script"));
+            items = items.concat(getParamsByFile("xr_gather_items.script"));
+            items = items.concat(getParamsByFile("xr_corpse_detection.script"));
         }
         if (this.getTypeName() === "logic") {
+            items = items.concat(getParamsByFile("stalker_generic.script"));
             items = items.concat(getParamsByFile("gulag_general.script"));
         }
         if (data.concat(items).length === 0) {

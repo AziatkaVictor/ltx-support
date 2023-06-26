@@ -37,7 +37,10 @@ export function getModules(): string[] {
     if (!modulesData) {
         updateModules();
     }
-    return modulesData.concat(["logic:xr_logic.script", "smart_terrain:smart_terrain.script", "smart_control:smart_terrain_control.script", "anomal_zone:bind_anomaly_zone.script"]);
+    return modulesData.concat(["logic:xr_logic.script",
+    "smart_terrain:smart_terrain.script",
+    "smart_control:smart_terrain_control.script",
+    "anomal_zone:bind_anomaly_zone.script"]);
 }
 
 export function getAllParams() {
