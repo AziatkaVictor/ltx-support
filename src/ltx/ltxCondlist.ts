@@ -121,8 +121,11 @@ export class LtxCondlist {
     validateActions() {
         for (const action of this.actions) {
             var actionName = action.text.substring(1, action.text.length);
-            if (!(getFunctions().includes(actionName) || getConditions().includes(actionName))) {
-                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция", actionName, DiagnosticSeverity.Error, "InvalidAction");
+            if (!getFunctions().includes(actionName) && this.isInsideFunction(action.range.start)) {
+                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция. Не удалось найти функцию в файле xr_effects.script", actionName, DiagnosticSeverity.Error, "InvalidAction");
+            }
+            else if (!getConditions().includes(actionName) && this.isInsideCondition(action.range.start)) {
+                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция. Не удалось найти функцию в файле xr_conditions.script", actionName, DiagnosticSeverity.Error, "InvalidAction");
             }
         }
     }
