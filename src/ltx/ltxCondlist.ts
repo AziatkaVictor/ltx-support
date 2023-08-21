@@ -1,9 +1,14 @@
-import { DiagnosticSeverity, Position, Range } from "vscode";
+import { Position, Range } from "vscode";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { LtxDocument } from "./ltxDocument";
 import { getConditions, getFunctions } from "../utils/actionsParser";
+import { InvalidConditionError } from "./Diagnostic/Errors/InvalidCondition";
+import { InvalidSectionLinkError } from "./Diagnostic/Errors/InvalidSectionLink";
+import { MultipleSectionLinkError } from "./Diagnostic/Errors/MultipleSectionLink";
+import { SelfSectionLinkError } from "./Diagnostic/Errors/SelfSectionLink";
+import { InvalidFunctionError } from "./Diagnostic/Errors/InvalidFunction";
 
 export class LtxCondlist {
     readonly range: Range;
@@ -59,14 +64,17 @@ export class LtxCondlist {
             var sectionsLinks = this.findElements(/(?<![\w\@.\-])[\w\@.\-]+?(?![\w\@.\-])/g, LtxSemanticType.class, LtxSemanticModification.definition, null, isOutside);
             for (const sectionLink of sectionsLinks) {
                 if (sectionsLinks.length > 1) {
-                    this.getOwnedDocument().addError(sectionLink.range, "В одном Condlist-е не можеть быть несколько ссылок на секции", sectionLink.text, DiagnosticSeverity.Error, "MultipleSectionLink");
+                    let error = new MultipleSectionLinkError(sectionLink.range, null, sectionLink.text);
+                    this.getOwnedDocument().addError(error);
                 }
                 else {
                     if (!this.getOwnedDocument().getSectionsName().includes(sectionLink.text)) {
-                        this.getOwnedDocument().addError(sectionLink.range, "Ссылка на несуществующую секцию", sectionLink.text, DiagnosticSeverity.Error, "InvalidSectionLink");
+                        let error = new InvalidSectionLinkError(sectionLink.range, null, sectionLink.text)
+                        this.getOwnedDocument().addError(error);
                     }
                     else if (this.getOwnedSection().name === sectionLink.text) {
-                        this.getOwnedDocument().addError(sectionLink.range, "Нельзя ссылаться на самого себя", sectionLink.text, DiagnosticSeverity.Error, "SelfSectionLink");
+                        let error = new SelfSectionLinkError(sectionLink.range, null, sectionLink.text);
+                        this.getOwnedDocument().addError(error);
                     }
                 }
             }
@@ -96,7 +104,8 @@ export class LtxCondlist {
             var infoName = info.text.substring(1, info.text.length);
             var infoType = info.text.substring(0, 1);
             if (infos.includes((infoType === "-" ? "+" : "-") + infoName)) {
-                this.getOwnedDocument().addError(info.range, "Одинаковые инфопоршни, с разными знаками. Условие всегда будет ложным.", info.text, DiagnosticSeverity.Warning, "InvalidCondition");
+                let error = new InvalidConditionError(info.range, "Одинаковые инфопоршни, с разными знаками. Условие всегда будет ложным.", info.text);
+                this.getOwnedDocument().addError(error);
             }
             infos.push(info.text);
         }
@@ -112,7 +121,8 @@ export class LtxCondlist {
             var actionName = action.text.substring(1, action.text.length);
             var actionType = action.text.substring(0, 1);
             if (actions.includes((actionType === "=" ? "!" : "=") + actionName)) {
-                this.getOwnedDocument().addError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text, DiagnosticSeverity.Warning, "InvalidCondition");
+                let error = new InvalidConditionError(action.range, "Одинаковые функции, с разными знаками. Условие всегда будет ложным.", action.text)
+                this.getOwnedDocument().addError(error);
             }
             actions.push(action.text);
         }
@@ -121,11 +131,14 @@ export class LtxCondlist {
     validateActions() {
         for (const action of this.actions) {
             var actionName = action.text.substring(1, action.text.length);
+            let range = new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end);
             if (!getFunctions().includes(actionName) && this.isInsideFunction(action.range.start)) {
-                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция. Не удалось найти функцию в файле xr_effects.script", actionName, DiagnosticSeverity.Error, "InvalidAction");
+                let error = new InvalidFunctionError(range, "Неизвестная функция. Не удалось найти функцию в файле xr_effects.script", actionName);
+                this.getOwnedDocument().addError(error);
             }
             else if (!getConditions().includes(actionName) && this.isInsideCondition(action.range.start)) {
-                this.getOwnedDocument().addError(new Range(new Position(action.range.start.line, action.range.start.character + 1), action.range.end), "Неизвестная функция. Не удалось найти функцию в файле xr_conditions.script", actionName, DiagnosticSeverity.Error, "InvalidAction");
+                let error = new InvalidFunctionError(range, "Неизвестная функция. Не удалось найти функцию в файле xr_conditions.script", actionName);
+                this.getOwnedDocument().addError(error);
             }
         }
     }

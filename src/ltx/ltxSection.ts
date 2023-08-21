@@ -1,4 +1,4 @@
-import { DiagnosticSeverity, Position, Range } from "vscode";
+import { Position, Range } from "vscode";
 import { isDiagnosticEnabled } from "../settings";
 import { getSectionData, getBasedConditions, getModules, getParamsByFile } from "../utils/modulesParser";
 import { LtxDocument } from "./ltxDocument";
@@ -6,6 +6,9 @@ import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxSectionLink } from "./ltxSectionLink";
 import { LtxDocumentType } from "./ltxDocumentType";
+import { InvalidSectionTypeError } from "./Diagnostic/Errors/InvalidSectionType";
+import { EmptySectionError } from "./Diagnostic/Errors/EmptySection";
+import { UselessSectionError } from "./Diagnostic/Errors/UselessSection";
 
 const ignoreSections = ["hit", "death", "meet", "gather_items"];
 const startSection = ['anomal_zone', 'logic', 'smart_terrain', 'exclusive']
@@ -29,14 +32,17 @@ export class LtxSection {
 
     validate() {
         if (!this.isTypeValid()) {
-            this.owner.addError(this.getTypeRange(), "Неизвестный тип секции.", this.name, DiagnosticSeverity.Error, "InvalidSectionType");
+            let error = new InvalidSectionTypeError(this.getTypeRange(), null, this.name);
+            this.owner.addError(error);
         }
         else {
             if (this.tempLines.size === 0) {
-                this.owner.addError(this.getRange(), "Пустая секция", this.name, DiagnosticSeverity.Information, this.isHaveLinks() ? "ReplaceSectionToNil" : "Remove");
+                let error = new EmptySectionError(this.getRange(), null, this.name);
+                this.owner.addError(error);
             }
             if (this.owner.getType() === LtxDocumentType.Logic && !this.isHaveLinks() && !startSection.includes(this.getTypeName())) {
-                this.owner.addError(this.getRange(), "Данная секция не используется.", this.name, DiagnosticSeverity.Information, "Remove");
+                let error = new UselessSectionError(this.getRange(), null, this.name);
+                this.owner.addError(error);
             }
         }
     }

@@ -1,10 +1,12 @@
-import { DiagnosticSeverity, Position, Range } from "vscode"
+import { Position, Range } from "vscode"
 import { getBasedConditions, getSectionData } from "../utils/modulesParser"
 import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
 import { LtxDocument } from "./ltxDocument"
 import { LtxDocumentType } from "./ltxDocumentType"
+import { InvalidParameterError } from "./Diagnostic/Errors/InvalidParameter"
+import { InvalidLineError } from "./Diagnostic/Errors/InvalidLine"
 
 export class LtxLine {
     readonly index: number
@@ -73,7 +75,9 @@ export class LtxLine {
                 return;
             }
             if (this.getOwnedDocument().getType() === LtxDocumentType.Logic) {
-                this.getOwnedDocument().addError(new Range(new Position(index, 0), new Position(index, data.length)), "Некорректная запись", null, DiagnosticSeverity.Error, "InvalidLine");
+                let range = new Range(new Position(index, 0), new Position(index, data.length));
+                let error = new InvalidLineError(range);
+                this.getOwnedDocument().addError(error);
             }
             return;
         }
@@ -121,7 +125,8 @@ export class LtxLine {
         if (!this.getOwnedSection().isIgnoreParamValidation(this.getPropertyName()) && this.getOwnedDocument().getType() !== LtxDocumentType.Trade) {
             var paramsData = this.getOwnedSection().getParams().map(value => { return value.split(":")[1] });
             if (!paramsData.includes(this.getPropertyName()) && paramsData.length > 0) {
-                this.getOwnedDocument().addError(this.propertyRange, "Неизвестный параметр", this.propertyName, DiagnosticSeverity.Error, "InvalidParameter")
+                let error = new InvalidParameterError(this.propertyRange, null, this.propertyName);
+                this.getOwnedDocument().addError(error);
             }
         }
     }

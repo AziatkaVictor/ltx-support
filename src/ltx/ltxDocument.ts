@@ -3,10 +3,9 @@ import {
     Position,
     TextDocument,
     Uri,
-    DiagnosticSeverity,
     Diagnostic
 } from "vscode";
-import { LtxError } from "./ltxError";
+import { LtxError } from "./Diagnostic/ltxError";
 import { LtxLine } from "./ltxLine";
 import { LtxSection } from "./ltxSection";
 import { globalSenmaticsData, LtxSemantic, LtxSemanticDescription } from "./ltxSemantic";
@@ -15,6 +14,8 @@ import { getParamsByFile } from "../utils/modulesParser";
 import { isDiagnosticEnabled } from "../settings";
 import { diagnosticCollection, diagnosticMap } from "../extension";
 import { LtxDocumentType, LtxDocumentTypeParams } from "./ltxDocumentType";
+import { SectionRepetitionError } from "./Diagnostic/Errors/SectionRepetition";
+import { InvalidDeclarationError } from "./Diagnostic/Errors/InvalidDeclaration";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -35,8 +36,9 @@ export class LtxDocument {
     private fileType: LtxDocumentType
     private tempSection: LtxSection
 
-    addError(range: Range, descr: string, data?: string, errorType?: DiagnosticSeverity, tag?: string) {
-        this.errorsData.push(new LtxError(range, descr, data, errorType, tag));
+    addError(error: LtxError) {
+        error.setOwner(this);
+        this.errorsData.push(error);
     }
     
     getErrorsByPosition(position: Position): LtxError[] {
@@ -223,7 +225,8 @@ export class LtxDocument {
                 continue;
             }
             let range = new Range(new Position(lineIndex, match.index), new Position(lineIndex, match.index + match[0].length));
-            this.addError(range, "В данной строке уже есть объявление секции.", match[0], DiagnosticSeverity.Error, "InvalidDeclaration");
+            let error = new InvalidDeclarationError(range, "В данной строке уже есть объявление секции", match[0]);
+            this.addError(error);
         }
 
         return result;
@@ -244,7 +247,8 @@ export class LtxDocument {
                 let lineIndex = (substr.match(/\n/g) || []).length || 0;
                 let range = new Range(new Position(lineIndex, substr.length - match.index + 1), new Position(lineIndex, substr.length - match.index + match[0].length + 1));
                 if (this.getType() !== LtxDocumentType.Unknown) {
-                    this.addError(range, "Повторение имени секции", match[0], DiagnosticSeverity.Error, "SectionRepetition");
+                    let error = new SectionRepetitionError(range, null, match[0]);
+                    this.addError(error);
                 }
             }
             sectionsArray.push(match[0]);
@@ -298,7 +302,7 @@ export class LtxDocument {
         let canonicalFile = this.uri.toString();
         var diagnostics = [];
         this.errorsData.forEach(item => {
-            let diagnosticItem = new Diagnostic(item.range, item.descr, item.errorType);
+            let diagnosticItem = new Diagnostic(item.range, item.getDescription(), item.type);
             diagnosticItem.code = item.tag;
             diagnostics.push(diagnosticItem);
         });
