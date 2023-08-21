@@ -58,8 +58,13 @@ export class LtxSection {
         this.tempLines.set(index, line);
     }
 
-    getRange() {
+    getRange(): Range {
         const end = this.endLine ? this.endLine : this.startLine;
+        return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
+    }
+
+    getFoldingRange(): Range {
+        const end = this.lines.size + this.startLine;
         return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
     }
 
