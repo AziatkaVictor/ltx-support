@@ -7,7 +7,7 @@ var modulesData: string[];
 var basedConditions: string[] = [];
 // `Секция` => `Тип`:`параметр`
 var sectionsData: Map<string, string[]> = new Map<string, string[]>();
-const ignoredParams = ["cfg_get_string:active", "cfg_get_string:in", "cfg_get_string:out"]
+const ignoredParams = ["cfg_get_string:active", "cfg_get_number:logic", "cfg_get_string:on_combat", "cfg_get_string:in", "cfg_get_string:out"]
 
 export function getParamsData(): string[][] {
     if (sectionsData.size === 0) {
