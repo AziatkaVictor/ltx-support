@@ -70,8 +70,16 @@ export class LtxSection {
     }
 
     getFoldingRange(): Range {
-        const end = Array.from(this.lines.keys()).pop();;
+        const end = this.getLastLineIndex();
         return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
+    }
+
+    getLinesLenghtWithSpaces(): number {
+        return this.startLine - this.getLastLineIndex() + 1;
+    }
+    
+    getLastLineIndex(): number {
+        return Array.from(this.lines.keys()).pop()
     }
 
     async parseLines() {
