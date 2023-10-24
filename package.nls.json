@@ -1,0 +1,22 @@
+{
+    "ltx-support.directories.pathToScripts": "Path to the folder where the scripts are stored.",
+    "ltx-support.directories.pathToLocalization": "Path to the folder where localization is stored. Currently not working. `WiP`.",
+    "ltx-support.directories.pathToMisc": "Path to the folder where the files with quests, squads and other stuff are stored.",
+    "ltx-support.documentation.updateDocumentation": "Update documentation every time when running the extension? Internet connection is required to work. If necessary, you can update the documentation via a special command `#ltx-support.updateDocumentation#`.",
+    "ltx-support.documentation.xr_effectsDocumentation": "Documentation for `xr_effects.script`, which is created via the `#ltx-support.addDocumentation#` command.",
+    "ltx-support.documentation.xr_conditionsDocumentation": "Documentation for `xr_conditions.script`, which is created via the `#ltx-support.addDocumentation#` command.",
+    "ltx-support.documentation.paramsDocumentation": "Documentation for section parameters that is created via the `#ltx-support.addDocumentation#` command.",
+    "ltx-support.documentation.sectionsDocumentation": "Documentation for section types that is created via the `#ltx-support.addDocumentation#` command.",
+    "ltx-support.documentation.argsTypeForFunctionsDocumentation": "A list of arguments that are usually needed to call functions in logic. They are necessary for creating the documentation. You can add your own variants.",
+    "ltx-support.completion.ignoreLocalizationFile": "The name of the localization files that will be ignored. For example: `st_characters.xml`.",
+    "ltx-support.completion.ignoreQuest": "Ignore localization files if the name is equal to `st_quests_*`.",
+    "ltx-support.completion.ignoreDialogs": "Ignore localization files if the name is equal to `st_dialogs_*`.",
+    "ltx-support.diagnostics.enable": "Enable file diagnostics. This will check the file for errors.",
+    "ltx-support.diagnostics.hideInformation": "Change the display of information, making them more invisible, in the form of three dots near the error. Also remove them from the list of errors.",
+    "ltx-support.game.useWorkspaceFolder": "Run the game relative from the workspace folder",
+    "ltx-support.game.silentStart": "Do not display the terminal at startup",
+    "ltx-support.game.additiveCommands": "Additional command that are called when `#ltx-support.game.useWorkspaceFolder#` is enabled before startup. They are needed to adjust the relative path from which the game will be launched.",
+    "ltx-support.game.path": "Custom path to the folder relative to which the command will be invoked. Ignored when `#ltx-support.game.useWorkspaceFolder#` is enabled.",
+    "ltx-support.game.commands.default.start-cop": "Launch CoP",
+    "ltx-support.game.commands": "Launch Options. Arguments: `name`, `command`. [Read more in the Wiki...](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)"
+}
