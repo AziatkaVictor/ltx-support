@@ -1,0 +1,22 @@
+{
+    "ltx-support.directories.pathToScripts": "Путь к папке, где хранятся функции.",
+    "ltx-support.directories.pathToLocalization": "Путь к папке, где хранится локализация. На данный момент не работает. `WiP`",
+    "ltx-support.directories.pathToMisc": "Путь к папке, где хранится файлы с квестами, сквадами и прочим.",
+    "ltx-support.documentation.updateDocumentation": "Обновлять документацию при каждом запуске расширения? Для работы необходимо подключение к интернету. При необходимости можно обновить документацию через специальную команду `#ltx-support.updateDocumentation#`.",
+    "ltx-support.documentation.xr_effectsDocumentation": "Документация для `xr_effects.script`, которая создана через комманду `#ltx-support.addDocumentation#`.",
+    "ltx-support.documentation.xr_conditionsDocumentation": "Документация для `xr_conditions.script`, которая создана через комманду `#ltx-support.addDocumentation#`.",
+    "ltx-support.documentation.paramsDocumentation": "Документация для параметров секций, которая создана через комманду `#ltx-support.addDocumentation#`.",
+    "ltx-support.documentation.sectionsDocumentation": "Документация для типов секций, которая создана через комманду `#ltx-support.addDocumentation#`.",
+    "ltx-support.documentation.argsTypeForFunctionsDocumentation": "Список аргументов, которые обычно нужны для вызова функций в логике. Необходимо для создания документации. Можно дополнить своими вариантами.",
+    "ltx-support.completion.ignoreLocalizationFile": "Название файлов локализации, которые будут игнорироваться. Например: `st_characters.xml`.",
+    "ltx-support.completion.ignoreQuest": "Игнорировать файлы локализации, если в названии есть `st_quests_*`.",
+    "ltx-support.completion.ignoreDialogs": "Игнорировать файлы локализации, если в названии есть `st_dialogs_*`.",
+    "ltx-support.diagnostics.enable": "Включить диагностику файлов. Будет происходить проверка файла на ошибки.",
+    "ltx-support.diagnostics.hideInformation": "Сменить отображение информации, сделав их более незаметными, ввиде трёх точек около ошибки. Так же убирет их из списка ошибок.",
+    "ltx-support.game.useWorkspaceFolder": "Запускать игру относительно рабочей папки",
+    "ltx-support.game.silentStart": "Не отображать терминал при запуске",
+    "ltx-support.game.additiveCommands": "Дополнительная команда, которая вызывается при включенном `#ltx-support.game.useWorkspaceFolder#` перед запуском. Нужно чтобы подкорректировать путь, относительно которого будет запущена игра.",
+    "ltx-support.game.path": "Пользовательский путь к папке, относительно которой будет вызываться комманда. Игнорируется при включенном `#ltx-support.game.useWorkspaceFolder#`.",
+    "ltx-support.game.commands.default.start-cop": "Запуск CoP",
+    "ltx-support.game.commands": "Варианты запуска. Аргументы: `название`, `комманда`. [Подробнее на Wiki...](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)"
+}
