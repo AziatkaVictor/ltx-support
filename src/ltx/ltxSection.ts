@@ -65,11 +65,6 @@ export class LtxSection {
     }
 
     getRange(): Range {
-        const end = this.endLine ? this.endLine : this.startLine;
-        return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
-    }
-
-    getFoldingRange(): Range {
         const end = this.getLastLineIndex();
         return new Range(new Position(this.startLine, 0), new Position(end, this.tempLines.get(end) ? this.tempLines.get(end).length : this.name.length + 2));
     }
@@ -79,13 +74,16 @@ export class LtxSection {
     }
     
     getLastLineIndex(): number {
+        if (this.lines.size === 0) {
+            console.debug("Can't find lines for [" + this.name + "] inside '" + this.getOwnedDocument().uri + "', line " + (this.startLine + 1));
+            return this.startLine + 1;
+        }
         return Array.from(this.lines.keys()).pop()
     }
 
     async parseLines() {
-        if (this.tempLines.size === 0) {
-            return;
-        }
+        if (this.tempLines.size === 0) return;
+
         let data = new Map<number, LtxLine>();
         for await (const [key, value] of this.tempLines) {
             data.set(key, new LtxLine(key, value, this));
@@ -172,6 +170,10 @@ export class LtxSection {
 
     isHaveLinks(): boolean {
         return this.getLinks() ? this.getLinks().length !== 0 : false;
+    }
+
+    isEmpty(temp = false): boolean {
+        return this.lines.size === 0;
     }
 
     isIgnoreParamValidation(paramName: string) {        
