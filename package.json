@@ -4,9 +4,9 @@
 	"publisher": "AziatkaVictor",
 	"icon": "data/Icon.png",
 	"description": "Support of stalker logic format",
-	"version": "0.6.1",
+	"version": "0.6.2",
 	"engines": {
-		"vscode": "^1.67.0"
+		"vscode": "^1.84.1"
 	},
 	"categories": [
 		"Programming Languages"
