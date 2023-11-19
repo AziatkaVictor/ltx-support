@@ -2,14 +2,14 @@ import { commands, ConfigurationChangeEvent, Diagnostic, DiagnosticCollection, E
 import { addDocumentation, startGame } from './commands';
 import { LtxDocument } from "./ltx/ltxDocument";
 import { updateScripts } from './utils/actionsParser';
-import { provideFolding } from './providers/logicFoldingProvider';
-import { provideHover } from './providers/logicHoverProvider';
-import { legend, provideLogicSemantic } from './providers/logicSemanticProvider';
-import { provideSymbols } from './providers/logicSymbolsProvider';
+import { provideFolding } from './providers/FoldingProvider';
+import { provideHover } from './providers/HoverProvider';
+import { legend, provideLogicSemantic } from './providers/SemanticProvider';
+import { provideSymbols } from './providers/SymbolsProvider';
 import { isUpdateDocumentation, isDiagnosticEnabled} from './settings';
-import { provideCompletion } from './providers/logicCompletionItemProvider';
+import { provideCompletion } from './providers/CompletionItemProvider';
 import { updateDocumentation } from './documentation';
-import { provideCodeActions } from './providers/logicCodeActionsProvider';
+import { provideCodeActions } from './providers/CodeActionsProvider';
 
 export var diagnosticCollection: DiagnosticCollection;
 export var diagnosticMap: Map<string, Diagnostic[]> = new Map();
