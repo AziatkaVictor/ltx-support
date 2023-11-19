@@ -18,10 +18,11 @@ export function addSemantic(element: LtxSemantic) {
 /**
  * Класс, который используется для подсветки синтаксиса.
  * 
- * @param type - enum, который характеризует тип (переменяя, функция)
- * @param modification - enum, который характеризует метод использования (объявление, ссылка)
- * @param description - enum, который я планирую использовать для анализа кода
- * @param range - Range, индексы начала и конца текста, который надо подсветить
+ * @param type - характеризует тип (переменяя, функция)
+ * @param modification - характеризует метод использования (объявление, ссылка)
+ * @param description - планирую использовать для анализа кода
+ * @param text - текст, который подсвечивается
+ * @param range - индексы начала и конца текста, который надо подсветить
  */
 export class LtxSemantic {
     type: LtxSemanticType

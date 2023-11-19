@@ -16,6 +16,7 @@ import { diagnosticCollection, diagnosticMap } from "../extension";
 import { LtxDocumentType, LtxDocumentTypeParams } from "./ltxDocumentType";
 import { SectionRepetitionError } from "./Diagnostic/Errors/SectionRepetition";
 import { InvalidDeclarationError } from "./Diagnostic/Errors/InvalidDeclaration";
+import { LtxCondlist } from "./ltxCondlist";
 export var sectionsArray: string[];
 export var currentFile: string;
 
@@ -196,6 +197,16 @@ export class LtxDocument {
             }
         }
         return;
+    }
+
+    /**
+     * Получить Condlist по положению курсора в документе
+     * @param position Курсор в текстовом документе 
+     */
+    getCondlist(selection: Position): LtxCondlist | null {
+        const line = this.getLine(selection);
+        if (!line) return;
+        return line.getCondlist(selection);
     }
 
     /**

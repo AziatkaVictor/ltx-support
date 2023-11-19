@@ -61,6 +61,12 @@ export class LtxLine {
         }
     }
 
+    getCondlist(selection: Position): LtxCondlist {
+        for (const condlist of this.condlists) {
+            if (condlist.isInside(selection)) return condlist;
+        }
+    }
+
     constructor(index: number, data: string, owner: LtxSection) {
         this.index = index;
         this.rawData = data;

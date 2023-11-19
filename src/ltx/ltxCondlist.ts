@@ -37,6 +37,15 @@ export class LtxCondlist {
         return this.functionRange ? this.functionRange.start.isBefore(position) && this.functionRange.end.isAfterOrEqual(position) : false;
     }
 
+    getAction(selection: Position): LtxSemantic | null {
+        for (const action of this.actions) {
+            let index = action.text.indexOf("(");
+            if (index === -1) continue;
+            let newPosition = new Position(action.range.start.line, action.range.start.character + index);
+            if(newPosition.isBefore(selection) && action.range.end.isAfterOrEqual(selection)) return action;
+        }
+    }
+
     constructor(lineIndex: number, PosIndex: number, content: string, owner: LtxLine) {
         this.tempData = content;
         this.owner = owner;
