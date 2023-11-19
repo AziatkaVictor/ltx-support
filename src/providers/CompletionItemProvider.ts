@@ -53,7 +53,7 @@ export async function provideCompletion(document: TextDocument, position: Positi
     if (data.isInsideArgumentsGroup(position) && isChar(context, ["(", ":"])) {
         items = items.concat(await getSquads(document));
         items = items.concat(await getTasks(document));
-        items = items.concat(await getKeywords(data));  
+        items = items.concat(await getKeywords(data, position));  
         items = items.concat(await getLocalization());   
     }
     else {  
@@ -72,9 +72,7 @@ export async function provideCompletion(document: TextDocument, position: Positi
 
         // Keywords and Localization
         if (!data.isInsideCondlistGroups(position) && data.inInsideCondlist(position)) {
-            if (data.getLine(position).getType() === "cfg_get_bool" || null) {
-                items = items.concat(await getKeywords(data));            
-            }
+            items = items.concat(await getKeywords(data, position));            
             if (data.getLine(position).getType() === "cfg_get_string" || null) {
                 items = items.concat(await getLocalization());            
             }
@@ -131,7 +129,7 @@ async function getTasks(document: TextDocument) : Promise<CompletionItem[]> {
     return items;
 }
 
-async function getKeywords(document : LtxDocument): Promise<CompletionItem[]> {
+async function getKeywords(document : LtxDocument, position: Position): Promise<CompletionItem[]> {
     var items = ["nil","true","false"];
     if (document.getType() === LtxDocumentType.Tasks) {
         items.push("complete", "fail", "reversed");
