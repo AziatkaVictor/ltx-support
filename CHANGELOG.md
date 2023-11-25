@@ -1,202 +1,202 @@
-# 0.6.2
+## 0.6.2
 
-* Система диагностики кода и решения ошибок были перенесенны на классы, чтобы упростить работу
-* Добавлены решение ошибок:
-    * Удаление строки
-* Исправлено сворачивание секций
-* Исправлена проверка функций для условий и действий в Condlist-е
-* Исправлено автодополнение ключевых слов
-* Поддержка английского языка для настроек расширения
+* Code diagnostics and error resolution systems have been moved to classes to make things easier
+* Added error solutions:
+     * Removing a line
+* Fixed collapsing sections
+* Fixed function checking for conditions and actions in Condlist
+* Fixed keyword completion
+* English language support for extension settings
 
-# 0.6.1
+## 0.6.1
 
-* Исправлена ошибка с недостающими параметрами в некоторых секциях
+* Fixed a bug with missing parameters in some sections
 
 # 0.6
 
-* Добавлена диагностика кода на ошибки:
-    * Объявление нескольких секций в одной строке
-    * Дублирование секций с одинаковым названием
-    * Ссылка на несуществующую секцию
-    * Неверный тип секции
-    * Неиспользуемая секция
-    * Пустая секция
-    * Ссылка на самого себя
-    * Ссылка на несколько секций в одном Condlist-е
-    * Проверка условия с инфопоршнями
-    * Проверка условия с функциями
-    * Вызов несуществующей функции
-    * Некорректная запись параметра
-    * Неизвестный параметр
-* Добавлены решение ошибок:
-    * Удаление секции
-    * Замена ссылки на nil
-    * Удаление секции и замена ссылок на nil
-    * Рекомендации по замене типа секции, если оно неверно
-    * Рекомендации по замене функции, если она неверна
-    * Рекомендации по замене параметра, если он неверный
-    * Добавление объявления секции
-* Исправлена ошибка при запуске программы через команду
-* Добавлены и исправлены настройки диагностики
-* Небольшие исправления и чистка кода 
+* Added error code diagnostics:
+     * Declaring multiple sections on one line
+     * Duplication of sections with the same name
+     * Link to a non-existent section
+     *Invalid section type
+     * Unused section
+     * Empty section
+     *Link to yourself
+     * Link to several sections in one Condlist
+     * Checking conditions with data pistons
+     * Checking conditions with functions
+     * Calling a non-existent function
+     * Incorrect parameter entry
+     *Unknown parameter
+* Added error solutions:
+     *Deleting a section
+     * Replacement of reference with nil
+     * Removing a section and replacing references with nil
+     * Recommendations for replacing the section type if it is incorrect
+     * Recommendations for replacing the function if it is incorrect
+     * Recommendations for replacing a parameter if it is incorrect
+     * Adding a section declaration
+* Fixed an error when starting the program through a command
+* Added and corrected diagnostic settings
+* Minor fixes and code cleanup
 
-# 0.5.4
+## 0.5.4
 
-* Поддержка документации для секций
-* Исправлена критическая ошибка с зависимостями
+* Documentation support for sections
+* Fixed critical bug with dependencies
 
-# 0.5.3
+## 0.5.3
 
-* Hover Provider для локализации
-* Предпросмотр секций при автодополнении `Task` или `Squad` переменных
-* Исправлена ошибка, которая происходила при наличии одинаковых названий функций в `xr_effects.script` и `xr_conditions.script`
-* Исправление Highligthing-а
-* Некоторое количество мелких исправлений
+* Hover Provider for localization
+* Preview sections when autocompleting `Task` or `Squad` variables
+* Fixed an error that occurred when there were identical function names in `xr_effects.script` and `xr_conditions.script`
+* Highligthing fix
+* Several minor fixes
 
-# 0.5.2
+## 0.5.2
 
-* Добавлена документация для некоторых параметров 
-* Добавлена возможность в обновить документацию расширения при помощи команды. Так же, по умолчанию, при запуске расширения идет автоматическое обновление файлов, которое можно отключить в настройках. Данная функция требует подключение к интернету.
-* Модуль, отвечающий за автодополнение, объеденён в один общий
-* Исправлена ошибка, при которой не отображались параметры
-* Некоторое количество мелких исправлений
+* Added documentation for some parameters
+* Added the ability to update the extension documentation using the command. Also, by default, when the extension is launched, files are automatically updated, which can be disabled in the settings. This function requires an Internet connection.
+* The module responsible for autocompletion has been combined into one common
+* Fixed a bug where parameters were not displayed
+* Several minor fixes
 
-# 0.5.1
+## 0.5.1
 
-* Исправление критической ошибки при работе с локализацией
+* Correction of a critical error when working with localization
 
 # 0.5
 
-* Добавлена возможность запуска игры или другого приложения из редактора. Подробнее на [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)
-* Добавлена возможность обновить информацию о скриптах с помощью команды `Update Scripts`
-* Добавлена документация для параметров *(написание в процессе)* и команда, для её написания
-* Добавлено автодополение сигналов
-* Добавлена поддержка файлов: 
-    * Заданий
-    * Сквадов
-    * Регистрации звуков
-    * Торговли
-* Добавлена подержка секций: 
-    * Anomal_zone
-    * Smart_control
-    * Smart_terrian
-* Добавлена подержка параметров, свойственых логике НПС
-* Добавлено автодополнение части параметра, на основе его типа
-* Подсветка на основе синтакиса для сигналов
-* Добавлены иконки файлов для расширения `*.ltx`
-* Исправлен алгоритм получения локализации, при котором он ломался, если получал пустую таблицу
-* Чистка кода
-* Исправление мелких ошибок
+* Added the ability to launch a game or other application from the editor. More details on [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki/Start-Game-from-VSCode)
+* Added the ability to update information about scripts using the `Update Scripts` command
+* Added documentation for parameters *(writing in progress)* and command for writing it
+* Added auto-completion of signals
+* Added file support:
+     *Tasks
+     * Squads
+     *Registration of sounds
+     * Trade
+* Added support for sections:
+     *Anomal_zone
+     * Smart_control
+     *Smart_terrian
+* Added support for parameters specific to NPC logic
+* Added auto-completion of part of the parameter based on its type
+* Syntax-based highlighting for signals
+* Added file icons for the `*.ltx` extension
+* Fixed the algorithm for obtaining localization, in which it would break if it received an empty table
+* Code cleaning
+* Minor bug fixes
 
 # 0.4
 
-* Добавлено автодополнение ключевых слов, таких как `true`, `false` или `nil`
-* Добавлена поддержка документации. Теперь есть возможность удобно, внутри расширения, наприметь документацию к функциям, через комманду `Add Documentation`. Подробнее процесс описан на [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki/Documentation-Guide)<br>
+* Added autocompletion of keywords such as `true`, `false` or `nil`
+* Added documentation support. Now it is possible to conveniently, inside the extension, for example, add documentation for functions using the `Add Documentation` command. The process is described in more detail on [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki/Documentation-Guide)<br>
 ![Docs](./data/Images/0.4/Docs.png)
-* Добавлен Hover Provider, который позволил реализовать отображение документации функции при наведении на неё:<br>
+* Added Hover Provider, which made it possible to display function documentation when hovering over it:<br>
 ![Hover](./data/Images/0.4/Hover.png)
-* Перенос части подсветки синтаксиса на готовое решение языкового расширения VSCode. Это ускорило работу расширения.
-* Добавленно автодополнение переменных из файлов локализации.
-* Добавлен Symbols Provider, который теперь отображает структуру файла и даёт возможность нафигации по файлу:<br>
+* Transferring part of the syntax highlighting to a ready-made solution for the VSCode language extension. This made the expansion work faster.
+* Added autocompletion of variables from localization files.
+* Added Symbols Provider, which now displays the file structure and makes it possible to navigate by file:<br>
 ![Symbols1](./data/Images/0.4/Symbols1.png)<br>
 ![Symbols2](./data/Images/0.4/Symbols2.png)
-* Добавлен Folding Provider, который дал возможность сворачивать секции:<br>
+* Added Folding Provider, which made it possible to collapse sections:<br>
 ![Folding](./data/Images/0.4/Folding.png)
-* Написана некоторая часть документации для функций логики, ~20-30 функций.
+* Some documentation for logic functions has been written, ~20-30 functions.
 
 # 0.3
 
-* Добавлено автодополнение параметров секций, которые свойственны всем типам:<br>
+* Added auto-completion of section parameters, which are common to all types:<br>
 ![SectionsParams1](./data/Images/0.3/SectionParam1.png)
-* Добавлено автодополнение параметров секций на основе их типа:<br>
+* Added auto-completion of section parameters based on their type:<br>
 ![SectionsParams2](./data/Images/0.3/SectionParam2.png)
-* Добавлено автодополнение инфопоршнаями из текущего файла:<br>
+* Added auto-completion of information engines from the current file:<br>
 ![Info](./data/Images/0.3/Info.png)
-* Убрано из автодополения ссылками на секции название текущой секции
-* Путь к скриптам теперь береться относительно рабочой папки
-* Добавлены некоторые Snippet-ы, которые должны ускорить работу с секциями: _(WIP)_<br>
+* The name of the current section has been removed from auto-completion with links to sections
+* The path to the scripts is now taken relative to the working folder
+* Added some Snippets that should speed up working with sections: _(WIP)_<br>
 ![Snippets](./data/Images/0.3/Snippets.png)
-* Проверки положения курсора перенесены в класс документа
-* Добавлен тип документа, который позволит разделить алгоритм на работу с разными типами _(файлы логики, конфиги, секции предметов, сквадов, квестов)_
-* Добавлена автодополнение типов секций для объявления внутри `[]`:<br>
+* Moved cursor position checks to the document class
+* Added a document type that will allow you to divide the algorithm into working with different types _(logic files, configs, sections of items, squads, quests)_
+* Added autocompletion of section types for declarations inside `[]`:<br>
 ![Sections](./data/Images/0.3/Sections.png)
-* Перерарботка структуры кода расширения, распределив функционал на Provider-ы, чтобы работать было было комфортнее
-* Добавлено условия для работы автодополения ссылки на секцию 
-* Корректировка подсветки текста для путей к файлам
-* Исправление мелких ошибок
+* Reworking the structure of the extension code, distributing the functionality to Providers to make working more comfortable
+* Added conditions for auto-completion of section links to work
+* Adjust text highlighting for file paths
+* Minor bug fixes
 
-# 0.2.2
+## 0.2.2
 
-* Добавлено автодополение секциями из текущего файла:<br>
+* Added auto-completion with sections from the current file:<br>
 ![SectionCompletion](./data/Images/0.2.2/SectionCompletion.png)<br>
-* У сквадов и квестов теперь новые иконки:<br>
+* Squads and quests now have new icons:<br>
 ![NewIcons](./data/Images/0.2.2/NewIcons.png)<br>
-* Исправлена ошибка с автодополением функций и проверок для логики
-* Исправлена ошибка при проверке расположения курсора внутри скобок `%%` и `{}`
-* Небольшие исправления кода, связанные с асинхронными алгоритмами
-* Исправлена проблема, которая могла появиться при открытии файла
-* Теперь в памяти может храниться несколько документов
-* Исправлена ошибка, когда не обновлялась подсветка синтаксиса при открытии файла
-* Теперь сквады и квесты предлагаются только внутри скобок `%%` и `{}`
+* Fixed a bug with autocompletion of functions and checks for logic
+* Fixed a bug when checking the cursor location inside the `%%` and `{}` brackets
+* Minor code fixes related to asynchronous algorithms
+* Fixed an issue that could appear when opening a file
+* Multiple documents can now be stored in memory
+* Fixed a bug where syntax highlighting was not updated when opening a file
+* Squads and quests are now offered only inside the `%%` and `{}` brackets
 
-# 0.2.1
+## 0.2.1
 
-* Исправлена ошибка с поиском файлом для сквадов и квестов
-* Добавлена возможность указать путь к папке `misc`
-* Переделаны настройки расширения, в соответствии со стандартами
-* Изменена структура исходного кода расширения
-* В процессе добавление документации в коде для тех, кто хочет помочь в разработке расширения
-* Добавлены асинхронные алгоритмы, для ускорения работы расширения. <br>До: <br>
+* Fixed a bug with searching for files for squads and quests
+* Added the ability to specify the path to the `misc` folder
+* Redesigned extension settings in accordance with standards
+* Changed the structure of the extension source code
+* In the process of adding documentation in the code for those who want to help develop the extension
+* Added asynchronous algorithms to speed up the extension. <br>Before: <br>
 ![Before](./data/Images/0.2.1/Before%20Async.png)<br>
-После (обычно это быстрее в 10-25 раз):<br>
+After (usually this is 10-25 times faster):<br>
 ![After](./data/Images/0.2.1/After%20Async.png)
-* Сделаны небольшие исправление ошибок и оптимизация кода
+* Made minor bug fixes and code optimizations
 
 # 0.2
 
-* Добавлена поддержка подсказок со сквадами и заданиями (Работает только при условии, что файлы находятся в нужных папках и имеют стандартный паттерн у названия файла).<br>
+* Added support for tooltips with squads and tasks (Works only if the files are in the required folders and have a standard file name pattern).<br>
 ![Quests](./data/Images/0.2/quests.png)
 ![Squads](./data/Images/0.2/squads.png)
-* Поддержка упрощенного алгоритма парсинга файла для оптимизации
-* Оптимизация работы расширения
-* Информация об подсветке синтаксиса теперь храниться внутри файла
-* Небольшие исправления
+* Support for simplified file parsing algorithm for optimization
+* Optimization of extension operation
+* Syntax highlighting information is now stored inside the file
+* Minor fixes
 
-# 0.1.4
+## 0.1.4
 
-* Добавлены необходимы библиотеки в пакет установки, теперь расширение должно работать
-* Изменение названия параметров
-* Небольшие изменения
+* Added required libraries to the installation package, now the extension should work
+* Changing the names of parameters
+* Minor changes
 
-# 0.1.3
+## 0.1.3
 
-* Исправлен алгоритм поиска `condlist-ов`
-* Исправлена проверка нахождения курсора в скобках
-* Добавлена поддержка подсветки синтаксиса в `fsgame.ltx`
-* Исправлен алгоритм поиска ссылок на секции
-* Подсветка булевых значение `true\false` в сигналах
-* Поддержка работы алгоритма в тексте без секций (необходимо для случаев, подобных `fsgame.ltx`)
+* Fixed the search algorithm for `condlists`
+* Fixed checking if the cursor is in parentheses
+* Added support for syntax highlighting in `fsgame.ltx`
+* Fixed algorithm for searching links to sections
+* Highlighting Boolean values `true\false` in signals
+* Support for the algorithm to work in text without sections (necessary for cases like `fsgame.ltx`)
 
-# 0.1.2
+## 0.1.2
 
-* Исправление алгоритма поиска параметра
-* Добавление проверки на число в значении сигнала
-* Небольшие исправления
+* Correction of the parameter search algorithm
+* Adding a check for a number in the signal value
+* Minor fixes
 
-# 0.1.1
+## 0.1.1
 
-* Исправление алгоритма поиска объявления секции
-* Исправление проверки нахождения курсора внутри специальных `"скобок"`
-* Исправление алгоритма поиска `condlist-ов`
-* Добавление несколько `try-catch` конструкций
+* Correction of the section advertisement search algorithm
+* Fixed checking that the cursor is inside special `"brackets"`
+* Correction of the search algorithm for `condlists`
+* Adding several `try-catch` constructs
 
 # 0.1
 
-* Предложение функций и предусловий для логики
-* Поддержка кастомных файлов со скриптами
-* Подсветка ключевых слов
-* Подсветка условий
-* Подсветка функций
-* Подсветка чисел
-* Подсветка ссылок на секции
-* Создана структура файла, для более удобной работы с данными
+* Suggest functions and preconditions for logic
+* Support for custom files with scripts
+* Keyword highlighting
+* Highlighting conditions
+* Function backlight
+* Number highlighting
+* Highlighting links to sections
+* A file structure has been created for more convenient work with data

@@ -1,14 +1,12 @@
 ![Title](./data/Images/ReadMe/Title.gif)
 
-[English translation](./README.en-US.md)
-
-Расширение для [Visual Studio Code](https://code.visualstudio.com/), которое добавляет поддержку синтаксиса логики из **S.T.A.L.K.E.R. Call of Pripyat**. Плагин добавляет множество крупных и не очень функций, которые должны упростить работу над модификациями, а так же помочь новичкам начать делать свои первые моды. Наверное самым важным аспектом расширения являеться то, что оно пытаеться максимально, как это только возможно, адаптироваться под проекты.
+An extension for [Visual Studio Code](https://code.visualstudio.com/) that adds support for the logic syntax from **S.T.A.L.K.E.R. Call of Pripyat**. The plugin adds some features that should simplify the work for creating mods, as well as help beginners making their first mods. Probably the most important aspect of the extension is that it tries to adapt to the projects as much as possible.
 
 ![Demonstration](./data/Images/ReadMe/Demonstration.gif)
 
-На данный момент реализованы такие функции VSCode, как:
+Currently implemented VSCode features:
 
-* Completion *(Автодополнение)*:
+* Completion *(Auto-completion)*:
     * Infos
     * Sections Types
     * Sections Links
@@ -17,32 +15,32 @@
     * Squads
     * Tasks
     * Signals
-* Hover *(Информация при наведении)*
-* Syntax Highlighting *(Подсветка кода на основе синтаксиса)*
-* Semantic Highlighting *(Подсветка кода на основе контекста)*
-* Folding Ranges *(Сворачивание секций)*
-* Symbols *(Визуализация структуры файла)*
+* Hover Information
+* Syntax Highlighting
+* Semantic Highlighting
+* Section Collapse
+* Symbols (Visualization of file structure)
 
-Список постоянно пополняется новыми функциями, с выходом каждой новой версии.
+The list is constantly updated with new features with each new version.
 
-# Настройки
+# Settings
 
-Чтобы зайти в настройки расширения необходимо:
+To enter the extension settings you need to:
 
-* Нажать `Ctrl+Shift+P => Open Settings (UI)`.
-* Открыть `Extensions => LTX` или просто написать в поиске `ltx`.
+* Press `Ctrl+Shift+P => Open Settings (UI)`.
+* Open `Extensions => LTX` or just write `ltx` in the search bar.
 
-# Сборка расширения
+# Building the extension
 
-Если вам интересно поковырять расширение самому или просто помочь в разработке, то вот немного информации о том, как его собрать. Чтобы это сделать, необходимо:
+If you're interested in poking around the extension yourself or just help with the development, here is the information on how to build it. To do this, you need to:
 
-1. Скачать исходники с помощью `git clone`
-2. Открыть проект, запустить в консоли `npm install` или нажать ПКМ на `package.json` в спойлере `NPM Scripts` и нажать на пункт `Run install`.
-3. После установки всех необходимых библиотек, необходимо нажать `Launch` во вкладке `Run and Debug` или на горячую клавишу `F5`.
-4. Готово. Должно открыться новое окно VS Code, в котором будет 2 тестовых файла.
+1. Download the source code using `git clone`.
+2. Open the project, run `npm install` in the console or click on `package.json` in the `NPM Scripts` spoiler and click on `Run install`.
+3. After installing all the necessary libraries, you should press `Launch` in the `Run and Debug` tab or the `F5` hotkey.
+4. Done. A new VS Code window should open with 2 test files in it.
 
-# Ссылки
+# References
 
-* [Профиль на AP-PRO.RU](https://ap-pro.ru/profile/6-aziatkavictor/)
-* [Тема на форуме](https://ap-pro.ru/forums/topic/3561-vscode-podderzhka-sintaksisa-cop/)
+* [Profile on AP-PRO.RU](https://ap-pro.ru/profile/6-aziatkavictor/)
+* [Forum topic](https://ap-pro.ru/forums/topic/3561-vscode-podderzhka-sintaksisa-cop/)
 * [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki)
