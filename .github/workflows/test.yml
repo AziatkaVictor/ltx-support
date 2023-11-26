@@ -1,0 +1,29 @@
+name: Unit Tests
+
+on:
+    push: 
+        branches: "*"
+    pull_request:
+        branches: "*"
+
+jobs:
+    runtests:
+        name: Run unit tests
+        strategy:
+            matrix:
+                platform: [ windows-latest ]
+        runs-on: ${{ matrix.platform }}
+        steps:
+          - uses: actions/checkout@v3
+          - uses: actions/setup-node@v3
+          - run: npm ci
+          - name: Run Tests
+            id: test
+            run: | 
+                set +e
+                npm run test
+                exitcode="$?"
+                echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+                exit "$exitcode"          
+                
+                
