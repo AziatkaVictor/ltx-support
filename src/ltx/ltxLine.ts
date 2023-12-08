@@ -45,14 +45,16 @@ export class LtxLine {
     }
 
     getType(): string | null {
-        const data = getSectionData().get(this.owner.getTypeName());
-        if (data) {
-            for (const param of data) {
-                if (param.indexOf(this.getPropertyName()) !== -1) {
-                    return param.split(":")[0];
+        if (this.owner) {
+            const data = getSectionData().get(this.owner.getTypeName());
+            if (data) {
+                for (const param of data) {
+                    if (param.indexOf(this.getPropertyName()) !== -1) {
+                        return param.split(":")[0];
+                    }
                 }
-            }
-        }
+            }  
+        }      
 
         for (const condition of getBasedConditions()) {
             if (condition.indexOf(this.getPropertyName()) !== -1) {
