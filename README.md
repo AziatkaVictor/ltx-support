@@ -34,7 +34,7 @@ To enter the extension settings you need to:
 
 If you're interested in poking around the extension yourself or just help with the development, here is the information on how to build it. To do this, you need to:
 
-1. Download the source code using `git clone`.
+1. Make sure, that you have [Node.js](https://nodejs.org/) installed and download the source code using `git clone`.
 2. Open the project, run `npm install` in the console or click on `package.json` in the `NPM Scripts` spoiler and click on `Run install`.
 3. After installing all the necessary libraries, you should press `Launch` in the `Run and Debug` tab or the `F5` hotkey.
 4. Done. A new VS Code window should open with 2 test files in it.
