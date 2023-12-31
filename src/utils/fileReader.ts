@@ -27,8 +27,8 @@ export function getFileData(path: string): string | null {
  * @returns результат функции `callback`
  */
 export function analyzeFile(name: string, firstPath: string, secondPath: string, callback: (path: string) => string[]): string[] {
-    if (!!workspace) {
-        return;
+    if (workspace === null) {
+        return [];
     }
 
     var item = (workspace.workspaceFolders[0].uri.path + "/" + firstPath + name).replace(/\//g, "\\");
