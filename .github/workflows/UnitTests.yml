@@ -1,10 +1,14 @@
 name: Unit Tests
 
 on:
-    push: 
-        branches: "*"
+    push:
+        branches: "master"
+        paths:
+            - 'src/**'
     pull_request:
         branches: "*"
+        paths:
+            - 'src/**'
 
 jobs:
     runtests:
