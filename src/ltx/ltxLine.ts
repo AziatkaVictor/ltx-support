@@ -16,7 +16,7 @@ export class LtxLine {
     readonly condlists: LtxCondlist[] = []
     readonly signals: Map<Range, string> = new Map<Range, string>()
     readonly owner: LtxSection
-    readonly rawData: string    
+    readonly rawData: string
 
     inInsideCondlist(position: Position): boolean {
         for (const condlist of this.condlists) {
@@ -45,11 +45,13 @@ export class LtxLine {
     }
 
     getType(): string | null {
-        const data = getSectionData().get(this.owner.getTypeName());
-        if (data) {
-            for (const param of data) {
-                if (param.indexOf(this.getPropertyName()) !== -1) {
-                    return param.split(":")[0];
+        if (this.owner) {
+            const data = getSectionData().get(this.owner.getTypeName());
+            if (data) {
+                for (const param of data) {
+                    if (param.indexOf(this.getPropertyName()) !== -1) {
+                        return param.split(":")[0];
+                    }
                 }
             }
         }
@@ -137,11 +139,11 @@ export class LtxLine {
         }
     }
 
-    getPropertyName() {
-        return this.propertyName.replace(/\d+\b/g, "");
+    getPropertyName(): string | null {
+        return this.propertyName?.replace(/\d+\b/g, "");
     }
 
-    getOwnedSection(): LtxSection {
+    getOwnedSection(): LtxSection | null {
         return this.owner;
     }
 

@@ -1,0 +1,29 @@
+name: Unit Tests
+
+on:
+    push:
+        branches: "master"
+        paths:
+            - 'src/**'
+    pull_request:
+        branches: "*"
+        paths:
+            - 'src/**'
+
+jobs:
+    runtests:
+        name: Run unit tests
+        strategy:
+            matrix:
+                platform: [ windows-latest ]
+        runs-on: ${{ matrix.platform }}
+        steps:
+          - uses: actions/checkout@v3
+          - uses: actions/setup-node@v3
+          - run: npm ci
+          - name: Run Tests
+            id: test
+            run: | 
+                npm run test        
+                
+                
