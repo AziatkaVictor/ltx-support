@@ -1,27 +1,48 @@
-import { TextDocument, Range, Position } from "vscode";
+import { TextDocument, Range } from "vscode";
+import { Section } from "../sections/Index";
+import { Parser } from "../shared/Parser";
 
+/**
+ * Implementation of base *.ltx file, which will handle parsing basic declarations.
+ */
 export class Document {
-    private sectionsDeclaration: Range[];
+    private sections: Section[]
 
     constructor(readonly source: TextDocument) {
-        const text = this.source.getText().replace(/;.*/g, '');
-        this.sectionsDeclaration = Document.findSectionsDeclaration(text);
+        this.sections = this.findSections().map((value: Range) => {
+            return new Section(this, value);
+        });
     }
 
-    static findSectionsDeclaration(text: string, range?: Range, parents?: string[]): Range[] {
-        const sectionRegExp: RegExp = /(?<=\[).+(?=\])/g;
-        const sectionRegExpWithParents: RegExp = new RegExp("(?<=\\[).+(?=\\]\:.*?(" + parents.join("|") + "))", "g");
-        const regExp: RegExp = !parents ? sectionRegExp : sectionRegExpWithParents;
+    /**
+     * Parse text with RegExp to find section declaration. With {@link parents} it will search to only sections with one of this parents.
+     * It will call {@link Document.findSectionsDeclaration} function to find sections in this document. Comments will be ignored.
+     * @param range where to search
+     * @param parents sections with which parent sections must be founded
+     * @returns array of {@link Range} in this document
+     */
+    public findSectionsDeclaration(range?: Range, parents?: string[]): Range[] {
+        const text = this.source.getText(range);
+        return Parser.toRange(this.source, Document.findSectionsDeclaration(text, parents), range);
+    }
 
-        var match: RegExpExecArray;
-        var sectionsArray = [];
+    /**
+     * Parse text with RegExp to find section declaration. With {@link parents} it will search to only sections with one of this parents. 
+     * @param text string, which must to be parsed
+     * @param parents sections with which parent sections must be founded
+     * @returns array of offsets in text
+     */
+    public static findSectionsDeclaration(text: string, parents: string[] = []): IMatch[] {
+        const pattern: RegExp = parents.length == 0 ? Section.namePattern : Section.getNamePatternWithParents(parents);
+        return Parser.findAll(text, pattern);
+    }
 
-        while (match = regExp.exec(text)) {
-            let lineIndex = (text.substring(0, match.index).match(/\n/g) || []).length || 0;
-            let start = new Position(lineIndex, match.index + 1);
-            let end = new Position(lineIndex, start.character + match[0].length);
-            sectionsArray.push(new Range(start, end));
-        }
-        return sectionsArray;
+    public findSections(range?: Range): Range[] {
+        const text = this.source.getText(range);
+        return Parser.toRange(this.source, Document.findSections(text), range);
+    }
+
+    public static findSections(text: string): IMatch[] {
+        return Parser.findAll(text, Section.bodyPattern);
     }
 }

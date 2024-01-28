@@ -1,4 +1,4 @@
-import {Document} from "./Common";
+import { Document } from "./Common";
 
 export class LogicDocument extends Document {
 }
