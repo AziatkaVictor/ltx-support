@@ -1,3 +1,5 @@
 export abstract class AbstractFactory {
-    static create(): undefined {}
+    static create(): undefined {
+        return;
+    }
 }
