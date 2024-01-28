@@ -4,7 +4,10 @@
         "target": "es2020",
         "outDir": "out",
         "rootDir": "src",
-        "lib": [ "es6" ],
+        "lib": [
+            "es6",
+            "es2020.string"
+        ],
         "sourceMap": true
     },
     "exclude": [
