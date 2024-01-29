@@ -38,11 +38,21 @@ export class Document {
         return Parser.findAll(text, pattern);
     }
 
+    /**
+     * Find all sections body in this document
+     * @param range in which range to search
+     * @returns where sections in text are located
+     */
     public findSections(range?: Range): Range[] {
         const text = this.source.getText(range);
         return Parser.toRange(this.source, Document.findSections(text), range);
     }
 
+    /**
+     * Find all sections body in text
+     * @param text string, which must to be parsed
+     * @returns array of offsets in text
+     */
     public static findSections(text: string): IMatch[] {
         return Parser.findAll(text, Section.bodyPattern);
     }
