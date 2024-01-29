@@ -20,11 +20,26 @@ export class Parser {
             );
         });
     }
+    
+    /**
+     * Find first element in text by given RegExp pattern
+     * @param text Where to search
+     * @param pattern Which RegExp pattern use
+     * @returns Zero-based offsets with length
+     */
+    public static find(text: string, pattern: RegExp): IMatch | void {
+        const result = text.match(pattern);
+        if (!result) return;
+
+        console.debug(pattern, "\n", result);
+
+        return { start: result.index, length: result[0].length };
+    }
 
     /**
-     * Find elements in text by given RegExp pattern
+     * Find all elements in text by given RegExp pattern
      * @param text Where to search
-     * @param pattern Which RegExp patter use
+     * @param pattern Which RegExp pattern use
      * @returns Array of zero-based offsets with length
      */
     public static findAll(text: string, pattern: RegExp): IMatch[] {
