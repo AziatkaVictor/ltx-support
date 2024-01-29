@@ -1,4 +1,5 @@
 export * from "./documents/Index"
 export * from "./parameters/Index"
 export * from "./sections/Index"
+export * from "./shared/Index"
 export * from "./factories/Document"

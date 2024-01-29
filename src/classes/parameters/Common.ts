@@ -1,5 +1,5 @@
 import { Range, TextDocument } from "vscode"
-import { Condlist } from "../shared/Condlist"
+import { Condlist } from "../shared/Index"
 import { Section } from "../sections/Index"
 
 export class Parameter {
