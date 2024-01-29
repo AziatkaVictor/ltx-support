@@ -1,15 +1,16 @@
-import { CancellationToken, FoldingRange, FoldingRangeKind, Position, ProviderResult, TextDocument } from "vscode";
-import { getLtxDocument } from "../extension";
+import { CancellationToken, Event, FoldingContext, FoldingRange, FoldingRangeKind, FoldingRangeProvider, ProviderResult, TextDocument } from "vscode";
+import { DocumentsManager, Section } from "../classes/ltx";
 
-export function provideFolding(document: TextDocument, position: Position, token?: CancellationToken): ProviderResult<FoldingRange[]> {
-    var data = getLtxDocument(document);
-    var result = [];
-    for (const section of data.getSections()) {
-        if (section.isEmpty()) {
-            continue;
-        }
-        const range = section.getRange();
-        result.push(new FoldingRange(range.start.line, range.end.line, FoldingRangeKind.Region));
-    }        
-    return result;
+export class CustomFoldingRangeProvider implements FoldingRangeProvider {
+    constructor(private documents: DocumentsManager) { }
+
+    onDidChangeFoldingRanges?: Event<void>;
+    provideFoldingRanges(document: TextDocument, context: FoldingContext, token: CancellationToken): ProviderResult<FoldingRange[]> {
+        const data = this.documents.get(document);
+        if (!data) return;
+
+        return data.sections.map((value: Section, index: number, array: Section[]) => {
+            return new FoldingRange(value.range.start.line, value.range.end.line, FoldingRangeKind.Region);
+        });
+    }
 }

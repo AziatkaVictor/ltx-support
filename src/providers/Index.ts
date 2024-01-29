@@ -1,0 +1,1 @@
+export { CustomFoldingRangeProvider } from "./FoldingProvider";
