@@ -1,16 +1,17 @@
 import { TextDocument, Range } from "vscode";
 import { Section } from "../sections/Index";
 import { Parser } from "../shared/Parser";
+import { SectionFactory } from "../factories/Section";
 
 /**
  * Implementation of base *.ltx file, which will handle parsing basic declarations.
  */
 export class Document {
-    private sections: Section[]
+    readonly sections: Section[]
 
     constructor(readonly source: TextDocument) {
         this.sections = this.findSections().map((value: Range) => {
-            return new Section(this, value);
+            return SectionFactory.create(this, value);
         });
     }
 
