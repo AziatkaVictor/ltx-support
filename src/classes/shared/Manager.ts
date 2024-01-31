@@ -22,4 +22,8 @@ export class DocumentsManager {
         }
         this.data.set(document.uri, value);
     }
+
+    update(document: TextDocument): void {
+        this.set(document, DocumentFactory.create(document));
+    }
 }

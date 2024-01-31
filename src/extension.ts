@@ -8,7 +8,10 @@ import { updateScripts } from './utils/actionsParser';
 export function activate(context: ExtensionContext) {
     var manager = new DocumentsManager();
 
-    workspace.onDidChangeConfiguration(updateData);
+    workspace.onDidChangeTextDocument((change: TextDocumentChangeEvent) => {
+        if (!change.contentChanges) return;
+        manager.update(change.document);
+    });
 
     var providers = [
         languages.registerFoldingRangeProvider("ltx", new CustomFoldingRangeProvider(manager)),
