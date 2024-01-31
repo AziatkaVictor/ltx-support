@@ -1,4 +1,4 @@
-import { TextDocument, Range } from "vscode";
+import { TextDocument, Range, Position } from "vscode";
 import { Section } from "../sections/Index";
 import { Parser } from "../shared/Parser";
 import { SectionFactory } from "../factories/Section";
@@ -24,18 +24,7 @@ export class Document {
      */
     public findSectionsDeclaration(range?: Range, parents?: string[]): Range[] {
         const text = this.source.getText(range);
-        return Parser.toRange(this.source, Document.findSectionsDeclaration(text, parents), range);
-    }
-
-    /**
-     * Parse text with RegExp to find section declaration. With {@link parents} it will search to only sections with one of this parents. 
-     * @param text string, which must to be parsed
-     * @param parents sections with which parent sections must be founded
-     * @returns array of offsets in text
-     */
-    public static findSectionsDeclaration(text: string, parents: string[] = []): IMatch[] {
-        const pattern: RegExp = parents.length == 0 ? Section.namePattern : Section.getNamePatternWithParents(parents);
-        return Parser.findAll(text, pattern);
+        return Parser.toRanges(this.source, Document.findSectionsDeclaration(text, parents), range);
     }
 
     /**
@@ -45,15 +34,16 @@ export class Document {
      */
     public findSections(range?: Range): Range[] {
         const text = this.source.getText(range);
-        return Parser.toRange(this.source, Document.findSections(text), range);
+        return Parser.toRanges(this.source, Document.findSections(text), range);
     }
 
     /**
-     * Find all sections body in text
-     * @param text string, which must to be parsed
-     * @returns array of offsets in text
+     * Get line on {@link Position} and checks that it is inside section declaration brackets, between `[]`.
+     * @param position position of cursor
+     * @returns is position inside
      */
-    public static findSections(text: string): IMatch[] {
-        return Parser.findAll(text, Section.bodyPattern);
+    public isSectionDeclaration(position: Position): boolean {
+        const lineText = this.source.lineAt(position.line).text;
+        return lineText.indexOf("[") < position.character && lineText.lastIndexOf("]") >= position.character;
     }
 }
