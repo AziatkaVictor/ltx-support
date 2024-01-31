@@ -1,3 +1,4 @@
+import { isNumber } from "util";
 import { TextDocument, Range } from "vscode";
 
 /** 
@@ -11,7 +12,7 @@ export class Parser {
      * @param range Range which must be converted in offset
      * @returns Array of ranges in document
      */
-    public static toRange(document: TextDocument, matches: IMatch[], range?: Range): Range[] {
+    public static toRanges(document: TextDocument, matches: IMatch[], range?: Range): Range[] {
         const offset = range ? document.offsetAt(range.start) : 0;
         return matches.map((value: IMatch) => {
             return new Range(
@@ -19,6 +20,14 @@ export class Parser {
                 document.positionAt(offset + value.start + value.length)
             );
         });
+    }
+
+    public static toRange(document: TextDocument, match: IMatch, range?: Range): Range {
+        const offset = range ? document.offsetAt(range.start) : 0;
+        return new Range(
+            document.positionAt(offset + match.start),
+            document.positionAt(offset + match.start + match.length)
+        );
     }
     
     /**
@@ -28,11 +37,10 @@ export class Parser {
      * @returns Zero-based offsets with length
      */
     public static find(text: string, pattern: RegExp): IMatch | void {
-        const result = text.match(pattern);
-        if (!result) return;
-
-        console.debug(pattern, "\n", result);
-
+        const result = pattern.exec(text);
+        if (!isNumber(result?.index)) return;
+        
+        console.debug(pattern, result.index, "\n", result);
         return { start: result.index, length: result[0].length };
     }
 
@@ -42,14 +50,32 @@ export class Parser {
      * @param pattern Which RegExp pattern use
      * @returns Array of zero-based offsets with length
      */
-    public static findAll(text: string, pattern: RegExp): IMatch[] {
+    public static findAll(text: string, pattern: RegExp): IMatch[] | void {
         const result = [...text.matchAll(pattern)];
-        if (!result) return [];
+        if (result?.length <= 0) return;
 
         console.debug(pattern, "\n", result);
 
         return result.map((value: RegExpExecArray, index: number, array: RegExpExecArray[]) => {
             return { start: value.index, length: value[0].length };
         });
+    }
+
+    public static findRange(document: TextDocument, pattern: RegExp, range?: Range): Range {
+        const text = document.getText(range);
+        const result = Parser.find(text, pattern);
+
+        if (!result) return;
+
+        return Parser.toRange(document, result);
+    }
+
+    public static findAllRanges(document: TextDocument, pattern: RegExp, range?: Range): Range[] | void {
+        const text = document.getText(range);
+        const result = Parser.findAll(text, pattern);
+
+        if (!result) return;
+
+        return Parser.toRanges(document, result);
     }
 }
