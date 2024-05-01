@@ -8,7 +8,7 @@ import { getDefaultPathToScripts, getPathToMisc, getPathToScripts } from "../set
 import { getConditions, getFunctions } from "../utils/actionsParser";
 import { analyzeFile, findLuaElements, getLocalizationData } from "../utils/fileReader";
 import { getModules } from "../utils/modulesParser";
-import { LtxDocumentType } from '../ltx/ltxDocumentType';
+import { LtxDocumentType } from '../ltx/LtxDocumentType';
 
 const paramSnippets = {
     "cfg_get_number_and_condlist": "{value} = ${1:100} | ${0}",

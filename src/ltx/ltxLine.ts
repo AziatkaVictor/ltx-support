@@ -4,7 +4,7 @@ import { LtxCondlist } from "./ltxCondlist"
 import { LtxSection } from "./ltxSection"
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic"
 import { LtxDocument } from "./ltxDocument"
-import { LtxDocumentType } from "./ltxDocumentType"
+import { LtxDocumentType } from "./LtxDocumentType"
 import { InvalidParameterError } from "./Diagnostic/Errors/InvalidParameter"
 import { InvalidLineError } from "./Diagnostic/Errors/InvalidLine"
 
