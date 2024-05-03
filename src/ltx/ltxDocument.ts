@@ -13,7 +13,7 @@ import { getFileData } from "../utils/fileReader";
 import { getParamsByFile } from "../utils/modulesParser";
 import { isDiagnosticEnabled } from "../settings";
 import { diagnosticCollection, diagnosticMap } from "../extension";
-import { LtxDocumentType, LtxDocumentTypeParams } from "./ltxDocumentType";
+import { LtxDocumentType, LtxDocumentTypeParams } from "./LtxDocumentType";
 import { SectionRepetitionError } from "./Diagnostic/Errors/SectionRepetition";
 import { InvalidDeclarationError } from "./Diagnostic/Errors/InvalidDeclaration";
 import { LtxCondlist } from "./ltxCondlist";

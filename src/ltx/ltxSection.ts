@@ -5,7 +5,7 @@ import { LtxDocument } from "./ltxDocument";
 import { LtxLine } from "./ltxLine";
 import { addSemantic, LtxSemantic, LtxSemanticDescription, LtxSemanticModification, LtxSemanticType } from "./ltxSemantic";
 import { LtxSectionLink } from "./ltxSectionLink";
-import { LtxDocumentType } from "./ltxDocumentType";
+import { LtxDocumentType } from "./LtxDocumentType";
 import { InvalidSectionTypeError } from "./Diagnostic/Errors/InvalidSectionType";
 import { EmptySectionError } from "./Diagnostic/Errors/EmptySection";
 import { UselessSectionError } from "./Diagnostic/Errors/UselessSection";
