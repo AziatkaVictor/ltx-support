@@ -1,5 +1,5 @@
 import { ConfigurationChangeEvent, ExtensionContext, TextDocumentChangeEvent, languages, window, workspace, commands, TextDocument } from 'vscode';
-import { Document, DocumentFactory, DocumentsManager, LogicDocument, TasksDocument } from './classes/ltx';
+import { Document, DocumentsFactory, DocumentsManager, LogicDocument, TasksDocument } from './classes/ltx';
 import { updateDocumentation } from './documentation';
 import { CustomCompletionProvider, CustomFoldingRangeProvider } from "./providers/Index";
 import { isUpdateDocumentation } from './settings';
@@ -7,7 +7,7 @@ import { updateScripts } from './utils/actionsParser';
 
 export function activate(context: ExtensionContext) {
     // Register Documents classes
-    const documentsFactory = DocumentFactory.instance;
+    const documentsFactory = DocumentsFactory.instance;
 
     documentsFactory.register('logic', {condition: LogicDocument.canBeCreated, classToCreate: LogicDocument});
     documentsFactory.register('task', {condition: TasksDocument.canBeCreated, classToCreate: TasksDocument});
