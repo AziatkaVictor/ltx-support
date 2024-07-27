@@ -1,30 +1,43 @@
-import { ConfigurationChangeEvent, ExtensionContext, TextDocumentChangeEvent, languages, window, workspace } from 'vscode';
-import { DocumentsManager } from './classes/ltx';
+import { ConfigurationChangeEvent, ExtensionContext, TextDocumentChangeEvent, languages, window, workspace, commands, TextDocument } from 'vscode';
+import { Document, DocumentFactory, DocumentsManager, LogicDocument, TasksDocument } from './classes/ltx';
 import { updateDocumentation } from './documentation';
 import { CustomCompletionProvider, CustomFoldingRangeProvider } from "./providers/Index";
 import { isUpdateDocumentation } from './settings';
 import { updateScripts } from './utils/actionsParser';
 
 export function activate(context: ExtensionContext) {
-    var manager = new DocumentsManager();
+    // Register Documents classes
+    const documentsFactory = DocumentFactory.instance;
 
+    documentsFactory.register('logic', {condition: LogicDocument.canBeCreated, classToCreate: LogicDocument});
+    documentsFactory.register('task', {condition: TasksDocument.canBeCreated, classToCreate: TasksDocument});
+
+    commands.registerCommand('extension/getDirectory', async function() {
+        return context;
+    });
+    
+    // Update data after changing settings
     workspace.onDidChangeConfiguration((change: ConfigurationChangeEvent) => {
         if (change.affectsConfiguration("Directories.PathToScripts")) {
             updateScripts();
         }
     });
+
+    // Update document data after changing text inside it
     workspace.onDidChangeTextDocument((change: TextDocumentChangeEvent) => {
         if (!change.contentChanges) return;
-        manager.update(change.document);
+        DocumentsManager.instance.set(change.document);
     });
 
+    // Registered custom LTX providers
     var providers = [
-        languages.registerFoldingRangeProvider("ltx", new CustomFoldingRangeProvider(manager)),
-        languages.registerCompletionItemProvider("ltx", new CustomCompletionProvider(manager), "[", "%", "=", "!", "(", ":")
+        languages.registerFoldingRangeProvider("ltx", new CustomFoldingRangeProvider(DocumentsManager.instance)),
+        languages.registerCompletionItemProvider("ltx", new CustomCompletionProvider(DocumentsManager.instance), "[", "%", "=", "!", "(", ":")
     ];
 
     context.subscriptions.push(...providers);
 
+    // Update documentation on every start of VSCode
     if (isUpdateDocumentation()) {
         updateDocumentation();
     }

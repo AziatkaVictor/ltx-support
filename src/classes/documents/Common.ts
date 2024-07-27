@@ -14,31 +14,18 @@ export class Document {
         const sectionsRanges = Parser.findAllRanges(this.source, Section.bodyPattern);
         if (sectionsRanges) {
             this.sections = sectionsRanges.map((value: Range) => {
-            return SectionFactory.create(this, value);
-        });
-    }
-    }
-
-    /**
-     * Parse text with RegExp to find section declaration. With {@link parents} it will search to only sections with one of this parents.
-     * It will call {@link Document.findSectionsDeclaration} function to find sections in this document. Comments will be ignored.
-     * @param range where to search
-     * @param parents sections with which parent sections must be founded
-     * @returns array of {@link Range} in this document
-     */
-    public findSectionsDeclaration(range?: Range, parents?: string[]): Range[] {
-        const text = this.source.getText(range);
-        return Parser.toRanges(this.source, Document.findSectionsDeclaration(text, parents), range);
+                return SectionFactory.create(this, value);
+            });
+        }
     }
 
     /**
-     * Find all sections body in this document
-     * @param range in which range to search
-     * @returns where sections in text are located
+     * Must be overwrote in inherited classes
+     * @param document 
+     * @returns Can this class be used for this type of document
      */
-    public findSections(range?: Range): Range[] {
-        const text = this.source.getText(range);
-        return Parser.toRanges(this.source, Document.findSections(text), range);
+    public static canBeCreated(document: TextDocument): boolean {
+        return false;
     }
 
     /**
