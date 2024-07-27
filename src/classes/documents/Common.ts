@@ -10,9 +10,13 @@ export class Document {
     readonly sections: Section[]
 
     constructor(readonly source: TextDocument) {
-        this.sections = this.findSections().map((value: Range) => {
+        // Searching sections body
+        const sectionsRanges = Parser.findAllRanges(this.source, Section.bodyPattern);
+        if (sectionsRanges) {
+            this.sections = sectionsRanges.map((value: Range) => {
             return SectionFactory.create(this, value);
         });
+    }
     }
 
     /**

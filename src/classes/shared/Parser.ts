@@ -1,5 +1,8 @@
+import { PathLike } from "fs";
 import { isNumber } from "util";
-import { TextDocument, Range } from "vscode";
+import { TextDocument, Range, workspace, Uri, extensions } from "vscode";
+import * as path from 'path';
+import * as fs from 'fs';
 
 /** 
  * Static class for parsing text with RegExp
@@ -29,7 +32,7 @@ export class Parser {
             document.positionAt(offset + match.start + match.length)
         );
     }
-    
+
     /**
      * Find first element in text by given RegExp pattern
      * @param text Where to search
@@ -39,7 +42,7 @@ export class Parser {
     public static find(text: string, pattern: RegExp): IMatch | void {
         const result = pattern.exec(text);
         if (!isNumber(result?.index)) return;
-        
+
         console.debug(pattern, result.index, "\n", result);
         return { start: result.index, length: result[0].length };
     }
@@ -77,5 +80,16 @@ export class Parser {
         if (!result) return;
 
         return Parser.toRanges(document, result);
+    }
+
+    public static async getFile(relativePath: PathLike): Promise<TextDocument | void> {
+        const extensionPath = extensions.getExtension("AziatkaVictor.ltx-support").extensionPath;
+        var filePath = path.relative(extensionPath + "data/", relativePath.toString());
+
+        if (!fs.existsSync(filePath)) {
+            var files = await workspace.findFiles(relativePath.toString());
+        }
+
+        return await workspace.openTextDocument(Uri.file(filePath));
     }
 }
