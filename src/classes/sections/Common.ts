@@ -26,7 +26,8 @@ export class Section {
     
     public get range(): Range {
         return this._range;
-
+    }
+    
     public get lastParameterLine(): number {
         return Math.max(...this.parameters.map((value: Parameter, index: number, array: Parameter[]) => {
             return value.range.start.line;
