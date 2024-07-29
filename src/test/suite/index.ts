@@ -19,16 +19,13 @@ export function run(): Promise<void> {
 
 			files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
 
-			try {
-				mocha.run(failures => {
-					if (failures > 0) {
-						error(new Error(`${failures} tests failed.`));
-					} else {
-						success();
-					}
-				});
-			} catch (err) {
-			}
+			mocha.run(failures => {
+				if (failures > 0) {
+					process.exit(1);
+				} else {
+					success();
+				}
+			});
 		});
 	});
 }
