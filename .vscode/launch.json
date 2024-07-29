@@ -11,11 +11,29 @@
             "name": "Launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-                "--extensionDevelopmentPath=${workspaceRoot}", 
+                "--extensionDevelopmentPath=${workspaceRoot}",
                 "${workspaceRoot}/.vscode-test"
             ],
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"
+            ],
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
+        },
+        {
+            "name": "Extension Tests",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--disable-extensions",
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/test/**/*.js"
             ],
             "preLaunchTask": {
                 "type": "npm",
