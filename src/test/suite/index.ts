@@ -60,8 +60,8 @@ export class CustomReporter extends Mocha.reporters.Base {
 				Logger.instance.success(`${this.indent()}${test.title}`);
 				this.write(this.indents, this.read(this.indents) - 1);
 			})
-			.on("fail", (test: Mocha.Test, err: any) => {
-				Logger.instance.fail(`${this.indent()}${test.title}`);
+			.on("fail", (test: Mocha.Test, err: Error) => {
+				Logger.instance.fail(`${this.indent()}${test.title} Error: ${err.message}`);
 				this.write(this.indents, this.read(this.indents) - 1);
 			})
 			.once("end", () => {
