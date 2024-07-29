@@ -2,9 +2,7 @@ name: Unit Tests
 
 on:
     push:
-        branches: "master"
-        paths:
-            - 'src/**'
+        branches: "*"
     pull_request:
         branches: "*"
         paths:
