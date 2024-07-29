@@ -3,6 +3,7 @@ import { isNumber } from "util";
 import { TextDocument, Range, workspace, Uri, extensions } from "vscode";
 import * as path from 'path';
 import * as fs from 'fs';
+import { Logger } from "./Logger";
 
 /** 
  * Static class for parsing text with RegExp
@@ -43,7 +44,7 @@ export class Parser {
         const result = pattern.exec(text);
         if (!isNumber(result?.index)) return;
 
-        console.debug(pattern, result.index, "\n", result);
+        Logger.instance.debug(`Parser found text!\tIndex: ${result.index}\tPattern: ${String(pattern)}`);
         return { start: result.index, length: result[0].length };
     }
 
@@ -57,7 +58,7 @@ export class Parser {
         const result = [...text.matchAll(pattern)];
         if (result?.length <= 0) return;
 
-        console.debug(pattern, "\n", result);
+        Logger.instance.debug(`Parser found texts!\tCount: ${result.length}\tPattern: ${String(pattern)}`);
 
         return result.map((value: RegExpExecArray, index: number, array: RegExpExecArray[]) => {
             return { start: value.index, length: value[0].length };
