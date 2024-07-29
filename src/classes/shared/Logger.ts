@@ -1,14 +1,28 @@
 import { OutputChannel, window } from "vscode";
 
+export enum LoggerLevel {
+    debug,
+    info,
+    warn,
+    error,
+    tests,
+    off
+};
+
 export class Logger {
     private static _instance: Logger;
     private outputChannel: OutputChannel;
+    private level = LoggerLevel.info;
 
     private static timeColor: string = "\u001b[2m\u001b[37m";
+    private static specColor: string = "\u001b[35m";
     private static debugColor: string = "\u001b[36m";
-    private static infoColor: string = "\u001b[32m";
+    private static infoColor: string = "\u001b[34m";
     private static warnColor: string = "\u001b[33m";
     private static errorColor: string = "\u001b[31m";
+    private static successColor: string = "\u001b[32m";
+    private static failColor: string = "\u001b[31m";
+    private static symbolsCount: number = 8;
 
     private constructor() {
         this.outputChannel = window.createOutputChannel('LTX Support', "log");
@@ -30,10 +44,14 @@ export class Logger {
     }
 
     private format(type: string, color?: string): string {
+        var freeSpace = Logger.symbolsCount - type.length;
+
+        var type = `${type}${Array(freeSpace).join(" ")}`;
+
         if (!color) {
-            return this.time + " [" + type + "] ";
+            return `${this.time} [${type}] `;
         }
-        return Logger.timeColor + this.time + "\u001b[22m " + color + " [" + type + "] \u001b[37m";
+        return `${Logger.timeColor}${this.time} \u001b[22m${color}[${type}]\u001b[37m `;
     }
 
     private write(message: string, type: string, color: string): void {
@@ -49,19 +67,49 @@ export class Logger {
     }
 
     public debug(message: string, ...args: any[]): void {
-        this.write(message, "debug", Logger.debugColor);
+        if (this.level <= LoggerLevel.debug) {
+            this.write(message, "debug", Logger.debugColor);
+        }
     }
 
     public info(message: string, ...args: any[]): void {
-        this.write(message, "info", Logger.infoColor);
+        if (this.level <= LoggerLevel.info) {
+            this.write(message, "info", Logger.infoColor);
+        }
     }
 
     public warn(message: string, ...args: any[]): void {
-        this.write(message, "warning", Logger.warnColor);
+        if (this.level <= LoggerLevel.warn) {
+            this.write(message, "warning", Logger.warnColor);
+        }
     }
 
     public error(message: string, ...args: any[]): void {
-        this.write(message, "error", Logger.errorColor);
+        if (this.level <= LoggerLevel.error) {
+            this.write(message, "error", Logger.errorColor);
+        }
+    }
+
+    public suite(message: string, ...args: any[]): void {
+        if (this.level <= LoggerLevel.tests) {
+            this.write(message, "suite", Logger.infoColor);
+        }
+    }
+
+    public success(message: string, ...args: any[]): void {
+        if (this.level <= LoggerLevel.tests) {
+            this.write(message, "success", Logger.successColor);
+        }
+    }
+
+    public fail(message: string, ...args: any[]): void {
+        if (this.level <= LoggerLevel.tests) {
+            this.write(message, "fail", Logger.failColor);
+        }
+    }
+
+    public setLevel(level: LoggerLevel) {
+        this.level = level;
     }
 }
 
