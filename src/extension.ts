@@ -4,6 +4,7 @@ import { updateDocumentation } from './documentation';
 import { CustomCompletionProvider, CustomFoldingRangeProvider } from "./providers/Index";
 import { isUpdateDocumentation } from './settings';
 import { updateScripts } from './utils/actionsParser';
+import { Logger } from './classes/shared/Logger';
 
 export function activate(context: ExtensionContext) {
     // Register Documents classes
@@ -25,7 +26,7 @@ export function activate(context: ExtensionContext) {
 
     // Update document data after changing text inside it
     workspace.onDidChangeTextDocument((change: TextDocumentChangeEvent) => {
-        if (!change.contentChanges) return;
+        if (change.contentChanges.length < 1 || change.document.languageId !== "ltx") return;
         DocumentsManager.instance.set(change.document);
     });
 
