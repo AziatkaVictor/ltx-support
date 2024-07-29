@@ -18,7 +18,7 @@ jobs:
         steps:
           - uses: actions/checkout@v3
           - uses: actions/setup-node@v3
-          - run: npm ci --cache .npm
+          - run: yarn install
           - name: Run Tests
             id: test
             run: | 
