@@ -56,19 +56,26 @@ export class DocumentsFactory implements AbstractFactory {
             console.error("Document factory failed to create object, because TextDocument is null!")
         }
 
+        // Check all registered classes, that they can be used for this document
+        // it's important to have the list of them for debugging
         var classes: IDocumentFactoryObject<Document>[] = [];
-
         for (const documentClass of this.registeredClasses.values()) {
             if (documentClass.condition(document)) {
                 classes.push(documentClass);
             }
         }
 
-        if (classes.length > 1) {
-            console.warn("Document factory has more than one class to create! Picking first one...");
-            return new classes[0].classToCreate(document);
+        // If class is not found, than just use default Document class
+        if (classes.length < 1)
+        {
+            return new Document(document);
         }
 
-        return new Document(document);
+        // Warn developer, when we have more 1 classes. It's mean, that conditions of classes are bad
+        if (classes.length > 1) {
+            console.warn("Document factory has more than one class to create! Picking first one...");
+        }
+
+        return new classes[0].classToCreate(document);
     }
 }
