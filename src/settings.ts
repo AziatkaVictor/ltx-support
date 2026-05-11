@@ -1,7 +1,22 @@
 import { workspace } from "vscode";
+import * as path from "path";
 
 function getSettings() {
     return workspace.getConfiguration("", workspace.workspaceFile);
+}
+
+let _extensionPath: string = "";
+
+/**
+ * Должно вызываться один раз в `activate()`, чтобы сохранить путь к корню расширения.
+ * Используется для построения абсолютных путей к встроенным ресурсам (`data/...`).
+ */
+export function setExtensionRoot(extensionPath: string) {
+    _extensionPath = extensionPath;
+}
+
+function dataPath(...segments: string[]): string {
+    return path.join(_extensionPath, "data", ...segments);
 }
 
 export function getPathToScripts() : string | null {
@@ -73,23 +88,27 @@ export function getGameCommands() : [] {
 }
 
 export function getDefaultPathToConditions() : string {
-    return "../../data/scripts/xr_conditions.script";
+    return dataPath("scripts", "xr_conditions.script");
 }
 
 export function getDefaultPathToFunctions() : string {
-    return "../../data/scripts/xr_effects.script";
+    return dataPath("scripts", "xr_effects.script");
 }
 
 export function getDefaultPathToModules() : string {
-    return "../../data/scripts/modules.script";
+    return dataPath("scripts", "modules.script");
 }
 
 export function getDefaultPathToScripts() : string {
-    return "../../data/scripts/";
+    return dataPath("scripts") + path.sep;
 }
 
 export function getDefaultPathToLocalization() : string {
-    return "../../data/localization/";
+    return dataPath("localization") + path.sep;
+}
+
+export function getDefaultPathToDocumentation() : string {
+    return dataPath("documentation") + path.sep;
 }
 
 export function getDefaultPathToGit() : string {
