@@ -89,20 +89,11 @@ export async function getLocalizationData(ignoredLocalization = getIgnoredLocali
     return Array.from(new Set(result));
 }
 
-/**
- * Экранирует одиночные `&`, которые не являются частью валидной XML-сущности
- * (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`, `&#123;`, `&#x1F;` и т.п.).
- *
- * Локализации сталкера часто содержат сырой `&` в тексте описаний, что ломает
- * строгий xml2js-парсер, хотя движок игры подобное принимает.
- */
 function sanitizeXml(text: string): string {
     return text.replace(/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/g, "&amp;");
 }
 
-/**
- * Получить информацию из `*.xml` файла. Поддерживает `cp1251` кодировку
- */
+
 export function getXmlData(file: string): string[] {
     var text = sanitizeXml(iconv.decode(fs.readFileSync(file), 'cp1251'));
     var data;
@@ -119,6 +110,7 @@ export function getXmlData(file: string): string[] {
     if (!data || !data.string_table || !data.string_table.string) {
         return [];
     }
+    
     return data.string_table.string;
 }
 
