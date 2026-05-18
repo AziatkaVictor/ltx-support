@@ -15,12 +15,9 @@
                 "${workspaceRoot}/.vscode-test"
             ],
             "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
+                "${workspaceRoot}/dist/**/*.js"
             ],
-            "preLaunchTask": {
-                "type": "npm",
-                "script": "watch"
-            }
+            "preLaunchTask": "${defaultBuildTask}"
         }
     ]
 }

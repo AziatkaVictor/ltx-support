@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { workspace } from 'vscode';
 import { parseString } from 'xml2js';
+import * as iconv from 'iconv-lite';
 import { getDefaultPathToLocalization, getIgnoredLocalization, getPathToLocalization } from '../settings';
 
 /**
@@ -88,13 +89,13 @@ export async function getLocalizationData(ignoredLocalization = getIgnoredLocali
     return Array.from(new Set(result));
 }
 
-/**
- * Получить информацию из `*.xml` файла. Поддерживает `cp1251` кодировку
- */
+function sanitizeXml(text: string): string {
+    return text.replace(/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/g, "&amp;");
+}
+
+
 export function getXmlData(file: string): string[] {
-    const Iconv = require('iconv').Iconv;
-    const convertor = new Iconv('cp1251', 'UTF-8');
-    var text = String(convertor.convert(fs.readFileSync(file))).replace("\"#$&'()*+-./:;<=>?@[]^_`{|}~", "");
+    var text = sanitizeXml(iconv.decode(fs.readFileSync(file), 'cp1251'));
     var data;
 
     parseString(text, function (err, result) {
@@ -105,6 +106,11 @@ export function getXmlData(file: string): string[] {
             data = result;
         }
     });
+
+    if (!data || !data.string_table || !data.string_table.string) {
+        return [];
+    }
+    
     return data.string_table.string;
 }
 

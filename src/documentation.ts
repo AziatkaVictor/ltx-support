@@ -1,12 +1,9 @@
 import { MarkdownString, window } from "vscode";
 import { getFunctions, getConditions } from "./utils/actionsParser";
-import { getDefaultPathToGit, getUserDocumentation } from "./settings";
-import axios from 'axios';
+import { getDefaultPathToDocumentation, getDefaultPathToGit, getUserDocumentation } from "./settings";
 import * as path from 'path';
 import * as fs from 'fs';
 import { findLocalization } from "./utils/fileReader";
-
-const docsPath = "../data/documentation/";
 export const functionsFiles = new Map<string, Function>([["xr_effects", getFunctions], ["xr_conditions", getConditions]]);
 
 /**
@@ -27,7 +24,7 @@ export enum DocumentationKind {
  */
 export function getDocumentationData(kind: DocumentationKind): Object | null {
     try {
-        var docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, docsPath + kind + "_docs.json")).toString());
+        var docs = JSON.parse(fs.readFileSync(path.join(getDefaultPathToDocumentation(), kind + "_docs.json")).toString());
         var userDocs = getUserDocumentation(kind);
         return Object.assign({}, docs, userDocs);
     } catch (error) {
@@ -153,12 +150,13 @@ export function updateDocumentation() {
 async function updateDocumentationFile(file: string) {
     const url = getDefaultPathToGit() + file;
     try {
-        const filepath = path.resolve(__dirname, docsPath + file);
-        const response = await axios.get(url);
-        if (response.status !== 200) {
+        const filepath = path.join(getDefaultPathToDocumentation(), file);
+        const response = await fetch(url);
+        if (!response.ok) {
             throw new Error("Error while trying to get data. Status: " + response.status)
         }
-        fs.writeFileSync(filepath, JSON.stringify(response.data));
+        const data = await response.json();
+        fs.writeFileSync(filepath, JSON.stringify(data));
     } catch (exception) {
         window.showErrorMessage(`Документация для файла ${file} не была обновлена! ${exception}`);
         console.log(`ERROR received from ${url}: ${exception}\n`);

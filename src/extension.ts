@@ -6,7 +6,7 @@ import { provideFolding } from './providers/FoldingProvider';
 import { provideHover } from './providers/HoverProvider';
 import { legend, provideLogicSemantic } from './providers/SemanticProvider';
 import { provideSymbols } from './providers/SymbolsProvider';
-import { isUpdateDocumentation, isDiagnosticEnabled} from './settings';
+import { isUpdateDocumentation, isDiagnosticEnabled, setExtensionRoot } from './settings';
 import { provideCompletion } from './providers/CompletionItemProvider';
 import { updateDocumentation } from './documentation';
 import { provideCodeActions } from './providers/CodeActionsProvider';
@@ -23,6 +23,7 @@ export function getLtxDocument(document : TextDocument) {
 }
 
 export function activate(context: ExtensionContext) {
+    setExtensionRoot(context.extensionPath);
     diagnosticCollection = languages.createDiagnosticCollection("ltx");
 
     workspace.onDidChangeTextDocument(onChange);

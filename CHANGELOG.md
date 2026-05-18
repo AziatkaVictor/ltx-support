@@ -92,34 +92,34 @@
 
 * Added autocompletion of keywords such as `true`, `false` or `nil`
 * Added documentation support. Now it is possible to conveniently, inside the extension, for example, add documentation for functions using the `Add Documentation` command. The process is described in more detail on [Wiki](https://github.com/AziatkaVictor/ltx-support/wiki/Documentation-Guide)<br>
-![Docs](./data/Images/0.4/Docs.png)
+![Docs](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.4/Docs.png)
 * Added Hover Provider, which made it possible to display function documentation when hovering over it:<br>
-![Hover](./data/Images/0.4/Hover.png)
+![Hover](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.4/Hover.png)
 * Transferring part of the syntax highlighting to a ready-made solution for the VSCode language extension. This made the expansion work faster.
 * Added autocompletion of variables from localization files.
 * Added Symbols Provider, which now displays the file structure and makes it possible to navigate by file:<br>
-![Symbols1](./data/Images/0.4/Symbols1.png)<br>
-![Symbols2](./data/Images/0.4/Symbols2.png)
+![Symbols1](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.4/Symbols1.png)<br>
+![Symbols2](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.4/Symbols2.png)
 * Added Folding Provider, which made it possible to collapse sections:<br>
-![Folding](./data/Images/0.4/Folding.png)
+![Folding](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.4/Folding.png)
 * Some documentation for logic functions has been written, ~20-30 functions.
 
 # 0.3
 
 * Added auto-completion of section parameters, which are common to all types:<br>
-![SectionsParams1](./data/Images/0.3/SectionParam1.png)
+![SectionsParams1](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.3/SectionParam1.png)
 * Added auto-completion of section parameters based on their type:<br>
-![SectionsParams2](./data/Images/0.3/SectionParam2.png)
+![SectionsParams2](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.3/SectionParam2.png)
 * Added auto-completion of information engines from the current file:<br>
-![Info](./data/Images/0.3/Info.png)
+![Info](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.3/Info.png)
 * The name of the current section has been removed from auto-completion with links to sections
 * The path to the scripts is now taken relative to the working folder
 * Added some Snippets that should speed up working with sections: _(WIP)_<br>
-![Snippets](./data/Images/0.3/Snippets.png)
+![Snippets](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.3/Snippets.png)
 * Moved cursor position checks to the document class
 * Added a document type that will allow you to divide the algorithm into working with different types _(logic files, configs, sections of items, squads, quests)_
 * Added autocompletion of section types for declarations inside `[]`:<br>
-![Sections](./data/Images/0.3/Sections.png)
+![Sections](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.3/Sections.png)
 * Reworking the structure of the extension code, distributing the functionality to Providers to make working more comfortable
 * Added conditions for auto-completion of section links to work
 * Adjust text highlighting for file paths
@@ -128,9 +128,9 @@
 ## 0.2.2
 
 * Added auto-completion with sections from the current file:<br>
-![SectionCompletion](./data/Images/0.2.2/SectionCompletion.png)<br>
+![SectionCompletion](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2.2/SectionCompletion.png)<br>
 * Squads and quests now have new icons:<br>
-![NewIcons](./data/Images/0.2.2/NewIcons.png)<br>
+![NewIcons](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2.2/NewIcons.png)<br>
 * Fixed a bug with autocompletion of functions and checks for logic
 * Fixed a bug when checking the cursor location inside the `%%` and `{}` brackets
 * Minor code fixes related to asynchronous algorithms
@@ -147,16 +147,16 @@
 * Changed the structure of the extension source code
 * In the process of adding documentation in the code for those who want to help develop the extension
 * Added asynchronous algorithms to speed up the extension. <br>Before: <br>
-![Before](./data/Images/0.2.1/Before%20Async.png)<br>
+![Before](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2.1/Before%20Async.png)<br>
 After (usually this is 10-25 times faster):<br>
-![After](./data/Images/0.2.1/After%20Async.png)
+![After](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2.1/After%20Async.png)
 * Made minor bug fixes and code optimizations
 
 # 0.2
 
 * Added support for tooltips with squads and tasks (Works only if the files are in the required folders and have a standard file name pattern).<br>
-![Quests](./data/Images/0.2/quests.png)
-![Squads](./data/Images/0.2/squads.png)
+![Quests](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2/quests.png)
+![Squads](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/0.2/squads.png)
 * Support for simplified file parsing algorithm for optimization
 * Optimization of extension operation
 * Syntax highlighting information is now stored inside the file

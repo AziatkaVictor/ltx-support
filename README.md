@@ -1,8 +1,8 @@
-![Title](./data/Images/ReadMe/Title.gif)
+![Title](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/ReadMe/Title.gif)
 
 An extension for [Visual Studio Code](https://code.visualstudio.com/) that adds support for the logic syntax from **S.T.A.L.K.E.R. Call of Pripyat**. The plugin adds some features that should simplify the work for creating mods, as well as help beginners making their first mods. Probably the most important aspect of the extension is that it tries to adapt to the projects as much as possible.
 
-![Demonstration](./data/Images/ReadMe/Demonstration.gif)
+![Demonstration](https://raw.githubusercontent.com/AziatkaVictor/ltx-support/master/data/Images/ReadMe/Demonstration.gif)
 
 Currently implemented VSCode features:
 

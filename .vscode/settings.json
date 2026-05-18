@@ -1,5 +1,7 @@
 {
     "cSpell.enabled": false,
+    "debug.javascript.autoAttachFilter": "disabled",
+    "npm.autoDetect": "off",
     "luahelper.base.ignoreFileOrDir": [
         ".vscode/",
         "one11.lua",
